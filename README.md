@@ -3,7 +3,7 @@
 Even closely related bacterial genomes can differ in the presence of hundreds of genes and  individual genes can be horizontally acquired from distant strains and species.
 This mix of inheritance patterns complicates phylogenetic analysis of bacteria.
 
-Although several software are available for pan-genome analysis, yet visualization, interpretation and exploration of pan-genomes remains challenging.
+Although several software packages are available for pan-genome analysis, yet visualization, interpretation and exploration of pan-genomes remains challenging.
 **panX** (Pan-genome Analysis and Exploration) aims at facilitating pan-genome research with an easy-to-use and interactive platform for analyzing and exploring pan-genomic data.
 
 panX displays the pan-genome using interconnected visual components including gene cluster table, multiple alignment, comparative phylogenetic tree viewers and strain metadata table. The pan-genome data structures are prepared by our [pan-genome-analysis](https://github.com/neherlab/pan-genome-analysis) analysis pipeline, which efficiently identifies orthologous clusters from large sets of genome sequences and pre-computes alignments, trees, and plenty of informative statistics.
@@ -71,8 +71,7 @@ script(src='dataset/yourSpecies/newColumnConfig.js')
 ## **Pipeline overview:**
 ![panX](/panX-pipeline.png)
 
-panX analysis pipeline is based on [DIAMOND](https://github.com/bbuchfink/diamond) ([Buchfink et al. 2015 Nature Methods](http://www.nature.com/nmeth/journal/v12/n1/full/nmeth.3176.html)), MCL and post-
-processing to determine clusters of orthologous genes from a collection of annotated genomes.
+panX analysis pipeline is based on DIAMOND, MCL and post-processing to determine clusters of orthologous genes from a collection of annotated genomes.
 panX generates a strain/species tree based on core genome SNPs and a gene tree for each gene cluster.
 
 **panX interactive visualization**: (1) The dynamic pan-genome statistical charts allow rapid filtering and selection of gene subsets in cluster table;
