@@ -44,7 +44,7 @@ const {
   ENABLE_TYPE_CHECKS,
   DOMAIN,
   DOMAIN_STRIPPED,
-  DATA_FULL_DOMAIN,
+  DATA_ROOT_URL,
 } = getEnvVars()
 
 const BRANCH_NAME = getGitBranch()
@@ -59,7 +59,7 @@ const clientEnv = {
   COMMIT_HASH: getGitCommitHash(),
   DOMAIN,
   DOMAIN_STRIPPED,
-  DATA_FULL_DOMAIN,
+  DATA_ROOT_URL,
 }
 
 console.info(`Client-side Environment:\n${JSON.stringify(clientEnv, null, 2)}`)

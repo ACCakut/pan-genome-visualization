@@ -8,7 +8,7 @@ export function getEnvVars() {
   const PRODUCTION = NODE_ENV === 'production'
   const DOMAIN = getDomain()
   const DOMAIN_STRIPPED = DOMAIN.replace('https://', '').replace('http://', '')
-  const DATA_FULL_DOMAIN = getenv('DATA_FULL_DOMAIN')
+  const DATA_ROOT_URL = getenv('DATA_ROOT_URL')
 
   const common = {
     BABEL_ENV,
@@ -17,7 +17,7 @@ export function getEnvVars() {
     PRODUCTION,
     DOMAIN,
     DOMAIN_STRIPPED,
-    DATA_FULL_DOMAIN,
+    DATA_ROOT_URL,
   }
 
   if (PRODUCTION) {
