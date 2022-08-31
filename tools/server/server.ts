@@ -86,9 +86,9 @@ function main() {
   app.use(setHeaders)
   app.use('/_next', expressStaticGzip(nextDir, cacheOneYear))
   app.use(expressStaticGzip(buildDir, cacheNone))
-  app.use('/species/:species', (req, res, next) => {
+  app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-cache')
-    res.sendFile(path.join(buildDir, 'species', '[species].html'))
+    res.sendFile(path.join(buildDir, 'index.html'))
     next()
   })
   app.use(notFound)

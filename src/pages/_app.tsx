@@ -2,7 +2,7 @@ import 'reflect-metadata'
 
 import 'src/styles/global.scss'
 
-import { memoize } from 'lodash'
+import { isNil, memoize } from 'lodash'
 import { useRouter } from 'next/router'
 import React, { Suspense, useMemo } from 'react'
 import type { AppProps } from 'next/app'
@@ -11,6 +11,8 @@ import dynamic from 'next/dynamic'
 import { RecoilRoot } from 'recoil'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientConfig, QueryClientProvider } from '@tanstack/react-query'
+import Route from 'route-parser'
+import { SpeciesPage } from 'src/components/Species/SpeciesPage'
 import { ThemeProvider } from 'styled-components'
 import { Provider as ReactReduxProvider } from 'react-redux'
 import { I18nextProvider } from 'react-i18next'
@@ -44,6 +46,8 @@ if (process.env.NODE_ENV === 'development') {
   global.console = mutedConsole(global.console)
 }
 
+const SPECIES_ROUTE = new Route<{ species: string }>('/species/:species')
+
 export type Obj = Record<string, unknown>
 
 export interface ClientSideRouterProps<T, U> {
@@ -52,7 +56,8 @@ export interface ClientSideRouterProps<T, U> {
 }
 
 export function ClientSideRouter<T, U>({ Component, pageProps }: ClientSideRouterProps<T, U>) {
-  const { query, route } = useRouter()
+  const router = useRouter()
+  const { asPath } = router
 
   const indexJson = useDataIndexQuery({
     staleTime: 24 * 60 * 60 * 1000,
@@ -63,16 +68,16 @@ export function ClientSideRouter<T, U>({ Component, pageProps }: ClientSideRoute
   })
 
   return useMemo(() => {
-    let props = { ...pageProps }
-    if (route === '/species/[species]') {
-      const species = indexJson.datasets.find(({ pathogenName }) => pathogenName === query.species)
-      if (!species) {
-        return <NotFoundPage />
+    const routeMatch = SPECIES_ROUTE.match(asPath)
+    if (!isNil(routeMatch) && routeMatch?.species) {
+      const species = indexJson.datasets.find(({ pathogenName }) => pathogenName === routeMatch?.species)
+      if (species) {
+        return <SpeciesPage species={species} />
       }
-      props = { ...props, species }
+      return <NotFoundPage />
     }
-    return <Component {...props} />
-  }, [Component, indexJson, pageProps, query.species, route])
+    return <Component {...pageProps} />
+  }, [Component, asPath, indexJson.datasets, pageProps])
 }
 
 const REACT_QUERY_OPTIONS: QueryClientConfig = {
