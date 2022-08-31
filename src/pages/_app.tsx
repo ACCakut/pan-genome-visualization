@@ -3,27 +3,32 @@ import 'reflect-metadata'
 import 'src/styles/global.scss'
 
 import { memoize } from 'lodash'
-import React, { useEffect, Suspense, useMemo } from 'react'
+import { useRouter } from 'next/router'
+import React, { Suspense, useMemo } from 'react'
+import type { AppProps } from 'next/app'
+import type { NextComponentType } from 'next'
+import dynamic from 'next/dynamic'
 import { RecoilRoot } from 'recoil'
-import { AppProps } from 'next/app'
-import { ReactQueryDevtools } from 'react-query/devtools'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { QueryClient, QueryClientConfig, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'styled-components'
 import { Provider as ReactReduxProvider } from 'react-redux'
 import { I18nextProvider } from 'react-i18next'
 import { MDXProvider } from '@mdx-js/react'
 
-import { configureStore } from 'src/state/store'
 import { DOMAIN_STRIPPED } from 'src/constants'
+import { theme } from 'src/theme'
+import { configureStore } from 'src/state/store'
+import { useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
+import i18n from 'src/i18n/i18n'
 import { ErrorPopup } from 'src/components/Error/ErrorPopup'
 import Loading from 'src/components/Loading/Loading'
 import { SEO } from 'src/components/Common/SEO'
 import { Plausible } from 'src/components/Common/Plausible'
-import i18n from 'src/i18n/i18n'
-import { theme } from 'src/theme'
 import { ErrorBoundary } from 'src/components/Error/ErrorBoundary'
 import { PreviewWarning } from 'src/components/Common/PreviewWarning'
 import { getMdxComponents } from 'src/components/Common/MdxComponents'
+import NotFoundPage from 'src/pages/404'
 
 if (process.env.NODE_ENV === 'development') {
   // Ignore recoil warning messages in browser console
@@ -39,19 +44,49 @@ if (process.env.NODE_ENV === 'development') {
   global.console = mutedConsole(global.console)
 }
 
-export default function MyApp({ Component, pageProps, router }: AppProps) {
-  const queryClient = useMemo(() => new QueryClient(), [])
+export type Obj = Record<string, unknown>
+
+export interface ClientSideRouterProps<T, U> {
+  Component: NextComponentType<T, U, Obj>
+  pageProps: Obj
+}
+
+export function ClientSideRouter<T, U>({ Component, pageProps }: ClientSideRouterProps<T, U>) {
+  const { query, route } = useRouter()
+
+  const indexJson = useDataIndexQuery({
+    staleTime: 24 * 60 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchIntervalInBackground: true,
+    refetchInterval: 24 * 60 * 60 * 1000,
+  })
+
+  return useMemo(() => {
+    let props = { ...pageProps }
+    if (route === '/species/[species]') {
+      const species = indexJson.datasets.find(({ pathogenName }) => pathogenName === query.species)
+      if (!species) {
+        return <NotFoundPage />
+      }
+      props = { ...props, species }
+    }
+    return <Component {...props} />
+  }, [Component, indexJson, pageProps, query.species, route])
+}
+
+const REACT_QUERY_OPTIONS: QueryClientConfig = {
+  defaultOptions: { queries: { suspense: true, useErrorBoundary: true } },
+}
+
+export interface MyAppProps extends AppProps<Obj> {
+  pageProps: Obj
+}
+
+export function MyApp({ Component, pageProps }: MyAppProps) {
+  const queryClient = useMemo(() => new QueryClient(REACT_QUERY_OPTIONS), [])
   const { store } = useMemo(() => configureStore(), [])
   const fallback = useMemo(() => <Loading />, [])
-
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'development' && router.pathname !== '/') {
-      void router.replace('/') // eslint-disable-line no-void
-    }
-
-    void router.prefetch('/') // eslint-disable-line no-void
-    void router.prefetch('/results') // eslint-disable-line no-void
-  }, [router])
 
   return (
     <Suspense fallback={fallback}>
@@ -66,7 +101,7 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
                     <Suspense fallback={fallback}>
                       <SEO />
                       <PreviewWarning />
-                      <Component {...pageProps} />
+                      <ClientSideRouter Component={Component} pageProps={pageProps} />
                       <ErrorPopup />
                       <ReactQueryDevtools initialIsOpen={false} />
                     </Suspense>
@@ -80,3 +115,6 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
     </Suspense>
   )
 }
+
+// NOTE: This disables server-side rendering (SSR) entirely
+export default dynamic(() => Promise.resolve(MyApp), { ssr: false })

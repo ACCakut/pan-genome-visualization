@@ -40,9 +40,10 @@ export interface ErrorPageProps {
   statusCode?: number
   title?: string
   error?: Error | undefined
+  showDetails?: boolean
 }
 
-function ErrorPage({ statusCode, title, error }: ErrorPageProps) {
+function ErrorPage({ statusCode, title, error, showDetails = true }: ErrorPageProps) {
   const { t } = useTranslationSafe()
 
   const reload = useReloadPage('/')
@@ -59,7 +60,7 @@ function ErrorPage({ statusCode, title, error }: ErrorPageProps) {
   }, [statusCode, t, title])
 
   const errorContent = useMemo(() => {
-    if (!error) {
+    if (!showDetails || !error) {
       return null
     }
 
@@ -70,7 +71,7 @@ function ErrorPage({ statusCode, title, error }: ErrorPageProps) {
         </Col>
       </Row>
     )
-  }, [error])
+  }, [error, showDetails])
 
   return (
     <Layout>
@@ -103,7 +104,7 @@ function ErrorPage({ statusCode, title, error }: ErrorPageProps) {
 
 ErrorPage.getInitialProps = ({ res, err }: NextPageContext): Promise<ErrorPageProps> | ErrorPageProps => {
   const statusCode = res?.statusCode ?? err?.statusCode
-  return { statusCode }
+  return { statusCode, error: err ?? undefined }
 }
 
 export default ErrorPage
