@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-collapsible-if,unicorn/no-lonely-if */
 // Workaround! Fixes HTTP headers for serving broken S3 uploads:
 //   'Cache-Control': 'no-cache',
 //   'Content-Encoding': 'gzip',
@@ -16,12 +17,7 @@ const NEW_HEADERS_FIX_COMPRESSION = {
 const ARCHIVE_EXTS = ['.7z', '.bz2', '.lzma', '.xz', '.zip', '.zst']
 
 function addHeaders(headersObject) {
-  return Object.fromEntries(
-    Object.entries(headersObject).map(([header, value]) => [header.toLowerCase(), [{
-      key: header,
-      value
-    }]]),
-  )
+  return Object.fromEntries(Object.entries(headersObject).map(([header, value]) => [header.toLowerCase(), [{ value }]]))
 }
 
 function getHeader(headers, headerName) {
@@ -44,10 +40,10 @@ function modifyHeaders({ request, response }) {
   let newHeaders = addHeaders(NEW_HEADERS_FIX_CACHE)
 
   if (ARCHIVE_EXTS.every((ext) => !request.uri.endsWith(ext))) {
-    if(acceptsEncoding(request.headers, 'gzip')) {
+    if (acceptsEncoding(request.headers, 'gzip')) {
       newHeaders = {
         ...newHeaders,
-        ...addHeaders(NEW_HEADERS_FIX_COMPRESSION)
+        ...addHeaders(NEW_HEADERS_FIX_COMPRESSION),
       }
     }
   }
