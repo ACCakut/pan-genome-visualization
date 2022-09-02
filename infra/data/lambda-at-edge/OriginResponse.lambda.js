@@ -6,14 +6,14 @@
 // event of a Cloudfront distribution
 
 const NEW_HEADERS_FIX_CACHE = {
-  'Cache-Control': 'no-cache',
+  'cache-control': 'no-cache',
 }
 
 const NEW_HEADERS_FIX_COMPRESSION = {
-  'Content-Encoding': 'gzip',
+  'content-encoding': 'gzip',
 }
 
-const ARCHIVE_EXTS = ['.7z', '.br', '.bz2', '.gz', '.lzma', '.xz', '.zip', '.zst']
+const ARCHIVE_EXTS = ['.7z', '.bz2', '.lzma', '.xz', '.zip', '.zst']
 
 function addHeaders(headersObject) {
   return Object.fromEntries(
