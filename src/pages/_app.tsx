@@ -24,7 +24,7 @@ import { configureStore } from 'src/state/store'
 import { useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
 import i18n from 'src/i18n/i18n'
 import { ErrorPopup } from 'src/components/Error/ErrorPopup'
-import Loading from 'src/components/Loading/Loading'
+import { LOADING } from 'src/components/Loading/Loading'
 import { SEO } from 'src/components/Common/SEO'
 import { Plausible } from 'src/components/Common/Plausible'
 import { ErrorBoundary } from 'src/components/Error/ErrorBoundary'
@@ -81,7 +81,7 @@ export function ClientSideRouter<T, U>({ Component, pageProps }: ClientSideRoute
 }
 
 const REACT_QUERY_OPTIONS: QueryClientConfig = {
-  defaultOptions: { queries: { suspense: true, useErrorBoundary: true } },
+  defaultOptions: { queries: { suspense: true, retry: 1 } },
 }
 
 export interface MyAppProps extends AppProps<Obj> {
@@ -91,32 +91,29 @@ export interface MyAppProps extends AppProps<Obj> {
 export function MyApp({ Component, pageProps }: MyAppProps) {
   const queryClient = useMemo(() => new QueryClient(REACT_QUERY_OPTIONS), [])
   const { store } = useMemo(() => configureStore(), [])
-  const fallback = useMemo(() => <Loading />, [])
 
   return (
-    <Suspense fallback={fallback}>
-      <ReactReduxProvider store={store}>
-        <RecoilRoot>
-          <ThemeProvider theme={theme}>
-            <MDXProvider components={getMdxComponents}>
-              <Plausible domain={DOMAIN_STRIPPED} />
-              <QueryClientProvider client={queryClient}>
+    <Suspense fallback={LOADING}>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <ReactReduxProvider store={store}>
+          <RecoilRoot>
+            <ThemeProvider theme={theme}>
+              <MDXProvider components={getMdxComponents}>
+                <Plausible domain={DOMAIN_STRIPPED} />
                 <I18nextProvider i18n={i18n}>
                   <ErrorBoundary>
-                    <Suspense fallback={fallback}>
-                      <SEO />
-                      <PreviewWarning />
-                      <ClientSideRouter Component={Component} pageProps={pageProps} />
-                      <ErrorPopup />
-                      <ReactQueryDevtools initialIsOpen={false} />
-                    </Suspense>
+                    <SEO />
+                    <PreviewWarning />
+                    <ClientSideRouter Component={Component} pageProps={pageProps} />
+                    <ErrorPopup />
                   </ErrorBoundary>
                 </I18nextProvider>
-              </QueryClientProvider>
-            </MDXProvider>
-          </ThemeProvider>
-        </RecoilRoot>
-      </ReactReduxProvider>
+              </MDXProvider>
+            </ThemeProvider>
+          </RecoilRoot>
+        </ReactReduxProvider>
+      </QueryClientProvider>
     </Suspense>
   )
 }
