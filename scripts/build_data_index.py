@@ -5,7 +5,7 @@ import os
 import sys
 import logging
 from logging import info, warning, INFO
-from os.path import join, basename, isfile
+from os.path import join, basename, isfile, isdir
 
 logging.basicConfig(level=INFO)
 
@@ -23,7 +23,7 @@ def generate_index_json(dataset_path):
     datasets = []
     for f in os.scandir(dataset_path):
         if f.is_dir:
-            files = list(filter(lambda f: isfile(f), glob(f"{f.path}")))
+            files = list(filter(lambda f: isfile(f) and not isdir(f), glob(f"{f.path}")))
 
             pathogen_name = basename(f.path)
             has_standard_column_config = "newColumnConfig.js" in files
@@ -47,14 +47,20 @@ def generate_index_json(dataset_path):
 
     info(f"Index written to '{index_json_path}'")
 
+
 def generate_page_404(dataset_path):
     not_found_json_path = join(dataset_path, "..", "not_found.json")
-    not_found_json = { "status": 404, "message": "Not found" }
+    not_found_json = {"status": 404, "message": "Not found"}
     with open(not_found_json_path, "w") as f:
         json.dump(not_found_json, f, indent=2, sort_keys=False)
 
+
 if __name__ == '__main__':
-    dataset_path = sys.argv[1]
+    data_root = sys.argv[1]
+    dataset_path = join(sys.argv[1], "dataset")
+
+    if not isdir(dataset_path):
+        raise NotADirectoryError(f"Data root ('{data_root}') should contain directory 'dataset', but it was not found")
 
     info("Unique filenames across datasets: ")
     for file in list_unique_files(dataset_path):

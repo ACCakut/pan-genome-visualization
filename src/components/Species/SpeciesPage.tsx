@@ -21,17 +21,28 @@ export function SpeciesPage({ species }: SpeciesPageProps) {
 
 export function SpeciesInfo({ species }: SpeciesPageProps) {
   const geneJson = useGeneClusterJson(species.pathogenName)
-  const geneId = geneJson[0].msa
+  const gene = geneJson.clusters[0]
 
-  const geneClusterData = useGeneClusterData(species.pathogenName, geneId)
-  const { alnAa, alnAaReduced, alnNa, alnNaReduced, nwk, patternsJson, treeJson } = geneClusterData
+  const geneClusterData = useGeneClusterData(species.pathogenName, gene)
+  const { aa_aln, aa_aln_reduced, na_aln, na_aln_reduced, nwk, patterns_json, tree_json } = geneClusterData
 
   return (
     <>
       <h2>{`Species: ${species.pathogenName}`}</h2>
       <p>
         {JSON.stringify(
-          { species, data: { alnAa, alnAaReduced, alnNa, alnNaReduced, nwk, patternsJson, treeJson } },
+          {
+            species,
+            data: {
+              aa_aln,
+              aa_aln_reduced,
+              na_aln,
+              na_aln_reduced,
+              nwk,
+              patterns_json,
+              tree_json,
+            },
+          },
           null,
           2,
         )}

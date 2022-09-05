@@ -1,10 +1,12 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import type { QueriesOptions, QueryKey, UseQueryOptions } from '@tanstack/react-query'
 import { useQuery } from '@tanstack/react-query'
+import { concurrent } from 'fasy'
 import { keys, values, zip } from 'lodash'
 import { useMemo } from 'react'
-import { ErrorInternal } from 'src/helpers/ErrorInternal'
 
+import { ErrorInternal } from 'src/helpers/ErrorInternal'
+import { sanitizeError } from 'src/helpers/sanitizeError'
 import { axiosFetch } from 'src/io/axiosFetch'
 import { useQueries } from './useQueriesWithSuspense'
 
@@ -111,4 +113,60 @@ export function useAxiosQueries<TData = unknown>(
       }),
     )
   }, [queries, results]) as unknown as TData
+}
+
+/** Downloads and extracts .tar file */
+export function useAxiosTarQuery(
+  url: string,
+  options?: UseAxiosQueryOptions<Record<string, string>>,
+): Record<string, string> {
+  const newOptions = useMemo(() => {
+    let newOptions: UseAxiosQueryOptions<Record<string, string>> = {
+      staleTime: Number.POSITIVE_INFINITY,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchInterval: Number.POSITIVE_INFINITY,
+    }
+    if (options) {
+      newOptions = { ...newOptions, ...options }
+    }
+    return newOptions
+  }, [options])
+
+  const res = useQuery<Record<string, string>, Error, Record<string, string>, string[]>(
+    [url],
+    async () => {
+      if (options?.delay) {
+        await new Promise((resolve) => {
+          setInterval(resolve, options.delay)
+        })
+      }
+
+      const res = await axiosFetch<ArrayBuffer>(url, { responseType: 'arraybuffer' })
+
+      return import('js-untar')
+        .then(({ default: untar }) => {
+          return untar(res)
+        })
+        .then(
+          async function filfill(extractedFiles) {
+            return Object.fromEntries(await concurrent.map(async (f) => [f.name, await f.blob.text()], extractedFiles))
+          },
+          function reject(error_: unknown) {
+            const error = sanitizeError(error_)
+            error.message = `When extracting tar archive '${url}': ${error.message}`
+            throw error
+          },
+        )
+    },
+    newOptions,
+  )
+
+  return useMemo(() => {
+    if (!res.data) {
+      throw new Error(`Fetch failed: ${url}`)
+    }
+    return res.data
+  }, [res.data, url])
 }

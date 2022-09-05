@@ -1,6 +1,8 @@
+import { get, mapValues } from 'lodash'
+import { useMemo } from 'react'
 import urljoin from 'url-join'
 import { ErrorInternal } from 'src/helpers/ErrorInternal'
-import { useAxiosQueries, UseAxiosQueriesOptions, useAxiosQuery, UseAxiosQueryOptions } from 'src/hooks/useAxiosQuery'
+import { useAxiosQuery, UseAxiosQueryOptions, useAxiosTarQuery } from 'src/hooks/useAxiosQuery'
 
 export interface SpeciesDesc {
   pathogenName: string
@@ -10,7 +12,7 @@ export interface DataIndexJson {
   datasets: SpeciesDesc[]
 }
 
-export interface GeneClusterJson {
+export interface GeneCluster {
   geneId: number
   geneLen: number
   count: number
@@ -24,6 +26,21 @@ export interface GeneClusterJson {
   GName: string
   allGName: string
   locus: string
+  archive: string
+  archive_files: {
+    aa_aln?: string
+    aa_aln_reduced?: string
+    na_aln?: string
+    na_aln_reduced?: string
+    nwk?: string
+    patterns_json?: string
+    tree_json?: string
+  }
+}
+
+export interface GeneClusterJson {
+  created_at: string
+  clusters: GeneCluster[]
 }
 
 export function getDataRootUrl(): string {
@@ -42,46 +59,47 @@ export function useDataIndexQuery(options?: UseAxiosQueryOptions<DataIndexJson>)
   return useAxiosQuery<DataIndexJson>(getDataIndexJsonUrl(), options)
 }
 
-export function useGeneClusterJson(
-  speciesSlug: string,
-  options?: UseAxiosQueryOptions<GeneClusterJson[]>,
-): GeneClusterJson[] {
-  return useAxiosQuery<GeneClusterJson[]>(
-    urljoin(getDataRootUrl(), 'dataset', speciesSlug, 'geneCluster.json'),
+export function useGeneClusterJson(speciesSlug: string, options?: UseAxiosQueryOptions<GeneClusterJson>) {
+  return useAxiosQuery<GeneClusterJson>(
+    urljoin(getDataRootUrl(), 'dataset', speciesSlug, 'gene_cluster_v2.json'),
     options,
   )
 }
 
-export function useGeneClusterDataFileUrl(speciesSlug: string, geneClusterId: string, suffix: string): string {
-  return urljoin(getDataRootUrl(), 'dataset', speciesSlug, 'geneCluster', `${geneClusterId}`, suffix)
-}
-
 export interface GeneClusterData {
-  alnAa: string
-  alnAaReduced: string
-  alnNa: string
-  alnNaReduced: string
-  nwk: string
-  patternsJson: string
-  treeJson: string
+  aa_aln?: string
+  aa_aln_reduced?: string
+  na_aln?: string
+  na_aln_reduced?: string
+  nwk?: string
+  patterns_json?: string
+  tree_json?: string
 }
 
 export function useGeneClusterData(
   speciesSlug: string,
-  geneClusterId: string,
-  options?: UseAxiosQueriesOptions<GeneClusterData>,
-) {
-  const urlBase = urljoin(getDataRootUrl(), 'dataset', speciesSlug, 'geneCluster', `${geneClusterId}`)
-  return useAxiosQueries<GeneClusterData>(
-    {
-      alnAa: `${urlBase}_aa_aln.fa`,
-      alnAaReduced: `${urlBase}_aa_aln_reduced.fa`,
-      alnNa: `${urlBase}_na_aln.fa`,
-      alnNaReduced: `${urlBase}_na_aln_reduced.fa`,
-      nwk: `${urlBase}.nwk`,
-      patternsJson: `${urlBase}_patterns.json`,
-      treeJson: `${urlBase}_tree.json`,
-    },
-    options,
+  cluster: GeneCluster,
+  options?: UseAxiosQueryOptions<Record<string, string>>,
+): GeneClusterData {
+  const archiveUrl = useMemo(
+    () => urljoin(getDataRootUrl(), 'dataset', speciesSlug, cluster.archive),
+    [cluster.archive, speciesSlug],
+  )
+
+  const clusterArchive = useAxiosTarQuery(archiveUrl, options)
+
+  return useMemo(
+    () =>
+      mapValues(cluster.archive_files, (filename) => {
+        if (!filename) {
+          return undefined
+        }
+        const content = get(clusterArchive, filename, undefined)
+        if (!content) {
+          throw new ErrorInternal(`File ${filename} not found in data archive`)
+        }
+        return content
+      }),
+    [cluster.archive_files, clusterArchive],
   )
 }
