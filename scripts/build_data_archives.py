@@ -44,8 +44,8 @@ def tar_add_files(tar, gene_cluster_dir_path, gene_cluster_name):
     }
 
 
-def generate_archives_for_species(dataset_path, species_name):
-    species_dir_path = join(dataset_path, species_name)
+def generate_archives_for_species(dataset_path, species_id):
+    species_dir_path = join(dataset_path, species_id)
     gene_cluster_dir_path = join(species_dir_path, "geneCluster")
     gene_cluster_json_path = join(species_dir_path, "geneCluster.json")
 
@@ -84,7 +84,7 @@ def generate_archives_for_species(dataset_path, species_name):
 
 def generate_all_archives(data_root):
     dataset_path = join(data_root, "dataset")
-    index_json_path = join(data_root, "index.json")
+    index_json_path = join(data_root, "index_v2.json")
 
     if not isdir(dataset_path):
         raise NotADirectoryError(f"Data root ('{data_root}') should contain directory 'dataset', but it was not found")
@@ -95,9 +95,10 @@ def generate_all_archives(data_root):
     with open(index_json_path, "r") as f:
         index_json = json.load(f)
 
-    for dataset in index_json["datasets"]:
-        species_name = dataset["pathogenName"]
-        generate_archives_for_species(dataset_path, species_name)
+    datasets = index_json["case_studies"] + index_json["orders"] + index_json["records"]
+    for dataset in datasets:
+        species_id = dataset["id"]
+        generate_archives_for_species(dataset_path, species_id)
 
 
 if __name__ == '__main__':
