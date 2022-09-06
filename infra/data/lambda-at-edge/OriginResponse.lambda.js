@@ -14,7 +14,7 @@ const NEW_HEADERS_FIX_COMPRESSION = {
   'content-encoding': 'gzip',
 }
 
-const ARCHIVE_EXTS = ['.7z', '.bz2', '.lzma', '.xz', '.zip', '.zst']
+const ARCHIVE_EXTS = ['.7z', '.bz2', '.lzma', '.tar.gz', '.xz', '.zip', '.zst']
 
 function addHeaders(headersObject) {
   return Object.fromEntries(Object.entries(headersObject).map(([header, value]) => [header.toLowerCase(), [{ value }]]))
