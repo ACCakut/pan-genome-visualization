@@ -1,4 +1,4 @@
-/* eslint-disable prefer-destructuring */
+/* eslint-disable prefer-destructuring,sonarjs/no-collapsible-if,unicorn/no-lonely-if */
 // Implements rewrite of non-compressed to .gz URLs using AWS
 // Lambda@Edge. This is useful if you have precompressed your files.
 //
