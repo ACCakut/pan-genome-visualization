@@ -2,6 +2,7 @@ import React, { PropsWithChildren } from 'react'
 
 import styled from 'styled-components'
 import { FaTwitterSquare } from 'react-icons/fa'
+import { StrictOmit } from 'ts-essentials'
 
 import type { LinkExternalProps } from './LinkExternal'
 import { LinkExternal } from './LinkExternal'
@@ -11,7 +12,7 @@ export const TwitterIcon = styled(FaTwitterSquare)`
   margin-right: 0.1rem;
 `
 
-export interface LinkTwitterProps extends LinkExternalProps {
+export interface LinkTwitterProps extends StrictOmit<LinkExternalProps, 'href'> {
   username: string
   iconSize?: number
 }
@@ -21,7 +22,7 @@ export function LinkTwitter({ username, iconSize = 20, ...restProps }: PropsWith
   const text = `@${username}`
 
   return (
-    <LinkExternal href={href} {...restProps}>
+    <LinkExternal {...restProps} href={href}>
       <TwitterIcon size={iconSize} />
       {text}
     </LinkExternal>

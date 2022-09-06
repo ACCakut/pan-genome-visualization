@@ -65,27 +65,27 @@ export function Footer() {
           </CopyrightText>
 
           <LogoContainer className="mx-auto">
-            <LogoLink url="https://neherlab.org">
+            <LogoLink href="https://neherlab.org">
               <LogoNeherlab />
             </LogoLink>
 
-            <LogoLink url="https://www.biozentrum.unibas.ch">
+            <LogoLink href="https://www.biozentrum.unibas.ch">
               <LogoBiozentrum />
             </LogoLink>
 
-            <LogoLink url="https://unibas.ch">
+            <LogoLink href="https://unibas.ch">
               <LogoUnibas />
             </LogoLink>
 
-            <LogoLink url="https://www.sib.swiss">
+            <LogoLink href="https://www.sib.swiss">
               <LogoSib />
             </LogoLink>
 
-            <LogoLink url="https://tuebingen.mpg.de">
+            <LogoLink href="https://tuebingen.mpg.de">
               <LogoMaxPlanck />
             </LogoLink>
 
-            <LogoLink className="my-auto" url="https://vercel.com/?utm_source=neherlab">
+            <LogoLink className="my-auto" href="https://vercel.com/?utm_source=neherlab">
               <LogoVercel />
             </LogoLink>
           </LogoContainer>

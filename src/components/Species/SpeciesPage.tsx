@@ -20,15 +20,15 @@ export function SpeciesPage({ species }: SpeciesPageProps) {
 }
 
 export function SpeciesInfo({ species }: SpeciesPageProps) {
-  const geneJson = useGeneClusterJson(species.pathogenName)
+  const geneJson = useGeneClusterJson(species.id)
   const gene = geneJson.clusters[0]
 
-  const geneClusterData = useGeneClusterData(species.pathogenName, gene)
+  const geneClusterData = useGeneClusterData(species.id, gene)
   const { aa_aln, aa_aln_reduced, na_aln, na_aln_reduced, nwk, patterns_json, tree_json } = geneClusterData
 
   return (
     <>
-      <h2>{`Species: ${species.pathogenName}`}</h2>
+      <h2>{`Species: ${species.name}`}</h2>
       <p>
         {JSON.stringify(
           {

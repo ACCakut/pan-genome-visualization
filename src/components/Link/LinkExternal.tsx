@@ -8,12 +8,10 @@ const A = styled.a`
 `
 
 export interface LinkExternalProps extends StrictOmit<HTMLProps<HTMLAnchorElement>, 'as' | 'ref' | 'download'> {
-  url?: string
-  href?: string
   download?: boolean
 }
 
-export function LinkExternal({ url, href, children, download, ...restProps }: PropsWithChildren<LinkExternalProps>) {
+export function LinkExternal({ children, download, ...restProps }: PropsWithChildren<LinkExternalProps>) {
   let target: string | undefined = '_blank'
   let rel: string | undefined = 'noopener noreferrer'
   if (download) {
@@ -22,7 +20,7 @@ export function LinkExternal({ url, href, children, download, ...restProps }: Pr
   }
 
   return (
-    <A target={target} rel={rel} href={url ?? href} download={download} {...restProps}>
+    <A target={target} rel={rel} download {...restProps}>
       {children}
     </A>
   )

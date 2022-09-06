@@ -5,11 +5,27 @@ import { ErrorInternal } from 'src/helpers/ErrorInternal'
 import { useAxiosQuery, UseAxiosQueryOptions, useAxiosTarQuery } from 'src/hooks/useAxiosQuery'
 
 export interface SpeciesDesc {
-  pathogenName: string
+  id: string
+  name: string
+  description: string
+  num_strains?: string
+  source?: string
+  downloads?: SpeciesDownloads
+}
+
+export interface SpeciesDownloads {
+  'gene cluster json'?: string
+  'metadata table'?: string
+  'strain/species tree'?: string
+  'all gene alignments'?: string
+  'core gene alignments'?: string
 }
 
 export interface DataIndexJson {
-  datasets: SpeciesDesc[]
+  created_at: string
+  orders: SpeciesDesc[]
+  case_studies: SpeciesDesc[]
+  records: SpeciesDesc[]
 }
 
 export interface GeneCluster {
@@ -52,16 +68,16 @@ export function getDataRootUrl(): string {
 }
 
 export function getDataIndexJsonUrl(): string {
-  return urljoin(getDataRootUrl(), 'index.json')
+  return urljoin(getDataRootUrl(), 'index_v2.json')
 }
 
 export function useDataIndexQuery(options?: UseAxiosQueryOptions<DataIndexJson>): DataIndexJson {
   return useAxiosQuery<DataIndexJson>(getDataIndexJsonUrl(), options)
 }
 
-export function useGeneClusterJson(speciesSlug: string, options?: UseAxiosQueryOptions<GeneClusterJson>) {
+export function useGeneClusterJson(speciesId: string, options?: UseAxiosQueryOptions<GeneClusterJson>) {
   return useAxiosQuery<GeneClusterJson>(
-    urljoin(getDataRootUrl(), 'dataset', speciesSlug, 'gene_cluster_v2.json'),
+    urljoin(getDataRootUrl(), 'dataset', speciesId, 'gene_cluster_v2.json'),
     options,
   )
 }

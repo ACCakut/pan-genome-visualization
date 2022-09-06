@@ -70,14 +70,15 @@ export function ClientSideRouter<T, U>({ Component, pageProps }: ClientSideRoute
   return useMemo(() => {
     const routeMatch = SPECIES_ROUTE.match(asPath)
     if (!isNil(routeMatch) && routeMatch?.species) {
-      const species = indexJson.datasets.find(({ pathogenName }) => pathogenName === routeMatch?.species)
+      const datasets = [...indexJson.records, ...indexJson.case_studies, ...indexJson.orders]
+      const species = datasets.find(({ id }) => id === routeMatch?.species)
       if (species) {
         return <SpeciesPage species={species} />
       }
       return <NotFoundPage />
     }
     return <Component {...pageProps} />
-  }, [Component, asPath, indexJson.datasets, pageProps])
+  }, [Component, asPath, indexJson, pageProps])
 }
 
 const REACT_QUERY_OPTIONS: QueryClientConfig = {
