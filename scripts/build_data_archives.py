@@ -22,6 +22,13 @@ def grouper(n, iterable, padvalue=None):
     return zip_longest(*[iter(iterable)] * n, fillvalue=padvalue)
 
 
+def rename_dict_key(mydict, key_old, key_new):
+    assert isinstance(mydict, dict)
+    if key_new != key_old:
+        mydict[key_new] = mydict[key_old]
+        del mydict[key_old]
+
+
 def tar_add(tar, filepath):
     if not isfile(filepath):
         return None
@@ -35,9 +42,9 @@ def tar_add(tar, filepath):
 def tar_add_files(tar, gene_cluster_dir_path, gene_cluster_name):
     return {
         "aa_aln": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_aa_aln.fa")),
-        "aa_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_aa_aln_reduced.fa")),
+        # "aa_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_aa_aln_reduced.fa")),
         "na_aln": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_na_aln.fa")),
-        "na_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_na_aln_reduced.fa")),
+        # "na_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_na_aln_reduced.fa")),
         "nwk": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}.nwk")),
         "patterns_json": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_patterns.json")),
         "tree_json": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_tree.json")),
@@ -66,11 +73,30 @@ def generate_archives_for_species(dataset_path, species_id):
 
                     add_files_result = tar_add_files(tar, gene_cluster_dir_path, gene_cluster_name)
 
-                    clusters.append({
+                    cluster = {
                         **gene_cluster,
                         "archive": archive_path_rel,
                         "archive_files": add_files_result,
-                    })
+                    }
+
+                    for key in ["GName", "dupli", "dup_detail"]:
+                        value = cluster[key].lower().strip()
+                        if value == "none" or value == "no":
+                            cluster[key] = None
+
+                    for key in ["allAnn", "allGName", "msa"]:
+                        del cluster[key]
+
+                    cluster["event"] = int(cluster["event"])
+
+                    rename_dict_key(cluster, "geneId", "id")
+                    rename_dict_key(cluster, "geneLen", "length")
+                    rename_dict_key(cluster, "ann", "name")
+                    rename_dict_key(cluster, "GName", "mnemonic")
+                    rename_dict_key(cluster, "count", "num_strains")
+                    rename_dict_key(cluster, "event", "num_events")
+
+                    clusters.append(cluster)
 
     gene_cluster_v2_json = {
         "created_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -79,7 +105,7 @@ def generate_archives_for_species(dataset_path, species_id):
 
     gene_cluster_v2_json_path = join(species_dir_path, "gene_cluster_v2.json")
     with open(gene_cluster_v2_json_path, "w") as f:
-        json.dump(gene_cluster_v2_json, f, indent=2, sort_keys=False)
+        json.dump(gene_cluster_v2_json, f, indent=2, sort_keys=True)
 
 
 def generate_all_archives(data_root):
