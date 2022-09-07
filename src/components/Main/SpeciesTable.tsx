@@ -30,6 +30,7 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<SpeciesDesc>[] = [
     accessorFn: (row) => row.downloads,
     size: 125,
     cell: (context) => <SpeciesTableCellDownloadList downloads={context.getValue<SpeciesDownloads>()} />,
+    enableSorting: false,
   },
 ]
 
