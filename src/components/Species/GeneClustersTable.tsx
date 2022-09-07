@@ -3,15 +3,18 @@ import { sortBy, isString, get } from 'lodash'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { useVirtual } from 'react-virtual'
-import { Col, Container, Input, Row } from 'reactstrap'
+import { Col, Container, Input, Row, Table as TableBase } from 'reactstrap'
+import { useRecoilState } from 'recoil'
+import { currentGeneIdAtom } from 'src/state/genes'
 import styled from 'styled-components'
 import fuzzysort from 'fuzzysort'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
-import type { GeneCluster } from 'src/hooks/useDataIndexQuery'
+import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 
 const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
   {
+    id: 'ID',
     header: 'ID',
     accessorFn: (gene) => gene.id,
     size: 50,
@@ -83,7 +86,7 @@ const TableContainer = styled.div`
   overflow: auto;
 `
 
-const Table = styled.table`
+const Table = styled(TableBase)`
   border-collapse: collapse;
   border-spacing: 0;
   font-family: arial, sans-serif;
@@ -100,7 +103,10 @@ const Thead = styled.thead`
 
 const Tbody = styled.tbody``
 
-const Tr = styled.tr``
+const Tr = styled.tr<{ $isHighlighted?: boolean }>`
+  cursor: pointer;
+  background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
+`
 
 const Th = styled.th<{ $width?: number }>`
   width: ${(props) => props.$width}px;
@@ -110,20 +116,25 @@ const Th = styled.th<{ $width?: number }>`
   white-space: nowrap;
 `
 
-const Td = styled.td`
+const Td = styled.td<{ $isHighlighted?: boolean }>`
   padding: 6px;
   overflow: hidden;
   white-space: nowrap;
+  color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.white} !important;
 `
 
 export interface GeneClustersTableProps {
+  species: SpeciesDesc
   clusters: GeneCluster[]
 }
 
-export function GeneClustersTable({ clusters }: GeneClustersTableProps) {
+export function GeneClustersTable({ species, clusters }: GeneClustersTableProps) {
   const { t } = useTranslationSafe()
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [sorting, setSorting] = useState<SortingState>([])
+
+  const [selectedGene, setSelectedGene_] = useRecoilState(currentGeneIdAtom(species.id))
+  const setSelectedGene = useCallback((geneId: number) => () => setSelectedGene_(geneId), [setSelectedGene_])
 
   const [searchTerm_, setSearchTerm] = useState('')
   const searchTerm = useDeferredValue(searchTerm_)
@@ -239,10 +250,16 @@ export function GeneClustersTable({ clusters }: GeneClustersTableProps) {
 
               {virtualRows.map((virtualRow) => {
                 const row = rows[virtualRow.index]
+                const geneId = row.getValue<number>('ID')
+                const isHighlighted = geneId === selectedGene
                 return (
-                  <Tr key={row.id}>
+                  <Tr key={row.id} onClick={setSelectedGene(geneId)} $isHighlighted={isHighlighted}>
                     {row.getVisibleCells().map((cell) => {
-                      return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                      return (
+                        <Td key={cell.id} $isHighlighted={isHighlighted}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Td>
+                      )
                     })}
                   </Tr>
                 )
