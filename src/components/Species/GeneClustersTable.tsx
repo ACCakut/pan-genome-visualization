@@ -13,50 +13,50 @@ import type { GeneCluster } from 'src/hooks/useDataIndexQuery'
 const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
   {
     header: 'ID',
-    accessorFn: (row) => row.geneId,
+    accessorFn: (gene) => gene.id,
     size: 50,
     minSize: 50,
     maxSize: 50,
   },
   {
-    header: 'Name',
-    accessorFn: (row) => row.GName,
+    header: 'Mnemonic',
+    accessorFn: (gene) => gene.mnemonic,
     size: 100,
   },
   {
-    header: 'Annotation',
-    accessorFn: (row) => row.ann,
+    header: 'Name',
+    accessorFn: (gene) => gene.name,
     size: 250,
   },
   {
     header: 'Strains',
-    accessorFn: (row) => row.count,
+    accessorFn: (gene) => gene.num_strains,
     minSize: 60,
     maxSize: 60,
     size: 60,
   },
   {
     header: 'Duplicated',
-    accessorFn: (row) => row.dupli,
+    accessorFn: (gene) => gene.dupli,
     minSize: 80,
     maxSize: 80,
     size: 80,
   },
   {
     header: 'Events',
-    accessorFn: (row) => row.event,
+    accessorFn: (gene) => gene.num_events,
     minSize: 50,
     size: 50,
   },
   {
     header: 'Diversity',
-    accessorFn: (row) => row.divers,
+    accessorFn: (gene) => gene.divers,
     minSize: 60,
     size: 60,
   },
   {
     header: 'Length',
-    accessorFn: (row) => row.geneLen,
+    accessorFn: (gene) => gene.length,
     minSize: 60,
     size: 60,
   },
@@ -135,7 +135,7 @@ export function GeneClustersTable({ clusters }: GeneClustersTableProps) {
   )
 
   const data = useMemo(() => {
-    const keys = ['GName', 'ann']
+    const keys: Extract<keyof GeneCluster, string>[] = ['mnemonic', 'name']
 
     const results = fuzzysort.go(searchTerm, clusters, { keys, all: true }).map((result) => {
       // Increase relevance if any of the candidate's words start with any of the search terms or include one exactly
@@ -163,7 +163,7 @@ export function GeneClustersTable({ clusters }: GeneClustersTableProps) {
     })
 
     const relevant = sortBy(results, (result) => -result.score).map((result) => result.obj)
-    const irrelevant = clusters.filter((candidate) => !relevant.includes(candidate))
+    const irrelevant = clusters.filter((candidate) => !relevant.some((relevant) => relevant.id === candidate.id))
     return [...relevant, ...irrelevant]
   }, [clusters, searchTerm])
 

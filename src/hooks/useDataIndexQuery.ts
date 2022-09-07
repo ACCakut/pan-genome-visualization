@@ -29,29 +29,24 @@ export interface DataIndexJson {
 }
 
 export interface GeneCluster {
-  geneId: number
-  geneLen: number
-  count: number
-  dupli?: string
-  dup_detail?: string
-  ann: string
-  msa: string
-  divers: number
-  event: string
-  allAnn: string
-  GName?: string
-  allGName: string
-  locus: string
   archive: string
   archive_files: {
     aa_aln?: string
-    aa_aln_reduced?: string
     na_aln?: string
-    na_aln_reduced?: string
     nwk?: string
     patterns_json?: string
     tree_json?: string
   }
+  divers: number
+  dup_detail?: string
+  dupli?: string
+  id: number
+  length: number
+  locus: string
+  mnemonic: string
+  name: string
+  num_events: number
+  num_strains: number
 }
 
 export interface GeneClusterJson {
