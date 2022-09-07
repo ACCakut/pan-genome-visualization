@@ -32,14 +32,14 @@ export interface GeneCluster {
   geneId: number
   geneLen: number
   count: number
-  dupli: string
-  dup_detail: string
+  dupli?: string
+  dup_detail?: string
   ann: string
   msa: string
-  divers: string
+  divers: number
   event: string
   allAnn: string
-  GName: string
+  GName?: string
   allGName: string
   locus: string
   archive: string

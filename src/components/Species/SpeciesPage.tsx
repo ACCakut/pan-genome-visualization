@@ -1,9 +1,10 @@
 import React, { Suspense } from 'react'
-import { LOADING } from 'src/components/Loading/Loading'
 
 import type { SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
+import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
+import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 
 export interface SpeciesPageProps {
   species: SpeciesDesc
@@ -29,6 +30,7 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
   return (
     <>
       <h2>{`Species: ${species.name}`}</h2>
+      <GeneClustersTable clusters={geneJson.clusters} />
       <p>
         {JSON.stringify(
           {
