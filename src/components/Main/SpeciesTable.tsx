@@ -10,11 +10,6 @@ import { SpeciesTableCellName } from './SpeciesTableCellName'
 
 const SPECIES_TABLE_COLUMNS: ColumnDef<SpeciesDesc>[] = [
   {
-    header: 'Idx',
-    accessorFn: (_, i) => i,
-    size: 25,
-  },
-  {
     header: 'Name',
     accessorFn: (row) => row,
     size: 200,
