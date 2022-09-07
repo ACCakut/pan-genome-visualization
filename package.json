@@ -42,6 +42,7 @@
     "prod:build:profile": "yarn run monkey-patch && yarn run next:build:profile && yarn run next:export",
     "prod:watch:profile": "nodemon --config config/nodemon/profile.json",
     "prod:start:profile": "yarn prod:build:profile && yarn prod:serve || cd .",
+    "serve:data": "babel-node --config-file \"./babel-node.config.js\" --extensions \".ts\" ./tools/server/dataServer.ts",
     "lint": "run-s -c eslint tsc",
     "lint:fix": "run-s -c eslint:fix tsc",
     "lint:watch": "nodemon --config config/nodemon/lint.json",
