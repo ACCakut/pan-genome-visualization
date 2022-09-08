@@ -11,6 +11,22 @@ import { axiosFetch } from 'src/io/axiosFetch'
 import { parseCsv } from 'src/io/parseCsv'
 import { useQueries } from './useQueriesWithSuspense'
 
+const QUERY_OPTIONS_DEFAULT = {
+  staleTime: Number.POSITIVE_INFINITY,
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: true,
+  refetchInterval: Number.POSITIVE_INFINITY,
+}
+
+function queryOptionsDefaulted<T>(options: T) {
+  let newOptions = QUERY_OPTIONS_DEFAULT
+  if (options) {
+    newOptions = { ...newOptions, ...options }
+  }
+  return newOptions
+}
+
 export type QueryOptions<
   TQueryFnData = unknown,
   TError = unknown,
@@ -20,38 +36,13 @@ export type QueryOptions<
   initialData?: () => undefined
 }
 
-export interface UseAxiosQueryOptions<TData = unknown> extends QueryOptions<TData, Error, TData, string[]> {
-  delay?: number
-}
+export type UseAxiosQueryOptions<TData = unknown> = QueryOptions<TData, Error, TData, string[]>
+export type UseAxiosQueriesOptions<TData = unknown> = QueriesOptions<TData[]>
 
+/** Makes a cached fetch request */
 export function useAxiosQuery<TData = unknown>(url: string, options?: UseAxiosQueryOptions<TData>): TData {
-  const newOptions = useMemo(() => {
-    let newOptions: UseAxiosQueryOptions<TData> = {
-      staleTime: Number.POSITIVE_INFINITY,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchInterval: Number.POSITIVE_INFINITY,
-    }
-    if (options) {
-      newOptions = { ...newOptions, ...options }
-    }
-    return newOptions
-  }, [options])
-
-  const res = useQuery<TData, Error, TData, string[]>(
-    [url],
-    async () => {
-      if (options?.delay) {
-        await new Promise((resolve) => {
-          setInterval(resolve, options.delay)
-        })
-      }
-      return axiosFetch(url)
-    },
-    newOptions,
-  )
-
+  const newOptions = useMemo(() => queryOptionsDefaulted(options), [options])
+  const res = useQuery<TData, Error, TData, string[]>([url], async () => axiosFetch(url), newOptions)
   return useMemo(() => {
     if (!res.data) {
       throw new Error(`Fetch failed: ${url}`)
@@ -60,40 +51,20 @@ export function useAxiosQuery<TData = unknown>(url: string, options?: UseAxiosQu
   }, [res.data, url])
 }
 
-export type UseAxiosQueriesOptions<TData = unknown> = QueriesOptions<TData[]> & { delay?: number }
-
+/** Make multiple cached fetches in parallel (and uses `Suspense`, by contrast to the default `useQueries()`)  */
 export function useAxiosQueries<TData = unknown>(
-  queries: Record<string, string>,
+  namedUrls: Record<string, string>,
   options?: UseAxiosQueriesOptions<TData>,
 ): TData {
-  const newOptions = useMemo(() => {
-    let newOptions = {
-      staleTime: Number.POSITIVE_INFINITY,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchInterval: Number.POSITIVE_INFINITY,
-    }
-    if (options) {
-      newOptions = { ...newOptions, ...options }
-    }
-    return newOptions
-  }, [options])
+  const newOptions = useMemo(() => queryOptionsDefaulted(options), [options])
 
   const results = useQueries({
-    queries: values(queries).map((url) => ({
+    queries: values(namedUrls).map((url) => ({
       ...newOptions,
       suspense: true,
       useErrorBoundary: true,
       queryKey: [url],
-      async queryFn() {
-        if (options?.delay) {
-          await new Promise((resolve) => {
-            setInterval(resolve, options.delay)
-          })
-        }
-        return axiosFetch(url)
-      },
+      queryFn: async () => axiosFetch(url),
     })),
     options: {
       suspense: true,
@@ -102,7 +73,7 @@ export function useAxiosQueries<TData = unknown>(
 
   return useMemo(() => {
     return Object.fromEntries(
-      zip(keys(queries), values(queries), results).map(([key, url, result]) => {
+      zip(keys(namedUrls), values(namedUrls), results).map(([key, url, result]) => {
         if (!key || !url || !result) {
           throw new ErrorInternal('useAxiosQueries: Attempted to zip arrays of different sizes.')
         }
@@ -113,39 +84,19 @@ export function useAxiosQueries<TData = unknown>(
         return [key, result.data]
       }),
     )
-  }, [queries, results]) as unknown as TData
+  }, [namedUrls, results]) as unknown as TData
 }
 
-/** Downloads and extracts .tar file */
+/** Makes a cached fetch request and extracts .tar file */
 export function useAxiosTarQuery(
   url: string,
   options?: UseAxiosQueryOptions<Record<string, string>>,
 ): Record<string, string> {
-  const newOptions = useMemo(() => {
-    let newOptions: UseAxiosQueryOptions<Record<string, string>> = {
-      staleTime: Number.POSITIVE_INFINITY,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchInterval: Number.POSITIVE_INFINITY,
-    }
-    if (options) {
-      newOptions = { ...newOptions, ...options }
-    }
-    return newOptions
-  }, [options])
-
+  const newOptions = useMemo(() => queryOptionsDefaulted(options), [options])
   const res = useQuery<Record<string, string>, Error, Record<string, string>, string[]>(
     [url],
     async () => {
-      if (options?.delay) {
-        await new Promise((resolve) => {
-          setInterval(resolve, options.delay)
-        })
-      }
-
       const res = await axiosFetch<ArrayBuffer>(url, { responseType: 'arraybuffer' })
-
       return import('js-untar')
         .then(({ default: untar }) => {
           return untar(res)
@@ -172,31 +123,13 @@ export function useAxiosTarQuery(
   }, [res.data, url])
 }
 
-/** Downloads and parses .tsv file */
+/** Makes a cached fetch request and parses a CSV file */
 export function useAxiosCsvQuery<T>(url: string, delimiter: string, options?: UseAxiosQueryOptions<T[]>): T[] {
-  const newOptions = useMemo(() => {
-    let newOptions: UseAxiosQueryOptions<T[]> = {
-      staleTime: Number.POSITIVE_INFINITY,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchInterval: Number.POSITIVE_INFINITY,
-    }
-    if (options) {
-      newOptions = { ...newOptions, ...options }
-    }
-    return newOptions
-  }, [options])
+  const newOptions = useMemo(() => queryOptionsDefaulted(options), [options])
 
   const res = useQuery(
     [url],
     async () => {
-      if (options?.delay) {
-        await new Promise((resolve) => {
-          setInterval(resolve, options.delay)
-        })
-      }
-
       const res = await axiosFetch<string>(url, { responseType: 'text' })
       return parseCsv<T>(res, delimiter)
     },
