@@ -7,6 +7,7 @@ import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
 import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { currentGeneIdAtom } from 'src/state/genes'
+import { MetadataTable } from './MetadataTable'
 
 export interface SpeciesPageProps {
   species: SpeciesDesc
@@ -55,6 +56,7 @@ export function GeneClustersSection({ species, gene }: GeneClustersSectionProps)
   }
   return (
     <Suspense fallback={LOADING}>
+      <MetadataTable species={species} />
       <GeneClustersData species={species} gene={gene} />
     </Suspense>
   )

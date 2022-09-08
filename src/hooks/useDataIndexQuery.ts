@@ -2,7 +2,7 @@ import { get, mapValues } from 'lodash'
 import { useMemo } from 'react'
 import urljoin from 'url-join'
 import { ErrorInternal } from 'src/helpers/ErrorInternal'
-import { useAxiosQuery, UseAxiosQueryOptions, useAxiosTarQuery } from 'src/hooks/useAxiosQuery'
+import { useAxiosQuery, UseAxiosQueryOptions, useAxiosTarQuery, useAxiosCsvQuery } from 'src/hooks/useAxiosQuery'
 
 export interface SpeciesDesc {
   id: string
@@ -75,6 +75,20 @@ export function useGeneClusterJson(speciesId: string, options?: UseAxiosQueryOpt
     urljoin(getDataRootUrl(), 'dataset', speciesId, 'gene_cluster_v2.json'),
     options,
   )
+}
+
+export interface MetadataEntry {
+  accession?: string
+  strain?: string
+  collection_date?: string
+  country?: string
+  host?: string
+  organism?: string
+}
+
+export function useSpeciesMetadata(speciesId: string, options?: UseAxiosQueryOptions<MetadataEntry[]>) {
+  const url = useMemo(() => urljoin(getDataRootUrl(), 'dataset', speciesId, 'metainfo.tsv'), [speciesId])
+  return useAxiosCsvQuery<MetadataEntry>(url, '\t', options)
 }
 
 export interface GeneClusterData {

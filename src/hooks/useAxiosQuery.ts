@@ -8,6 +8,7 @@ import { useMemo } from 'react'
 import { ErrorInternal } from 'src/helpers/ErrorInternal'
 import { sanitizeError } from 'src/helpers/sanitizeError'
 import { axiosFetch } from 'src/io/axiosFetch'
+import { parseCsv } from 'src/io/parseCsv'
 import { useQueries } from './useQueriesWithSuspense'
 
 export type QueryOptions<
@@ -159,6 +160,45 @@ export function useAxiosTarQuery(
             throw error
           },
         )
+    },
+    newOptions,
+  )
+
+  return useMemo(() => {
+    if (!res.data) {
+      throw new Error(`Fetch failed: ${url}`)
+    }
+    return res.data
+  }, [res.data, url])
+}
+
+/** Downloads and parses .tsv file */
+export function useAxiosCsvQuery<T>(url: string, delimiter: string, options?: UseAxiosQueryOptions<T[]>): T[] {
+  const newOptions = useMemo(() => {
+    let newOptions: UseAxiosQueryOptions<T[]> = {
+      staleTime: Number.POSITIVE_INFINITY,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchInterval: Number.POSITIVE_INFINITY,
+    }
+    if (options) {
+      newOptions = { ...newOptions, ...options }
+    }
+    return newOptions
+  }, [options])
+
+  const res = useQuery(
+    [url],
+    async () => {
+      if (options?.delay) {
+        await new Promise((resolve) => {
+          setInterval(resolve, options.delay)
+        })
+      }
+
+      const res = await axiosFetch<string>(url, { responseType: 'text' })
+      return parseCsv<T>(res, delimiter)
     },
     newOptions,
   )
