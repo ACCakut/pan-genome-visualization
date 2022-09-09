@@ -13,6 +13,8 @@ require('bootstrap-toggle');
 var multiselect = require('bootstrap-multiselect');
 $.multiselect = multiselect;
 
+export const DATA_ROOT_URL = process.env.DATA_ROOT_URL
+
 if (typeof customized_standard_columns=='undefined'){
     //## dc_DataTables configuration <div style="display:inline-block" ></div>
     var table_columns= [
@@ -289,8 +291,8 @@ export const datatable_configuration = function(table_input, table_id, col_selec
     })
 
     //** append download button for all core genes
-    append_download_button('#'+table_id+'_filter.dataTables_filter', 'core_gene_alignments', '/dataset/'+speciesAbbr+'/core_gene_alignments.tar.gz');
-    append_download_button('#'+table_id+'_filter.dataTables_filter', 'all_gene_alignments', '/dataset/'+speciesAbbr+'/all_gene_alignments.tar.gz');
+    append_download_button('#'+table_id+'_filter.dataTables_filter', 'core_gene_alignments', `${DATA_ROOT_URL}/dataset/${speciesAbbr}/core_gene_alignments.zip`);
+    append_download_button('#'+table_id+'_filter.dataTables_filter', 'all_gene_alignments', `${DATA_ROOT_URL}/dataset/${speciesAbbr}/all_gene_alignments.zip`);
     //append_download_button('#'+table_id+'_filter.dataTables_filter', 'core_gene_trees', '/dataset/'+speciesAbbr+'/core_gene_trees.tar.gz');
     const dt_button_tooltip_dict= {
     //**download core genes

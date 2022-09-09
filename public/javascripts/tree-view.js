@@ -1,3 +1,5 @@
+export const DATA_ROOT_URL = process.env.DATA_ROOT_URL
+
 var winInnerWidth = pgDashbord.winInnerWidth;
 var adjust_height_unit =0.5;//#0.3
 var times_flag=0;
@@ -289,7 +291,7 @@ var render_tree = function(tree_index,tree_div,treeJsonPath,clusterID,tool_side)
         var selected_speciesAbbr= (tool_side==1) ? speciesAbbr2 : speciesAbbr;
         d3.select('#'+buttons.download_coreTree_id)
             .append('a')
-            .attr('href','/download/dataset/'+selected_speciesAbbr+'/strain_tree.nwk')
+            .attr('href',`${DATA_ROOT_URL}/dataset/${selected_speciesAbbr}/strain_tree.nwk`)
             .append('i')
             .attr('class','glyphicon glyphicon-download-alt')
             .attr('aria-hidden','true')
@@ -299,7 +301,7 @@ var render_tree = function(tree_index,tree_div,treeJsonPath,clusterID,tool_side)
         download_geneTree.selectAll('a').remove();
         download_geneTree.append('a')
             .attr('id',buttons.download_geneTree_id+'_href')
-            .attr('href','/download/dataset/'+selected_speciesAbbr+'/geneCluster/'+clusterID+'.nwk')
+            .attr('href', `${DATA_ROOT_URL}/dataset/${selected_speciesAbbr}/geneCluster/${clusterID}.nwk`)
             .append('i')
             .attr('class','glyphicon glyphicon-download-alt')
             .attr('aria-hidden','true')
