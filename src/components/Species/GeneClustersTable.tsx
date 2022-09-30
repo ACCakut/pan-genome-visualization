@@ -1,13 +1,23 @@
-import React, { useState, useRef, useMemo, ChangeEvent, useCallback, useDeferredValue } from 'react'
+import React, { useState, useRef, useMemo, ChangeEvent, useCallback, useDeferredValue, ReactElement } from 'react'
 import { sortBy, isString, get } from 'lodash'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
-import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  Table as ReactTable,
+  Column,
+  ColumnOrderState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  Header,
+  useReactTable,
+} from '@tanstack/react-table'
 import { useVirtual } from 'react-virtual'
 import { Col, Container, Input, Row, Table as TableBase } from 'reactstrap'
 import { useRecoilState } from 'recoil'
 import { currentGeneIdAtom } from 'src/state/genes'
 import styled from 'styled-components'
 import fuzzysort from 'fuzzysort'
+import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
@@ -22,16 +32,19 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     maxSize: 50,
   },
   {
+    id: 'Mnemonic',
     header: 'Mnemonic',
     accessorFn: (gene) => gene.mnemonic,
     size: 100,
   },
   {
+    id: 'Name',
     header: 'Name',
     accessorFn: (gene) => gene.name,
     size: 250,
   },
   {
+    id: 'Strains',
     header: 'Strains',
     accessorFn: (gene) => gene.num_strains,
     minSize: 60,
@@ -39,6 +52,7 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 60,
   },
   {
+    id: 'Duplicated',
     header: 'Duplicated',
     accessorFn: (gene) => gene.dupli,
     minSize: 80,
@@ -46,18 +60,21 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 80,
   },
   {
+    id: 'Events',
     header: 'Events',
     accessorFn: (gene) => gene.num_events,
     minSize: 50,
     size: 50,
   },
   {
+    id: 'Diversity',
     header: 'Diversity',
     accessorFn: (gene) => gene.divers,
     minSize: 60,
     size: 60,
   },
   {
+    id: 'Length',
     header: 'Length',
     accessorFn: (gene) => gene.length,
     minSize: 60,
@@ -108,12 +125,13 @@ const Tr = styled.tr<{ $isHighlighted?: boolean }>`
   background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
 `
 
-const Th = styled.th<{ $width?: number }>`
+const Th = styled.th<{ $width?: number; $isDragging?: boolean }>`
   width: ${(props) => props.$width}px;
   border-bottom: 1px solid lightgray;
   border-right: 1px solid lightgray;
   overflow: hidden;
   white-space: nowrap;
+  opacity: ${(props) => (props.$isDragging ? 0.5 : 1.0)};
 `
 
 const Td = styled.td<{ $isHighlighted?: boolean }>`
@@ -122,6 +140,70 @@ const Td = styled.td<{ $isHighlighted?: boolean }>`
   white-space: nowrap;
   color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.white} !important;
 `
+
+const reorderColumn = (draggedColumnId: string, targetColumnId: string, columnOrder: string[]): ColumnOrderState => {
+  columnOrder.splice(
+    columnOrder.indexOf(targetColumnId),
+    0,
+    columnOrder.splice(columnOrder.indexOf(draggedColumnId), 1)[0],
+  )
+  return [...columnOrder]
+}
+
+export interface DraggableColumnHeaderProps {
+  header: Header<GeneCluster, unknown>
+  table: ReactTable<GeneCluster>
+}
+
+export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderProps) {
+  const { getState, setColumnOrder } = table
+  const { columnOrder } = getState()
+  const { column, colSpan, isPlaceholder } = header
+
+  const [, dropRef] = useDrop({
+    accept: 'column',
+    drop: (draggedColumn: Column<GeneCluster>) => {
+      const newColumnOrder = reorderColumn(draggedColumn.id, column.id, columnOrder)
+      setColumnOrder(newColumnOrder)
+    },
+  })
+
+  const [{ isDragging }, dragRef, previewRef] = useDrag({
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    item: () => column,
+    type: 'column',
+  })
+
+  const attachRef = useCallback(
+    (element: ConnectableElement) => {
+      dragRef(element)
+      dropRef(element)
+    },
+    [dragRef, dropRef],
+  )
+
+  const content = useMemo(() => {
+    if (isPlaceholder) {
+      return null
+    }
+    return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+      <div onClick={column.getToggleSortingHandler()}>
+        {flexRender(column.columnDef.header, header.getContext())}
+        {{
+          asc: ' ^',
+          desc: ' v',
+        }[column.getIsSorted() as string] ?? null}
+      </div>
+    )
+  }, [column, header, isPlaceholder])
+
+  return (
+    <Th ref={attachRef} colSpan={colSpan} $width={header.getSize()} $isDragging={isDragging}>
+      <div ref={previewRef}>{content}</div>
+    </Th>
+  )
+}
 
 export interface GeneClustersTableProps {
   species: SpeciesDesc
@@ -132,6 +214,8 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   const { t } = useTranslationSafe()
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [sorting, setSorting] = useState<SortingState>([])
+  const [columns] = React.useState(SPECIES_TABLE_COLUMNS)
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(columns.map((column) => column.id as string))
 
   const [selectedGene, setSelectedGene_] = useRecoilState(currentGeneIdAtom(species.id))
   const setSelectedGene = useCallback((geneId: number) => () => setSelectedGene_(geneId), [setSelectedGene_])
@@ -180,9 +264,10 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
 
   const table = useReactTable({
     data,
-    columns: SPECIES_TABLE_COLUMNS,
-    state: { sorting },
+    columns,
+    state: { sorting, columnOrder },
     onSortingChange: setSorting,
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
@@ -228,18 +313,7 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
               {table.getHeaderGroups().map((headerGroup) => (
                 <Tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <Th key={header.id} colSpan={header.colSpan} $width={header.getSize()}>
-                      {header.isPlaceholder ? null : (
-                        // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-                        <div onClick={header.column.getToggleSortingHandler()}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {{
-                            asc: ' ^',
-                            desc: ' v',
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
-                      )}
-                    </Th>
+                    <DraggableColumnHeader key={header.id} header={header} table={table} />
                   ))}
                 </Tr>
               ))}

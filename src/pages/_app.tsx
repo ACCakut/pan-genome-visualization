@@ -8,6 +8,8 @@ import React, { Suspense, useMemo } from 'react'
 import type { AppProps } from 'next/app'
 import type { NextComponentType } from 'next'
 import dynamic from 'next/dynamic'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { RecoilRoot } from 'recoil'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientConfig, QueryClientProvider } from '@tanstack/react-query'
@@ -99,19 +101,21 @@ export function MyApp({ Component, pageProps }: MyAppProps) {
         <ReactQueryDevtools initialIsOpen={false} />
         <ReactReduxProvider store={store}>
           <RecoilRoot>
-            <ThemeProvider theme={theme}>
-              <MDXProvider components={getMdxComponents}>
-                <Plausible domain={DOMAIN_STRIPPED} />
-                <I18nextProvider i18n={i18n}>
-                  <ErrorBoundary>
-                    <SEO />
-                    <PreviewWarning />
-                    <ClientSideRouter Component={Component} pageProps={pageProps} />
-                    <ErrorPopup />
-                  </ErrorBoundary>
-                </I18nextProvider>
-              </MDXProvider>
-            </ThemeProvider>
+            <DndProvider backend={HTML5Backend}>
+              <ThemeProvider theme={theme}>
+                <MDXProvider components={getMdxComponents}>
+                  <Plausible domain={DOMAIN_STRIPPED} />
+                  <I18nextProvider i18n={i18n}>
+                    <ErrorBoundary>
+                      <SEO />
+                      <PreviewWarning />
+                      <ClientSideRouter Component={Component} pageProps={pageProps} />
+                      <ErrorPopup />
+                    </ErrorBoundary>
+                  </I18nextProvider>
+                </MDXProvider>
+              </ThemeProvider>
+            </DndProvider>
           </RecoilRoot>
         </ReactReduxProvider>
       </QueryClientProvider>
