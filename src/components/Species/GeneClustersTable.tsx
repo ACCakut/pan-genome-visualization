@@ -17,14 +17,16 @@ import {
   Col,
   Container,
   CustomInput,
-  Dropdown,
-  DropdownMenu,
-  DropdownToggle,
   FormGroup,
   Input,
   Label,
   Row,
   Table as TableBase,
+  Popover as PopoverBase,
+  PopoverProps,
+  Card,
+  CardBody,
+  CardHeader,
 } from 'reactstrap'
 import { useRecoilState } from 'recoil'
 import { currentGeneIdAtom } from 'src/state/genes'
@@ -32,7 +34,8 @@ import styled, { useTheme } from 'styled-components'
 import fuzzysort from 'fuzzysort'
 import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
 import { IoReorderFourOutline as IconReorder } from 'react-icons/io5'
-import { MdUndo as IconUndo, MdMenu as MenuIcon } from 'react-icons/md'
+import { MdUndo as IconUndo } from 'react-icons/md'
+import { BsThreeDotsVertical as MenuIcon } from 'react-icons/bs'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
@@ -361,24 +364,44 @@ export function ColumnList<T>({ table }: { table: ReactTable<T> }) {
   )
 }
 
+export const Popover = styled(PopoverBase)<PopoverProps & { $width: string }>`
+  & .popover {
+    max-width: ${({ $width }) => `${$width}px`};
+  }
+  & .popover.show.bs-popover-auto {
+    min-width: ${({ $width }) => `${$width}px`};
+  }
+`
+
 export function ColumnListDropdown<T>({ table }: { table: ReactTable<T> }) {
+  const id = 'menu'
   const { t } = useTranslationSafe()
   const theme = useTheme()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const toggle = useCallback(() => setDropdownOpen((prevState) => !prevState), [])
-
   return (
-    <Dropdown isOpen={dropdownOpen} toggle={toggle} direction="down">
-      <DropdownToggle>
-        <MenuIcon color={theme.gray700} size={16} />
-      </DropdownToggle>
-      <DropdownMenu>
-        <ColumnList table={table} />
-        <Button color="secondary" onClick={toggle}>
-          {t('Ok')}
-        </Button>
-      </DropdownMenu>
-    </Dropdown>
+    <Button id={id} color="link" onClick={toggle}>
+      <MenuIcon color={theme.gray700} size={16} />
+      <Popover target={id} placement="bottom-end" delay={0} fade={false} $width={300} isOpen={dropdownOpen} hideArrow>
+        <Card>
+          <CardHeader className="bg-dark text-light">{t('Columns')}</CardHeader>
+          <CardBody>
+            <Row noGutters>
+              <Col>
+                <ColumnList table={table} />
+              </Col>
+            </Row>
+            <Row noGutters>
+              <Col>
+                <Button color="secondary" onClick={toggle}>
+                  {t('Ok')}
+                </Button>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      </Popover>
+    </Button>
   )
 }
 
