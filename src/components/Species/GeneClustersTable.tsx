@@ -33,6 +33,7 @@ import { currentGeneIdAtom } from 'src/state/genes'
 import styled, { useTheme } from 'styled-components'
 import fuzzysort from 'fuzzysort'
 import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
+import { Reorder } from 'framer-motion'
 import { IoReorderFourOutline as IconReorder } from 'react-icons/io5'
 import { MdUndo as IconUndo } from 'react-icons/md'
 import { BsThreeDotsVertical as MenuIcon } from 'react-icons/bs'
@@ -241,78 +242,37 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
   )
 }
 
-const ColumnListUl = styled.ul`
+const ColumnListUl = styled(Reorder.Group)`
   width: 100%;
   padding-left: 0;
 `
 
-const ColumnListLi = styled.li<{ $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
-  background-color: ${({ $canDrop, $isDragOver, theme }) =>
-    $isDragOver ? theme.gray300 : $canDrop ? theme.gray150 : undefined};
-  outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
-  opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1.0)};
+const ColumnListLi = styled(Reorder.Item)`
   list-style: none;
-  display: flex;
 `
 
 export interface ColumnListItemProps<T> {
-  table: ReactTable<T>
   column: Column<T, unknown>
 }
 
-export function ColumnListItem<T>({ table, column }: ColumnListItemProps<T>) {
-  const { getState, setColumnOrder } = table
-  const { columnOrder } = getState()
-
-  const [{ canDrop, isDragOver }, dropRef] = useDrop({
-    accept: 'column',
-    drop: (draggedColumn: Column<GeneCluster>) => {
-      const newColumnOrder = reorderColumn(draggedColumn.id, column.id, columnOrder)
-      setColumnOrder(newColumnOrder)
-    },
-    canDrop: () => true,
-    collect: (monitor) => ({
-      isDragOver: !!monitor.isOver(),
-      canDrop: !!monitor.canDrop(),
-    }),
-  })
-
-  const [{ isDragging }, dragRef, previewRef] = useDrag({
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-    item: () => column,
-    type: 'column',
-  })
-
-  const attachRef = useCallback(
-    (element: ConnectableElement) => {
-      dragRef(element)
-      dropRef(element)
-      previewRef(element)
-    },
-    [dragRef, dropRef, previewRef],
-  )
-
+export function ColumnListItem<T>({ column }: ColumnListItemProps<T>) {
   const theme = useTheme()
   const id = useMemo(() => `column-toggle-${column.id}`, [column.id])
 
   return (
-    <ColumnListLi $isDragging={isDragging} $canDrop={canDrop} $isDragOver={isDragOver} ref={attachRef}>
-      <div ref={previewRef}>
-        <FormGroup check inline>
-          <IconReorder color={theme.gray600} size={16} />
-          <CustomInput
-            className="ml-1"
-            id={id}
-            type="checkbox"
-            checked={column.getIsVisible()}
-            onChange={column.getToggleVisibilityHandler()}
-          />
-          <Label htmlFor={id} check>
-            {column.id}
-          </Label>
-        </FormGroup>
-      </div>
-    </ColumnListLi>
+    <FormGroup check inline>
+      <IconReorder color={theme.gray600} size={16} />
+      <CustomInput
+        className="ml-1"
+        id={id}
+        type="checkbox"
+        checked={column.getIsVisible()}
+        onChange={column.getToggleVisibilityHandler()}
+      />
+      <Label htmlFor={id} check>
+        {column.id}
+      </Label>
+    </FormGroup>
   )
 }
 
@@ -329,14 +289,9 @@ export function ColumnList<T>({ table }: { table: ReactTable<T> }) {
     table.setColumnOrder([...SPECIES_TABLE_COLUMN_ORDER])
   }, [table])
 
-  const columnCheckboxes = useMemo(
-    () => columns.map((column) => <ColumnListItem key={column.id} table={table} column={column} />),
-    [columns, table],
-  )
-
   return (
-    <ColumnListUl>
-      <ColumnListLi>
+    <ColumnListUl axis="y" values={table.getState().columnOrder} onReorder={table.setColumnOrder}>
+      <ColumnListLi value="">
         <FormGroup check inline>
           <CustomInput
             id={id}
@@ -359,7 +314,11 @@ export function ColumnList<T>({ table }: { table: ReactTable<T> }) {
           </Button>
         </FormGroup>
       </ColumnListLi>
-      {columnCheckboxes}
+      {columns.map((column) => (
+        <ColumnListLi key={column.id} value={column.id}>
+          <ColumnListItem key={column.id} column={column} />
+        </ColumnListLi>
+      ))}
     </ColumnListUl>
   )
 }
@@ -380,8 +339,10 @@ export function ColumnListDropdown<T>({ table }: { table: ReactTable<T> }) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const toggle = useCallback(() => setDropdownOpen((prevState) => !prevState), [])
   return (
-    <Button id={id} color="link" onClick={toggle}>
-      <MenuIcon color={theme.gray700} size={16} />
+    <>
+      <Button id={id} color="link" onClick={toggle}>
+        <MenuIcon color={theme.gray700} size={16} />
+      </Button>
       <Popover target={id} placement="bottom-end" delay={0} fade={false} $width={300} isOpen={dropdownOpen} hideArrow>
         <Card>
           <CardHeader className="bg-dark text-light">{t('Columns')}</CardHeader>
@@ -401,7 +362,7 @@ export function ColumnListDropdown<T>({ table }: { table: ReactTable<T> }) {
           </CardBody>
         </Card>
       </Popover>
-    </Button>
+    </>
   )
 }
 
