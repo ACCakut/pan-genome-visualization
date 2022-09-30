@@ -12,14 +12,27 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtual } from 'react-virtual'
-import { Button, Col, Container, CustomInput, FormGroup, Input, Label, Row, Table as TableBase } from 'reactstrap'
+import {
+  Button,
+  Col,
+  Container,
+  CustomInput,
+  Dropdown,
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+  Table as TableBase,
+} from 'reactstrap'
 import { useRecoilState } from 'recoil'
 import { currentGeneIdAtom } from 'src/state/genes'
 import styled, { useTheme } from 'styled-components'
 import fuzzysort from 'fuzzysort'
 import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
 import { IoReorderFourOutline as IconReorder } from 'react-icons/io5'
-import { MdUndo as IconUndo } from 'react-icons/md'
+import { MdUndo as IconUndo, MdMenu as MenuIcon } from 'react-icons/md'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
@@ -348,6 +361,27 @@ export function ColumnList<T>({ table }: { table: ReactTable<T> }) {
   )
 }
 
+export function ColumnListDropdown<T>({ table }: { table: ReactTable<T> }) {
+  const { t } = useTranslationSafe()
+  const theme = useTheme()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const toggle = useCallback(() => setDropdownOpen((prevState) => !prevState), [])
+
+  return (
+    <Dropdown isOpen={dropdownOpen} toggle={toggle} direction="down">
+      <DropdownToggle>
+        <MenuIcon color={theme.gray700} size={16} />
+      </DropdownToggle>
+      <DropdownMenu>
+        <ColumnList table={table} />
+        <Button color="secondary" onClick={toggle}>
+          {t('Ok')}
+        </Button>
+      </DropdownMenu>
+    </Dropdown>
+  )
+}
+
 export interface GeneClustersTableProps {
   species: SpeciesDesc
   clusters: GeneCluster[]
@@ -431,17 +465,11 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   return (
     <DatasetSelectorContainer>
       <Row noGutters>
-        <Col>
-          <ColumnList table={table} />
-        </Col>
-      </Row>
-
-      <Row noGutters>
         <Col sm={6} className="d-flex">
           <DatasetSelectorTitle>{t('Select a gene')}</DatasetSelectorTitle>
         </Col>
 
-        <Col sm={6}>
+        <Col sm={5}>
           <Input
             type="text"
             title="Search gene"
@@ -454,6 +482,10 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
             value={searchTerm}
             onChange={onSearchTermChange}
           />
+        </Col>
+
+        <Col sm={1}>
+          <ColumnListDropdown table={table} />
         </Col>
       </Row>
 
