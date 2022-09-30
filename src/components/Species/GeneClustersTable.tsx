@@ -1,5 +1,5 @@
-import React, { useState, useRef, useMemo, ChangeEvent, useCallback, useDeferredValue, ReactElement } from 'react'
-import { sortBy, isString, get } from 'lodash'
+import React, { useState, useRef, useMemo, ChangeEvent, useCallback, useDeferredValue } from 'react'
+import { sortBy, isString, get, isEqual } from 'lodash'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import {
   Table as ReactTable,
@@ -12,12 +12,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtual } from 'react-virtual'
-import { Col, Container, Input, Row, Table as TableBase } from 'reactstrap'
+import { Button, Col, Container, CustomInput, FormGroup, Input, Label, Row, Table as TableBase } from 'reactstrap'
 import { useRecoilState } from 'recoil'
 import { currentGeneIdAtom } from 'src/state/genes'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import fuzzysort from 'fuzzysort'
 import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
+import { IoReorderFourOutline as IconReorder } from 'react-icons/io5'
+import { MdUndo as IconUndo } from 'react-icons/md'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
@@ -82,6 +84,8 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
   },
 ]
 
+const SPECIES_TABLE_COLUMN_ORDER = SPECIES_TABLE_COLUMNS.map((column) => column.id as string)
+
 const DatasetSelectorContainer = styled(Container)`
   display: flex;
   flex-direction: column;
@@ -125,13 +129,16 @@ const Tr = styled.tr<{ $isHighlighted?: boolean }>`
   background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
 `
 
-const Th = styled.th<{ $width?: number; $isDragging?: boolean }>`
+const Th = styled.th<{ $width?: number; $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
   width: ${(props) => props.$width}px;
-  border-bottom: 1px solid lightgray;
-  border-right: 1px solid lightgray;
+  border-bottom: 1px solid ${(props) => props.theme.gray600};
+  border-right: 1px solid ${(props) => props.theme.gray600};
   overflow: hidden;
   white-space: nowrap;
-  opacity: ${(props) => (props.$isDragging ? 0.5 : 1.0)};
+  color: ${(props) => props.theme.gray100};
+  background-color: ${({ $isDragOver, theme }) => ($isDragOver ? theme.gray600 : theme.gray700)};
+  outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
+  opacity: ${({ $isDragging }) => ($isDragging ? 0.1 : 1.0)};
 `
 
 const Td = styled.td<{ $isHighlighted?: boolean }>`
@@ -160,12 +167,17 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
   const { columnOrder } = getState()
   const { column, colSpan, isPlaceholder } = header
 
-  const [, dropRef] = useDrop({
+  const [{ canDrop, isDragOver }, dropRef] = useDrop({
     accept: 'column',
     drop: (draggedColumn: Column<GeneCluster>) => {
       const newColumnOrder = reorderColumn(draggedColumn.id, column.id, columnOrder)
       setColumnOrder(newColumnOrder)
     },
+    canDrop: () => true,
+    collect: (monitor) => ({
+      isDragOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
+    }),
   })
 
   const [{ isDragging }, dragRef, previewRef] = useDrag({
@@ -178,8 +190,9 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
     (element: ConnectableElement) => {
       dragRef(element)
       dropRef(element)
+      previewRef(element)
     },
-    [dragRef, dropRef],
+    [dragRef, dropRef, previewRef],
   )
 
   const content = useMemo(() => {
@@ -199,9 +212,139 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
   }, [column, header, isPlaceholder])
 
   return (
-    <Th ref={attachRef} colSpan={colSpan} $width={header.getSize()} $isDragging={isDragging}>
-      <div ref={previewRef}>{content}</div>
+    <Th
+      ref={attachRef}
+      colSpan={colSpan}
+      $width={header.getSize()}
+      $isDragging={isDragging}
+      $canDrop={canDrop}
+      $isDragOver={isDragOver}
+    >
+      {content}
     </Th>
+  )
+}
+
+const ColumnListUl = styled.ul`
+  width: 100%;
+  padding-left: 0;
+`
+
+const ColumnListLi = styled.li<{ $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
+  background-color: ${({ $canDrop, $isDragOver, theme }) =>
+    $isDragOver ? theme.gray300 : $canDrop ? theme.gray150 : undefined};
+  outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
+  opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1.0)};
+  list-style: none;
+  display: flex;
+`
+
+export interface ColumnListItemProps<T> {
+  table: ReactTable<T>
+  column: Column<T, unknown>
+}
+
+export function ColumnListItem<T>({ table, column }: ColumnListItemProps<T>) {
+  const { getState, setColumnOrder } = table
+  const { columnOrder } = getState()
+
+  const [{ canDrop, isDragOver }, dropRef] = useDrop({
+    accept: 'column',
+    drop: (draggedColumn: Column<GeneCluster>) => {
+      const newColumnOrder = reorderColumn(draggedColumn.id, column.id, columnOrder)
+      setColumnOrder(newColumnOrder)
+    },
+    canDrop: () => true,
+    collect: (monitor) => ({
+      isDragOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
+    }),
+  })
+
+  const [{ isDragging }, dragRef, previewRef] = useDrag({
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    item: () => column,
+    type: 'column',
+  })
+
+  const attachRef = useCallback(
+    (element: ConnectableElement) => {
+      dragRef(element)
+      dropRef(element)
+      previewRef(element)
+    },
+    [dragRef, dropRef, previewRef],
+  )
+
+  const theme = useTheme()
+  const id = useMemo(() => `column-toggle-${column.id}`, [column.id])
+
+  return (
+    <ColumnListLi $isDragging={isDragging} $canDrop={canDrop} $isDragOver={isDragOver} ref={attachRef}>
+      <div ref={previewRef}>
+        <FormGroup check inline>
+          <IconReorder color={theme.gray600} size={16} />
+          <CustomInput
+            className="ml-1"
+            id={id}
+            type="checkbox"
+            checked={column.getIsVisible()}
+            onChange={column.getToggleVisibilityHandler()}
+          />
+          <Label htmlFor={id} check>
+            {column.id}
+          </Label>
+        </FormGroup>
+      </div>
+    </ColumnListLi>
+  )
+}
+
+export function ColumnList<T>({ table }: { table: ReactTable<T> }) {
+  const { t } = useTranslationSafe()
+  const id = 'columns-toggle-all'
+
+  const { columnOrder } = table.getState()
+  const columns = table.getAllLeafColumns()
+
+  const isDefaultOrder = useMemo(() => isEqual(columnOrder, SPECIES_TABLE_COLUMN_ORDER), [columnOrder])
+
+  const resetColumnOrder = useCallback(() => {
+    table.setColumnOrder([...SPECIES_TABLE_COLUMN_ORDER])
+  }, [table])
+
+  const columnCheckboxes = useMemo(
+    () => columns.map((column) => <ColumnListItem key={column.id} table={table} column={column} />),
+    [columns, table],
+  )
+
+  return (
+    <ColumnListUl>
+      <ColumnListLi>
+        <FormGroup check inline>
+          <CustomInput
+            id={id}
+            type="checkbox"
+            checked={table.getIsAllColumnsVisible()}
+            onChange={table.getToggleAllColumnsVisibilityHandler()}
+          />
+          <Label htmlFor={id} check>
+            {t('Toggle All')}
+          </Label>
+          <Button
+            className="p-0 m-0 ml-2"
+            color="link"
+            onClick={resetColumnOrder}
+            title={t('Reset column order and visibility')}
+            hidden={isDefaultOrder}
+          >
+            <IconUndo size={12} />
+            <span className="ml-1">{t('Reset order')}</span>
+          </Button>
+        </FormGroup>
+      </ColumnListLi>
+      {columnCheckboxes}
+    </ColumnListUl>
   )
 }
 
@@ -215,7 +358,8 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columns] = React.useState(SPECIES_TABLE_COLUMNS)
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(columns.map((column) => column.id as string))
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([...SPECIES_TABLE_COLUMN_ORDER])
+  const [columnVisibility, setColumnVisibility] = React.useState({})
 
   const [selectedGene, setSelectedGene_] = useRecoilState(currentGeneIdAtom(species.id))
   const setSelectedGene = useCallback((geneId: number) => () => setSelectedGene_(geneId), [setSelectedGene_])
@@ -265,9 +409,10 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnOrder },
+    state: { sorting, columnOrder, columnVisibility },
     onSortingChange: setSorting,
     onColumnOrderChange: setColumnOrder,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
@@ -285,6 +430,12 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
 
   return (
     <DatasetSelectorContainer>
+      <Row noGutters>
+        <Col>
+          <ColumnList table={table} />
+        </Col>
+      </Row>
+
       <Row noGutters>
         <Col sm={6} className="d-flex">
           <DatasetSelectorTitle>{t('Select a gene')}</DatasetSelectorTitle>

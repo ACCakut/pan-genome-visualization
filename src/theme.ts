@@ -112,6 +112,10 @@ export const shadows = {
   },
 }
 
+export const outline = {
+  drop: `2px dashed ${primary}`,
+}
+
 export const code = {
   pre: {
     background: gray300,
@@ -130,6 +134,7 @@ export const theme = {
   containerMaxWidths,
   font,
   shadows,
+  outline,
 }
 
 export type Theme = typeof theme
