@@ -3,6 +3,7 @@ import { sortBy, isString, get, isEqual } from 'lodash'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import {
   Table as ReactTable,
+  Row as ReactTableRow,
   Column,
   ColumnOrderState,
   flexRender,
@@ -366,6 +367,26 @@ export function ColumnListDropdown<T>({ table }: { table: ReactTable<T> }) {
   )
 }
 
+export interface TableRowProps<T> {
+  row: ReactTableRow<T>
+  isHighlighted: boolean
+  onClick: () => void
+}
+
+export function TableRow<T>({ row, isHighlighted, onClick }: TableRowProps<T>) {
+  return (
+    <Tr onClick={onClick} $isHighlighted={isHighlighted}>
+      {row.getVisibleCells().map((cell) => {
+        return (
+          <Td key={cell.id} $isHighlighted={isHighlighted}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </Td>
+        )
+      })}
+    </Tr>
+  )
+}
+
 export interface GeneClustersTableProps {
   species: SpeciesDesc
   clusters: GeneCluster[]
@@ -446,6 +467,15 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
   const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0
 
+  const rowComponents = useMemo(() => {
+    return virtualRows.map((virtualRow) => {
+      const row = rows[virtualRow.index]
+      const geneId = row.getValue<number>('ID')
+      const isHighlighted = geneId === selectedGene
+      return <TableRow key={geneId} row={row} isHighlighted={isHighlighted} onClick={setSelectedGene(geneId)} />
+    })
+  }, [rows, selectedGene, setSelectedGene, virtualRows])
+
   return (
     <DatasetSelectorContainer>
       <Row noGutters>
@@ -488,24 +518,7 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
 
             <Tbody>
               <TableSpacer height={paddingTop} />
-
-              {virtualRows.map((virtualRow) => {
-                const row = rows[virtualRow.index]
-                const geneId = row.getValue<number>('ID')
-                const isHighlighted = geneId === selectedGene
-                return (
-                  <Tr key={row.id} onClick={setSelectedGene(geneId)} $isHighlighted={isHighlighted}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <Td key={cell.id} $isHighlighted={isHighlighted}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </Td>
-                      )
-                    })}
-                  </Tr>
-                )
-              })}
-
+              {rowComponents}
               <TableSpacer height={paddingBottom} />
             </Tbody>
           </Table>
