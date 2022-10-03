@@ -50,8 +50,8 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     header: 'ID',
     accessorFn: (gene) => gene.id,
     size: 50,
-    minSize: 50,
-    maxSize: 50,
+    minSize: 40,
+    maxSize: 200,
   },
   {
     id: 'Mnemonic',
@@ -69,38 +69,41 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     id: 'Strains',
     header: 'Strains',
     accessorFn: (gene) => gene.num_strains,
-    minSize: 60,
-    maxSize: 60,
     size: 60,
+    minSize: 50,
+    maxSize: 200,
   },
   {
     id: 'Duplicated',
     header: 'Duplicated',
     accessorFn: (gene) => gene.dupli,
-    minSize: 80,
-    maxSize: 80,
     size: 80,
+    minSize: 50,
+    maxSize: 200,
   },
   {
     id: 'Events',
     header: 'Events',
     accessorFn: (gene) => gene.num_events,
-    minSize: 50,
     size: 50,
+    minSize: 30,
+    maxSize: 200,
   },
   {
     id: 'Diversity',
     header: 'Diversity',
     accessorFn: (gene) => gene.divers,
-    minSize: 60,
     size: 60,
+    minSize: 50,
+    maxSize: 200,
   },
   {
     id: 'Length',
     header: 'Length',
     accessorFn: (gene) => gene.length,
-    minSize: 60,
     size: 60,
+    minSize: 50,
+    maxSize: 200,
   },
 ]
 
@@ -115,7 +118,7 @@ const DatasetSelectorContainer = styled(Container)`
   max-width: 1000px;
 `
 
-const DatasetSelectorTitle = styled.h3`
+const TableTitle = styled.h3`
   padding: 0;
   margin: auto 0;
 `
@@ -124,22 +127,21 @@ const TableContainer = styled.div`
   width: 100%;
   height: 600px;
   margin: 0 auto;
-  overflow: auto;
+  overflow: hidden auto;
 `
 
 const Table = styled(TableBase)`
   border-collapse: collapse;
   border-spacing: 0;
-  font-family: arial, sans-serif;
   table-layout: fixed;
   width: 100%;
 `
 
 const Thead = styled.thead`
-  background: lightgray;
   margin: 0;
   position: sticky;
   top: 0;
+  background-color: ${(props) => props.theme.gray650};
 `
 
 const Tbody = styled.tbody``
@@ -148,19 +150,7 @@ const Tr = styled.tr<{ $isHighlighted?: boolean; $isDragging?: boolean; $canDrop
   cursor: pointer;
   background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
   outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
-  opacity: ${({ $isDragging }) => ($isDragging ? 0.1 : 1.0)};
-`
-
-const Th = styled.th<{ $width?: number; $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
-  width: ${(props) => props.$width}px;
-  border-bottom: 1px solid ${(props) => props.theme.gray600};
-  border-right: 1px solid ${(props) => props.theme.gray600};
-  overflow: hidden;
-  white-space: nowrap;
-  color: ${(props) => props.theme.gray100};
-  background-color: ${({ $isDragOver, theme }) => ($isDragOver ? theme.gray600 : theme.gray700)};
-  outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
-  opacity: ${({ $isDragging }) => ($isDragging ? 0.1 : 1.0)};
+  opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1.0)};
 `
 
 const Td = styled.td<{ $isHighlighted?: boolean }>`
@@ -185,6 +175,57 @@ export interface DraggableColumnHeaderProps {
   header: Header<GeneCluster, unknown>
   table: ReactTable<GeneCluster>
 }
+
+const Th = styled.th<{ $width?: number; $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
+  position: relative;
+  width: ${(props) => props.$width}px;
+  height: 45px;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: ${({ theme }) => `1px solid ${theme.gray700}`} !important;
+  border-right: ${({ theme }) => `2px solid ${theme.gray600}`} !important;
+  color: ${(props) => props.theme.gray100};
+  background-color: ${({ $isDragOver, theme }) => ($isDragOver ? theme.gray600 : theme.gray700)};
+  outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
+  opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1.0)};
+`
+
+const ColumnHeaderContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+`
+
+const ColumnHeaderContent = styled.span`
+  margin: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: transparent !important;
+`
+
+export interface ColumnHeaderResizerProps {
+  $isResizing: boolean
+  $deltaOffset?: number | null
+}
+
+const ColumnHeaderResizer = styled.span.attrs<ColumnHeaderResizerProps>(({ $isResizing, $deltaOffset }) => ({
+  style: {
+    transform: $isResizing && `translate(${$deltaOffset ?? 0}px)`,
+  },
+}))<ColumnHeaderResizerProps>`
+  display: inline-block;
+  position: absolute;
+  right: -2.5px;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background-color: ${({ $isResizing, theme }) => $isResizing && theme.primary};
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  z-index: 999;
+`
 
 export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderProps) {
   const { getState, setColumnOrder } = table
@@ -212,11 +253,10 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
 
   const attachRef = useCallback(
     (element: ConnectableElement) => {
-      dragRef(element)
       dropRef(element)
       previewRef(element)
     },
-    [dragRef, dropRef, previewRef],
+    [dropRef, previewRef],
   )
 
   const content = useMemo(() => {
@@ -224,16 +264,15 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
       return null
     }
     return (
-      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-      <div onClick={column.getToggleSortingHandler()}>
+      <ColumnHeaderContent ref={dragRef} onClick={column.getToggleSortingHandler()}>
         {flexRender(column.columnDef.header, header.getContext())}
         {{
           asc: ' ^',
           desc: ' v',
         }[column.getIsSorted() as string] ?? null}
-      </div>
+      </ColumnHeaderContent>
     )
-  }, [column, header, isPlaceholder])
+  }, [column, dragRef, header, isPlaceholder])
 
   return (
     <Th
@@ -244,7 +283,13 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
       $canDrop={canDrop}
       $isDragOver={isDragOver}
     >
-      {content}
+      <ColumnHeaderContainer>{content}</ColumnHeaderContainer>
+      <ColumnHeaderResizer
+        onMouseDown={header.getResizeHandler()}
+        onTouchStart={header.getResizeHandler()}
+        $isResizing={column.getIsResizing()}
+        $deltaOffset={table.getState().columnSizingInfo.deltaOffset}
+      />
     </Th>
   )
 }
@@ -490,6 +535,7 @@ export function GeneClustersTable({ species, clusters: clusters_ }: GeneClusters
     data,
     columns,
     state: { columnOrder, columnVisibility },
+    columnResizeMode: 'onEnd',
     onSortingChange: setSorting,
     onColumnOrderChange: setColumnOrder,
     onColumnVisibilityChange: setColumnVisibility,
@@ -533,7 +579,7 @@ export function GeneClustersTable({ species, clusters: clusters_ }: GeneClusters
     <DatasetSelectorContainer>
       <Row noGutters>
         <Col sm={6} className="d-flex">
-          <DatasetSelectorTitle>{t('Select a gene')}</DatasetSelectorTitle>
+          <TableTitle>{t('Select a gene')}</TableTitle>
         </Col>
 
         <Col sm={5}>
