@@ -1,5 +1,7 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import React, { useState, useRef, useMemo, ChangeEvent, useCallback, useDeferredValue } from 'react'
 import { sortBy, isString, get, isEqual } from 'lodash'
+import copy from 'fast-copy'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import {
   Table as ReactTable,
@@ -142,9 +144,11 @@ const Thead = styled.thead`
 
 const Tbody = styled.tbody``
 
-const Tr = styled.tr<{ $isHighlighted?: boolean }>`
+const Tr = styled.tr<{ $isHighlighted?: boolean; $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
   cursor: pointer;
   background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
+  outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
+  opacity: ${({ $isDragging }) => ($isDragging ? 0.1 : 1.0)};
 `
 
 const Th = styled.th<{ $width?: number; $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
@@ -166,13 +170,15 @@ const Td = styled.td<{ $isHighlighted?: boolean }>`
   color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.white} !important;
 `
 
-const reorderColumn = (draggedColumnId: string, targetColumnId: string, columnOrder: string[]): ColumnOrderState => {
-  columnOrder.splice(
-    columnOrder.indexOf(targetColumnId),
-    0,
-    columnOrder.splice(columnOrder.indexOf(draggedColumnId), 1)[0],
-  )
-  return [...columnOrder]
+/** Reorder elemets of an array by index: src element is moved into slot before the dst element */
+export function reorder<T>(arr: T[], srcIdx: number, dstIdx: number): T[] {
+  arr.splice(dstIdx, 0, arr.splice(srcIdx, 1)[0])
+  return copy(arr)
+}
+
+/** Reorder elemets of an array by value: src element is moved into slot before the dst element. Elements are assumed to be unique. */
+export function reorderByValue<T>(arr: T[], srcVal: T, dstVal: T): T[] {
+  return reorder(arr, arr.indexOf(srcVal), arr.indexOf(dstVal))
 }
 
 export interface DraggableColumnHeaderProps {
@@ -188,7 +194,7 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
   const [{ canDrop, isDragOver }, dropRef] = useDrop({
     accept: 'column',
     drop: (draggedColumn: Column<GeneCluster>) => {
-      const newColumnOrder = reorderColumn(draggedColumn.id, column.id, columnOrder)
+      const newColumnOrder = reorderByValue(columnOrder, draggedColumn.id, column.id)
       setColumnOrder(newColumnOrder)
     },
     canDrop: () => true,
@@ -287,7 +293,7 @@ export function ColumnList<T>({ table }: { table: ReactTable<T> }) {
   const isDefaultOrder = useMemo(() => isEqual(columnOrder, SPECIES_TABLE_COLUMN_ORDER), [columnOrder])
 
   const resetColumnOrder = useCallback(() => {
-    table.setColumnOrder([...SPECIES_TABLE_COLUMN_ORDER])
+    table.setColumnOrder(copy(SPECIES_TABLE_COLUMN_ORDER))
   }, [table])
 
   return (
@@ -370,12 +376,45 @@ export function ColumnListDropdown<T>({ table }: { table: ReactTable<T> }) {
 export interface TableRowProps<T> {
   row: ReactTableRow<T>
   isHighlighted: boolean
-  onClick: () => void
+  onClick?: () => void
+  onRowReorder: (srcRowIndex: number, dstRowIndex: number) => void
 }
 
-export function TableRow<T>({ row, isHighlighted, onClick }: TableRowProps<T>) {
+export function TableRow<T>({ row, isHighlighted, onClick, onRowReorder }: TableRowProps<T>) {
+  const [{ canDrop, isDragOver }, dropRef] = useDrop({
+    accept: 'row',
+    drop: (draggedRow: ReactTableRow<T>) => onRowReorder(draggedRow.index, row.index),
+    canDrop: () => true,
+    collect: (monitor) => ({
+      isDragOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
+    }),
+  })
+
+  const [{ isDragging }, dragRef, previewRef] = useDrag({
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    item: () => row,
+    type: 'row',
+  })
+
+  const attachRef = useCallback(
+    (element: ConnectableElement) => {
+      dragRef(element)
+      dropRef(element)
+      previewRef(element)
+    },
+    [dragRef, dropRef, previewRef],
+  )
+
   return (
-    <Tr onClick={onClick} $isHighlighted={isHighlighted}>
+    <Tr
+      ref={attachRef}
+      onClick={onClick}
+      $isHighlighted={isHighlighted}
+      $isDragging={isDragging}
+      $canDrop={canDrop}
+      $isDragOver={isDragOver}
+    >
       {row.getVisibleCells().map((cell) => {
         return (
           <Td key={cell.id} $isHighlighted={isHighlighted}>
@@ -392,12 +431,14 @@ export interface GeneClustersTableProps {
   clusters: GeneCluster[]
 }
 
-export function GeneClustersTable({ species, clusters }: GeneClustersTableProps) {
+export function GeneClustersTable({ species, clusters: clusters_ }: GeneClustersTableProps) {
+  const [initialData, setInitialData] = useState(clusters_)
+
   const { t } = useTranslationSafe()
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columns] = React.useState(SPECIES_TABLE_COLUMNS)
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([...SPECIES_TABLE_COLUMN_ORDER])
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(copy(SPECIES_TABLE_COLUMN_ORDER))
   const [columnVisibility, setColumnVisibility] = React.useState({})
 
   const [selectedGene, setSelectedGene_] = useRecoilState(currentGeneIdAtom(species.id))
@@ -415,7 +456,7 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   const data = useMemo(() => {
     const keys: Extract<keyof GeneCluster, string>[] = ['mnemonic', 'name']
 
-    const results = fuzzysort.go(searchTerm, clusters, { keys, all: true }).map((result) => {
+    const results = fuzzysort.go(searchTerm, initialData, { keys, all: true }).map((result) => {
       // Increase relevance if any of the candidate's words start with any of the search terms or include one exactly
       const words = keys
         .map((key) => get(result.obj, key) as unknown)
@@ -441,14 +482,14 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
     })
 
     const relevant = sortBy(results, (result) => -result.score).map((result) => result.obj)
-    const irrelevant = clusters.filter((candidate) => !relevant.some((relevant) => relevant.id === candidate.id))
+    const irrelevant = initialData.filter((candidate) => !relevant.some((relevant) => relevant.id === candidate.id))
     return [...relevant, ...irrelevant]
-  }, [clusters, searchTerm])
+  }, [initialData, searchTerm])
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnOrder, columnVisibility },
+    state: { columnOrder, columnVisibility },
     onSortingChange: setSorting,
     onColumnOrderChange: setColumnOrder,
     onColumnVisibilityChange: setColumnVisibility,
@@ -467,14 +508,26 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
   const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0
 
-  const rowComponents = useMemo(() => {
-    return virtualRows.map((virtualRow) => {
-      const row = rows[virtualRow.index]
-      const geneId = row.getValue<number>('ID')
-      const isHighlighted = geneId === selectedGene
-      return <TableRow key={geneId} row={row} isHighlighted={isHighlighted} onClick={setSelectedGene(geneId)} />
-    })
-  }, [rows, selectedGene, setSelectedGene, virtualRows])
+  const onRowReorder = useCallback(
+    (srcRowIndex: number, dstRowIndex: number) => {
+      setInitialData(reorder(data, srcRowIndex, dstRowIndex))
+    },
+    [data],
+  )
+  const rowComponents = virtualRows.map((virtualRow) => {
+    const row = rows[virtualRow.index]
+    const geneId = row.getValue<number>('ID')
+    const isHighlighted = geneId === selectedGene
+    return (
+      <TableRow<GeneCluster>
+        key={geneId}
+        row={row}
+        isHighlighted={isHighlighted}
+        onClick={setSelectedGene(geneId)}
+        onRowReorder={onRowReorder}
+      />
+    )
+  })
 
   return (
     <DatasetSelectorContainer>
