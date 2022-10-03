@@ -130,7 +130,7 @@ const TableContainer = styled.div`
 `
 
 const Table = styled(TableBase)`
-  border-collapse: collapse;
+  border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
   width: 100%;
