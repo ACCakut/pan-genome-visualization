@@ -263,7 +263,7 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
       return null
     }
     return (
-      <ColumnHeaderContent ref={dragRef} onClick={column.getToggleSortingHandler()}>
+      <ColumnHeaderContent onClick={column.getToggleSortingHandler()}>
         {flexRender(column.columnDef.header, header.getContext())}
         {{
           asc: ' ^',
@@ -271,7 +271,7 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
         }[column.getIsSorted() as string] ?? null}
       </ColumnHeaderContent>
     )
-  }, [column, dragRef, header, isPlaceholder])
+  }, [column, header, isPlaceholder])
 
   return (
     <Th
@@ -282,7 +282,7 @@ export function DraggableColumnHeader({ header, table }: DraggableColumnHeaderPr
       $canDrop={canDrop}
       $isDragOver={isDragOver}
     >
-      <ColumnHeaderContainer>{content}</ColumnHeaderContainer>
+      <ColumnHeaderContainer ref={dragRef}>{content}</ColumnHeaderContainer>
       <ColumnHeaderResizer
         onMouseDown={header.getResizeHandler()}
         onTouchStart={header.getResizeHandler()}
