@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-identical-functions */
 import React, { useState, useRef, useMemo, ChangeEvent, useCallback, useDeferredValue } from 'react'
 import { sortBy, isString, get, isEqual } from 'lodash'
 import copy from 'fast-copy'
@@ -481,7 +480,7 @@ export function GeneClustersTable({ species, clusters: clusters_ }: GeneClusters
 
   const { t } = useTranslationSafe()
   const tableContainerRef = useRef<HTMLDivElement>(null)
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [_, setSorting] = useState<SortingState>([])
   const [columns] = React.useState(SPECIES_TABLE_COLUMNS)
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(copy(SPECIES_TABLE_COLUMN_ORDER))
   const [columnVisibility, setColumnVisibility] = React.useState({})
