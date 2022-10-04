@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { Table } from 'src/components/Table/Table'
 import { currentGeneIdAtom } from 'src/state/genes'
-import { GeneCluster, geneClusterEquals, geneClusterGetId, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
+import { GeneCluster, geneClusterGetId, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 
 const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
   {
@@ -93,7 +93,6 @@ export function GeneClustersTable({ species, clusters }: GeneClustersTableProps)
       selectedRowId={selectedRowId}
       setSelectedRowId={setSelectedRowId}
       getRowId={geneClusterGetId}
-      equals={geneClusterEquals}
     />
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
-import { SpeciesDesc, SpeciesDownloads, speciesEquals, useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
 
+import { SpeciesDesc, SpeciesDownloads, useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { Table } from 'src/components/Table/Table'
 import { SpeciesTableCellDownloadList } from './SpeciesTableCellDownloadList'
@@ -55,7 +55,6 @@ export function SpeciesTable() {
       columns_={SPECIES_TABLE_COLUMNS}
       initialColumnOrder={SPECIES_TABLE_COLUMN_ORDER}
       searchKeys={SPECIES_TABLE_SEARCH_KEYS}
-      equals={speciesEquals}
     />
   )
 }

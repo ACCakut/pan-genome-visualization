@@ -2,13 +2,14 @@ import React, { useCallback, useMemo } from 'react'
 import { Column, flexRender, Header, Table as ReactTable } from '@tanstack/react-table'
 import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
 import styled from 'styled-components'
+import { BsCaretDownFill as IconDown, BsCaretUpFill as IconUp } from 'react-icons/bs'
+
 import { GeneCluster } from 'src/hooks/useDataIndexQuery'
+import { ButtonTransparent } from 'src/components/Common/ButtonTransparent'
 import { reorderByValue } from './helpers'
 
-export interface TableHeaderProps<T> {
-  header: Header<T, unknown>
-  table: ReactTable<T>
-}
+const SORT_BUTTON_SIZE = '16px'
+const SORT_BUTTON_ICON_SIZE = '8px'
 
 const Th = styled.th<{ $width?: number; $isDragging?: boolean; $canDrop?: boolean; $isDragOver?: boolean }>`
   position: relative;
@@ -38,6 +39,20 @@ const ColumnHeaderContent = styled.span`
   background-color: transparent !important;
 `
 
+export const SortButtonWrapper = styled.div`
+  flex: 1;
+  text-align: center;
+  align-items: center;
+`
+
+export const SortButton = styled(ButtonTransparent)<{ $highlight?: boolean }>`
+  width: 30px;
+  margin: auto;
+  * {
+    fill: ${({ $highlight, theme }) => ($highlight ? theme.primary : theme.gray600)};
+  }
+`
+
 export interface ColumnHeaderResizerProps {
   $isResizing: boolean
   $deltaOffset?: number | null
@@ -60,6 +75,11 @@ const ColumnHeaderResizer = styled.span.attrs<ColumnHeaderResizerProps>(({ $isRe
   touch-action: none;
   z-index: 999;
 `
+
+export interface TableHeaderProps<T> {
+  header: Header<T, unknown>
+  table: ReactTable<T>
+}
 
 export function TableHeader<T>({ header, table }: TableHeaderProps<T>) {
   const { getState, setColumnOrder } = table
@@ -93,20 +113,40 @@ export function TableHeader<T>({ header, table }: TableHeaderProps<T>) {
     [dropRef, previewRef],
   )
 
+  const isAsc = column.getIsSorted() === 'asc'
+  const isDesc = column.getIsSorted() === 'desc'
+
+  const sortAsc = useCallback(() => {
+    column.toggleSorting(false)
+  }, [column])
+
+  const sortDesc = useCallback(() => {
+    column.toggleSorting(true)
+  }, [column])
+
   const content = useMemo(() => {
     if (isPlaceholder) {
       return null
     }
+
     return (
-      <ColumnHeaderContent onClick={column.getToggleSortingHandler()}>
-        {flexRender(column.columnDef.header, header.getContext())}
-        {{
-          asc: ' ^',
-          desc: ' v',
-        }[column.getIsSorted() as string] ?? null}
+      <ColumnHeaderContent>
+        <div className="d-flex w-100">
+          <SortButton height={SORT_BUTTON_SIZE} onClick={sortDesc} $highlight={isDesc}>
+            <IconUp size={SORT_BUTTON_ICON_SIZE} />
+          </SortButton>
+        </div>
+
+        <div className="w-100 text-center">{flexRender(column.columnDef.header, header.getContext())}</div>
+
+        <div className="d-flex w-100">
+          <SortButton height={SORT_BUTTON_SIZE} onClick={sortAsc} $highlight={isAsc}>
+            <IconDown size={SORT_BUTTON_ICON_SIZE} />
+          </SortButton>
+        </div>
       </ColumnHeaderContent>
     )
-  }, [column, header, isPlaceholder])
+  }, [column, header, isAsc, isDesc, isPlaceholder, sortAsc, sortDesc])
 
   return (
     <Th

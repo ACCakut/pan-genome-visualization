@@ -2,7 +2,7 @@ import React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
-import { MetadataEntry, metadataEntryEquals, SpeciesDesc, useSpeciesMetadata } from 'src/hooks/useDataIndexQuery'
+import { MetadataEntry, SpeciesDesc, useSpeciesMetadata } from 'src/hooks/useDataIndexQuery'
 import { Table } from '../Table/Table'
 
 export function sanitizeTsvValue(value?: string) {
@@ -77,7 +77,6 @@ export function MetadataTable({ species }: MetadataTableProps) {
       columns_={METADATA_TABLE_COLUMNS}
       initialColumnOrder={METADATA_TABLE_COLUMN_ORDER}
       searchKeys={METADATA_TABLE_SEARCH_KEYS}
-      equals={metadataEntryEquals}
     />
   )
 }

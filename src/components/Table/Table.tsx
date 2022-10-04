@@ -36,7 +36,6 @@ export interface TableProps<T, I> {
   selectedRowId?: I
   setSelectedRowId?(id: I): void
   getRowId?(item: T): I
-  equals(left: T, right: T): boolean
 }
 
 export function Table<T, I>({
@@ -49,10 +48,9 @@ export function Table<T, I>({
   selectedRowId,
   setSelectedRowId,
   getRowId,
-  equals,
 }: TableProps<T, I>) {
   const tableContainerRef = useRef<HTMLDivElement>(null)
-  const [_, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [columns] = React.useState(columns_)
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(() => copy(initialColumnOrder))
   const [columnVisibility, setColumnVisibility] = React.useState({})
@@ -96,15 +94,21 @@ export function Table<T, I>({
     })
 
     const relevant = sortBy(results, (result) => -result.score).map((result) => result.obj)
-    const irrelevant = initialData.filter((candidate) => !relevant.some((relevant) => equals(relevant, candidate)))
-    return [...relevant, ...irrelevant]
-  }, [equals, initialData, searchKeys, searchTerm])
+
+    if (relevant.length < initialData.length) {
+      setSorting([])
+    }
+
+    return [...relevant]
+  }, [initialData, searchKeys, searchTerm])
 
   const table = useReactTable({
     data,
     columns,
-    state: { columnOrder, columnVisibility },
+    state: { columnOrder, columnVisibility, sorting },
     columnResizeMode: 'onEnd',
+    enableSorting: true,
+    enableMultiSort: true,
     onSortingChange: setSorting,
     onColumnOrderChange: setColumnOrder,
     onColumnVisibilityChange: setColumnVisibility,
