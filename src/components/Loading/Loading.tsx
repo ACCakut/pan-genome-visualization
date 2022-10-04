@@ -14,12 +14,22 @@ const Container = styled.div`
 
 const SpinningLogo = styled(LogoPangenome)`
   margin: auto;
-  width: 80px;
-  height: 80px;
-  animation: spin 1s linear infinite;
-  @keyframes spin {
+  width: 100px;
+  height: 100px;
+
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
+  transform: scale(1);
+  animation: pulse 2s ease-out infinite;
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.66);
+    }
+    70% {
+      transform: scale(1);
+    }
     100% {
-      transform: rotate(360deg);
+      transform: scale(0.66);
     }
   }
 `
