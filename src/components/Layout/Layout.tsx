@@ -6,13 +6,20 @@ import { NavigationBar } from './NavigationBar'
 import { Footer } from './Footer'
 
 export const Container = styled(ContainerBase)`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   margin: 0;
   padding: 0;
+  overflow-y: scroll;
 `
 
 const Header = styled.header``
 
 const MainContent = styled.main`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   margin: 0;
 `
 

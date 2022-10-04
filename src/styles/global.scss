@@ -9,6 +9,15 @@
 
 @import './auspice';
 
+html,
+body {
+  height: 100%;
+}
+
+#__next {
+  height: 100%;
+}
+
 // Always show spinbox arrows in Chrome
 [type='number']::-webkit-inner-spin-button,
 [type='number']::-webkit-outer-spin-button {
