@@ -76,12 +76,12 @@ const ColumnHeaderResizer = styled.span.attrs<ColumnHeaderResizerProps>(({ $isRe
   z-index: 999;
 `
 
-export interface TableHeaderProps<T> {
+export interface TableColumnHeaderProps<T> {
   header: Header<T, unknown>
   table: ReactTable<T>
 }
 
-export function TableHeader<T>({ header, table }: TableHeaderProps<T>) {
+export function TableColumnHeader<T>({ header, table }: TableColumnHeaderProps<T>) {
   const { getState, setColumnOrder } = table
   const { columnOrder } = getState()
   const { column, colSpan, isPlaceholder } = header

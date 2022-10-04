@@ -25,7 +25,7 @@ import {
   Thead,
   Tr,
 } from 'src/components/Table/TableStyles'
-import { TableHeader } from './TableHeader'
+import { TableColumnHeader } from './TableColumnHeader'
 import { TableSpacer } from './TableSpacer'
 
 export interface TableProps<T, I> {
@@ -132,7 +132,7 @@ export function Table<T, I>({
   const headerComponents = table.getHeaderGroups().map((headerGroup) => (
     <Tr key={headerGroup.id}>
       {headerGroup.headers.map((header) => (
-        <TableHeader<T> key={header.id} header={header} table={table} />
+        <TableColumnHeader<T> key={header.id} header={header} table={table} />
       ))}
     </Tr>
   ))
