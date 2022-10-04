@@ -26,6 +26,7 @@ import {
   Tr,
 } from 'src/components/Table/TableStyles'
 import { TableHeader } from './TableHeader'
+import { TableSpacer } from './TableSpacer'
 
 export interface TableProps<T, I> {
   title: string
@@ -176,22 +177,4 @@ export function Table<T, I>({
       </Row>
     </TableWrapper>
   )
-}
-
-function TableSpacer({ height }: { height: number }) {
-  const component = useMemo(
-    () => (
-      <tr>
-        {/* eslint-disable-next-line react-perf/jsx-no-new-object-as-prop */}
-        <td style={{ height: `${height}px` }} />
-      </tr>
-    ),
-    [height],
-  )
-
-  if (height <= 0) {
-    return null
-  }
-
-  return component
 }
