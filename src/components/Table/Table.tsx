@@ -9,12 +9,13 @@ import {
 import copy from 'fast-copy'
 import fuzzysort from 'fuzzysort'
 import { get, isNil, isString, sortBy } from 'lodash'
-import React, { ChangeEvent, useCallback, useDeferredValue, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useDeferredValue, useMemo, useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
-import { Col, Input, Row } from 'reactstrap'
+import { Col, Row } from 'reactstrap'
 import { reorder } from 'src/components/Table/helpers'
 import { ColumnListDropdown } from 'src/components/Table/TableColumnList'
 import { TableRow } from 'src/components/Table/TableRow'
+import { SearchBox } from 'src/components/Common/SearchBox'
 import {
   TableWrapper,
   TableContainer,
@@ -57,18 +58,11 @@ export function Table<T, I>({
 
   const setSelectedRowIndexFun = useCallback((i: I) => () => setSelectedRowId?.(i), [setSelectedRowId])
 
-  const [searchTerm_, setSearchTerm] = useState('')
-  const searchTerm = useDeferredValue(searchTerm_)
-  const onSearchTermChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(event.target.value)
-    },
-    [setSearchTerm],
-  )
-
+  const [searchTerm, setSearchTerm] = useState('')
+  const searchTermDeferred = useDeferredValue(searchTerm)
   const [initialData, setInitialData] = useState(data_)
   const data = useMemo(() => {
-    const results = fuzzysort.go(searchTerm, initialData, { keys: searchKeys, all: true }).map((result) => {
+    const results = fuzzysort.go(searchTermDeferred, initialData, { keys: searchKeys, all: true }).map((result) => {
       // Increase relevance if any of the candidate's words start with any of the search terms or include one exactly
       const words = searchKeys
         .map((key) => get(result.obj, key) as unknown)
@@ -80,7 +74,7 @@ export function Table<T, I>({
         return result
       }
 
-      const searchTerms = searchTerm.split(' ')
+      const searchTerms = searchTermDeferred.split(' ')
       if (searchTerms.some((searchTerm) => words[0].startsWith(searchTerm))) {
         return { ...result, score: result.score * 0.05 }
       }
@@ -100,7 +94,7 @@ export function Table<T, I>({
     }
 
     return [...relevant]
-  }, [initialData, searchKeys, searchTerm])
+  }, [initialData, searchKeys, searchTermDeferred])
 
   const table = useReactTable({
     data,
@@ -160,18 +154,7 @@ export function Table<T, I>({
         </Col>
 
         <Col sm={5}>
-          <Input
-            type="text"
-            title={searchTitle}
-            placeholder={searchTitle}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-            data-gramm="false"
-            value={searchTerm}
-            onChange={onSearchTermChange}
-          />
+          <SearchBox searchTitle={searchTitle} searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
         </Col>
 
         <Col sm={1}>
