@@ -49,6 +49,14 @@ export interface GeneCluster {
   num_strains: number
 }
 
+export function geneClusterEquals(left: GeneCluster, right: GeneCluster): boolean {
+  return left.id === right.id
+}
+
+export function geneClusterGetId(cluster: GeneCluster) {
+  return cluster.id
+}
+
 export interface GeneClusterJson {
   created_at: string
   clusters: GeneCluster[]
