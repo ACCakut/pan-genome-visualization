@@ -1,12 +1,13 @@
 import React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useRecoilState } from 'recoil'
+
+import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { Table } from 'src/components/Table/Table'
 import { currentGeneIdAtom } from 'src/state/genes'
-
 import { GeneCluster, geneClusterEquals, geneClusterGetId, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 
-const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
+const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
   {
     id: 'ID',
     header: 'ID',
@@ -69,9 +70,9 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
   },
 ]
 
-const SPECIES_TABLE_COLUMN_ORDER = SPECIES_TABLE_COLUMNS.map((column) => column.id as string)
+const GENE_CLUSTERS_TABLE_COLUMN_ORDER = GENE_CLUSTERS_TABLE_COLUMNS.map((column) => column.id as string)
 
-const SPECIES_TABLE_SEARCH_KEYS: Extract<keyof GeneCluster, string>[] = ['mnemonic', 'name']
+const GENE_CLUSTERS_TABLE_SEARCH_KEYS: Extract<keyof GeneCluster, string>[] = ['mnemonic', 'name']
 
 export interface GeneClustersTableProps {
   species: SpeciesDesc
@@ -79,13 +80,16 @@ export interface GeneClustersTableProps {
 }
 
 export function GeneClustersTable({ species, clusters }: GeneClustersTableProps) {
+  const { t } = useTranslationSafe()
   const [selectedRowId, setSelectedRowId] = useRecoilState(currentGeneIdAtom(species.id))
   return (
     <Table
+      title={t('Select gene')}
+      searchTitle={t('Search genes')}
       data_={clusters}
-      columns_={SPECIES_TABLE_COLUMNS}
-      initialColumnOrder={SPECIES_TABLE_COLUMN_ORDER}
-      searchKeys={SPECIES_TABLE_SEARCH_KEYS}
+      columns_={GENE_CLUSTERS_TABLE_COLUMNS}
+      initialColumnOrder={GENE_CLUSTERS_TABLE_COLUMN_ORDER}
+      searchKeys={GENE_CLUSTERS_TABLE_SEARCH_KEYS}
       selectedRowId={selectedRowId}
       setSelectedRowId={setSelectedRowId}
       getRowId={geneClusterGetId}

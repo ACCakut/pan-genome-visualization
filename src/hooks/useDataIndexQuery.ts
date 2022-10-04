@@ -13,6 +13,10 @@ export interface SpeciesDesc {
   downloads?: SpeciesDownloads
 }
 
+export function speciesEquals(left: SpeciesDesc, right: SpeciesDesc): boolean {
+  return left.id === right.id
+}
+
 export interface SpeciesDownloads {
   'gene cluster json'?: string
   'metadata table'?: string
@@ -92,6 +96,10 @@ export interface MetadataEntry {
   country?: string
   host?: string
   organism?: string
+}
+
+export function metadataEntryEquals(left: MetadataEntry, right: MetadataEntry) {
+  return left.accession === right.accession
 }
 
 export function useSpeciesMetadata(speciesId: string, options?: UseAxiosQueryOptions<MetadataEntry[]>) {

@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import copy from 'fast-copy'
 import fuzzysort from 'fuzzysort'
-import { get, isString, sortBy } from 'lodash'
+import { get, isNil, isString, sortBy } from 'lodash'
 import React, { ChangeEvent, useCallback, useDeferredValue, useMemo, useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
 import { Col, Input, Row } from 'reactstrap'
@@ -24,38 +24,40 @@ import {
   Thead,
   Tr,
 } from 'src/components/Table/TableStyles'
-import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { TableHeader } from './TableHeader'
 
 export interface TableProps<T, I> {
+  title: string
+  searchTitle: string
   data_: T[]
   columns_: ColumnDef<T>[]
   initialColumnOrder: string[]
   searchKeys: Extract<keyof T, string>[]
-  selectedRowId: I
-  setSelectedRowId(id: I): void
-  getRowId(item: T): I
+  selectedRowId?: I
+  setSelectedRowId?(id: I): void
+  getRowId?(item: T): I
   equals(left: T, right: T): boolean
 }
 
 export function Table<T, I>({
+  title,
+  searchTitle,
   data_,
   columns_,
   initialColumnOrder,
+  searchKeys,
   selectedRowId,
   setSelectedRowId,
   getRowId,
-  searchKeys,
   equals,
 }: TableProps<T, I>) {
-  const { t } = useTranslationSafe()
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [_, setSorting] = useState<SortingState>([])
   const [columns] = React.useState(columns_)
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(() => copy(initialColumnOrder))
   const [columnVisibility, setColumnVisibility] = React.useState({})
 
-  const setSelectedRowIndexFun = useCallback((i: I) => () => setSelectedRowId(i), [setSelectedRowId])
+  const setSelectedRowIndexFun = useCallback((i: I) => () => setSelectedRowId?.(i), [setSelectedRowId])
 
   const [searchTerm_, setSearchTerm] = useState('')
   const searchTerm = useDeferredValue(searchTerm_)
@@ -138,16 +140,11 @@ export function Table<T, I>({
 
   const rowComponents = virtualRows.map((virtualRow) => {
     const row = rows[virtualRow.index]
-    const rowId = getRowId(row.original)
-    const isHighlighted = rowId === selectedRowId
+    const rowId = getRowId?.(row.original)
+    const isHighlighted = !isNil(rowId) && !isNil(selectedRowId) && rowId === selectedRowId
+    const onClick = rowId && setSelectedRowIndexFun(rowId)
     return (
-      <TableRow<T>
-        key={row.id}
-        row={row}
-        isHighlighted={isHighlighted}
-        onClick={setSelectedRowIndexFun(rowId)}
-        onRowReorder={onRowReorder}
-      />
+      <TableRow<T> key={row.id} row={row} isHighlighted={isHighlighted} onClick={onClick} onRowReorder={onRowReorder} />
     )
   })
 
@@ -155,14 +152,14 @@ export function Table<T, I>({
     <TableWrapper>
       <Row noGutters>
         <Col sm={6} className="d-flex">
-          <TableTitle>{t('Select a gene')}</TableTitle>
+          <TableTitle>{title}</TableTitle>
         </Col>
 
         <Col sm={5}>
           <Input
             type="text"
-            title="Search gene"
-            placeholder="Search gene"
+            title={searchTitle}
+            placeholder={searchTitle}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"

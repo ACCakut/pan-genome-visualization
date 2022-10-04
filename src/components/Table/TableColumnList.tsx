@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import copy from 'fast-copy'
 import { Column, Table as ReactTable } from '@tanstack/react-table'
 import { Reorder } from 'framer-motion'
-import { isEqual } from 'lodash'
+import { isEqual, uniqueId } from 'lodash'
 import { BsThreeDotsVertical as MenuIcon } from 'react-icons/bs'
 import { IoReorderFourOutline as IconReorder } from 'react-icons/io5'
 import { MdUndo as IconUndo } from 'react-icons/md'
@@ -63,7 +63,7 @@ export interface ColumnListProps<T> {
 
 export function ColumnList<T>({ table, initialColumnOrder }: ColumnListProps<T>) {
   const { t } = useTranslationSafe()
-  const id = 'columns-toggle-all'
+  const id = useMemo(() => uniqueId('columns-toggle-all'), [])
 
   const { columnOrder } = table.getState()
   const columns = table.getAllLeafColumns()
@@ -114,11 +114,11 @@ export interface ColumnListDropdownProps<T> {
 }
 
 export function ColumnListDropdown<T>({ table, initialColumnOrder }: ColumnListDropdownProps<T>) {
-  const id = 'menu'
   const { t } = useTranslationSafe()
   const theme = useTheme()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const toggle = useCallback(() => setDropdownOpen((prevState) => !prevState), [])
+  const id = useMemo(() => uniqueId('menu'), [])
   return (
     <>
       <Button id={id} color="link" onClick={toggle}>
