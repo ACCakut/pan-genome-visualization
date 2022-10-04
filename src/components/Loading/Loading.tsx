@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 
@@ -36,6 +36,20 @@ const SpinningLogo = styled(LogoPangenome)`
 
 function Loading() {
   const { t } = useTranslation()
+
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), 300)
+    return () => {
+      clearTimeout(timer)
+    }
+  })
+
+  if (!show) {
+    return null
+  }
+
   return (
     <Container title={t('Loading...')}>
       <SpinningLogo />
