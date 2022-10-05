@@ -1,10 +1,27 @@
 import React from 'react'
-import { Col, Row } from 'reactstrap'
 import styled from 'styled-components'
 import { Table as ReactTable } from '@tanstack/react-table'
 
 import { SearchBox } from 'src/components/Common/SearchBox'
 import { ColumnListDropdown } from 'src/components/Table/TableColumnList'
+
+export const Flex = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+`
+
+export const TitleWrapper = styled.div`
+  flex: 1 1 60%;
+`
+
+export const SearchBoxWrapper = styled.div`
+  flex: 1 0 40%;
+`
+
+export const MenuWrapper = styled.div`
+  flex: 0;
+`
 
 export const TableTitle = styled.h3`
   padding: 0;
@@ -29,18 +46,18 @@ export function TableHeading<T>({
   initialColumnOrder,
 }: TableHeadingProps<T>) {
   return (
-    <Row noGutters>
-      <Col sm={6} className="d-flex">
+    <Flex>
+      <TitleWrapper>
         <TableTitle>{title}</TableTitle>
-      </Col>
+      </TitleWrapper>
 
-      <Col sm={5}>
+      <SearchBoxWrapper>
         <SearchBox searchTitle={searchTitle} searchTerm={searchTerm} onSearchTermChange={onSearchTermChange} />
-      </Col>
+      </SearchBoxWrapper>
 
-      <Col sm={1}>
+      <MenuWrapper>
         <ColumnListDropdown table={table} initialColumnOrder={initialColumnOrder} />
-      </Col>
-    </Row>
+      </MenuWrapper>
+    </Flex>
   )
 }
