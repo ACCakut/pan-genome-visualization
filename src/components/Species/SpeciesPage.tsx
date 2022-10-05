@@ -1,4 +1,5 @@
 import React, { Suspense, useMemo } from 'react'
+import { Col, Container, Row } from 'reactstrap'
 import { useRecoilValue } from 'recoil'
 
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
@@ -37,11 +38,23 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
   }
 
   return (
-    <>
-      <h2>{`Species: ${species.name}`}</h2>
-      <GeneClustersTable species={species} clusters={geneJson.clusters} />
-      {gene && <GeneClustersSection species={species} gene={gene} />}
-    </>
+    <Container fluid>
+      <Row noGutters>
+        <Col>
+          <h2 className="text-center">{species.name}</h2>
+        </Col>
+      </Row>
+
+      <Row noGutters>
+        <Col>
+          <GeneClustersTable species={species} clusters={geneJson.clusters} />
+        </Col>
+      </Row>
+
+      <Row noGutters className="my-4">
+        <Col>{gene && <GeneClustersSection species={species} gene={gene} />}</Col>
+      </Row>
+    </Container>
   )
 }
 
@@ -56,8 +69,18 @@ export function GeneClustersSection({ species, gene }: GeneClustersSectionProps)
   }
   return (
     <Suspense fallback={LOADING}>
-      <MetadataTable species={species} />
-      <GeneClustersData species={species} gene={gene} />
+      <Container fluid>
+        <Row noGutters>
+          <Col>
+            <MetadataTable species={species} />
+          </Col>
+        </Row>
+        <Row noGutters>
+          <Col>
+            <GeneClustersData species={species} gene={gene} />
+          </Col>
+        </Row>
+      </Container>
     </Suspense>
   )
 }
@@ -72,23 +95,25 @@ export function GeneClustersData({ species, gene }: GeneClustersDataProps) {
   const { aa_aln, aa_aln_reduced, na_aln, na_aln_reduced, nwk, patterns_json, tree_json } = geneClusterData
 
   return (
-    <p>
-      {JSON.stringify(
-        {
-          species,
-          data: {
-            aa_aln,
-            aa_aln_reduced,
-            na_aln,
-            na_aln_reduced,
-            nwk,
-            patterns_json,
-            tree_json,
+    <div className="d-flex w-100 overflow-x-scroll">
+      <pre className="overflow-x-scroll bg-dark text-light">
+        {JSON.stringify(
+          {
+            species,
+            data: {
+              aa_aln,
+              aa_aln_reduced,
+              na_aln,
+              na_aln_reduced,
+              nwk,
+              patterns_json,
+              tree_json,
+            },
           },
-        },
-        null,
-        2,
-      )}
-    </p>
+          null,
+          2,
+        )}
+      </pre>
+    </div>
   )
 }
