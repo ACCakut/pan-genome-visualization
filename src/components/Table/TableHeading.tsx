@@ -13,6 +13,7 @@ export const Flex = styled.div`
 
 export const TitleWrapper = styled.div`
   flex: 1 1 60%;
+  margin: auto 0;
 `
 
 export const SearchBoxWrapper = styled.div`
