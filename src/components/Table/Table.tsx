@@ -12,19 +12,11 @@ import { get, isNil, isString, sortBy } from 'lodash'
 import React, { useCallback, useDeferredValue, useMemo, useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
 import { Col, Row } from 'reactstrap'
+
 import { reorder } from 'src/components/Table/helpers'
-import { ColumnListDropdown } from 'src/components/Table/TableColumnList'
+import { TableHeading } from 'src/components/Table/TableHeading'
 import { TableRow } from 'src/components/Table/TableRow'
-import { SearchBox } from 'src/components/Common/SearchBox'
-import {
-  TableWrapper,
-  TableContainer,
-  TableStyled,
-  TableTitle,
-  Tbody,
-  Thead,
-  Tr,
-} from 'src/components/Table/TableStyles'
+import { TableWrapper, TableContainer, TableStyled, Tbody, Thead, Tr } from 'src/components/Table/TableStyles'
 import { TableColumnHeader } from './TableColumnHeader'
 import { TableSpacer } from './TableSpacer'
 
@@ -150,16 +142,15 @@ export function Table<T, I>({
   return (
     <TableWrapper>
       <Row noGutters>
-        <Col sm={6} className="d-flex">
-          <TableTitle>{title}</TableTitle>
-        </Col>
-
-        <Col sm={5}>
-          <SearchBox searchTitle={searchTitle} searchTerm={searchTerm} onSearchTermChange={setSearchTerm} />
-        </Col>
-
-        <Col sm={1}>
-          <ColumnListDropdown table={table} initialColumnOrder={initialColumnOrder} />
+        <Col>
+          <TableHeading
+            table={table}
+            initialColumnOrder={initialColumnOrder}
+            title={title}
+            searchTitle={searchTitle}
+            searchTerm={searchTerm}
+            onSearchTermChange={setSearchTerm}
+          />
         </Col>
       </Row>
 

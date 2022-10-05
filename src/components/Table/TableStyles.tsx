@@ -10,11 +10,6 @@ export const TableWrapper = styled(Container)`
   max-width: 1000px;
 `
 
-export const TableTitle = styled.h3`
-  padding: 0;
-  margin: auto 0;
-`
-
 export const TableContainer = styled.div`
   width: 100%;
   height: 600px;
