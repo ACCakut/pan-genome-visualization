@@ -6,7 +6,7 @@ import { BsCaretDownFill as IconDown, BsCaretUpFill as IconUp } from 'react-icon
 
 import { GeneCluster } from 'src/hooks/useDataIndexQuery'
 import { ButtonTransparent } from 'src/components/Common/ButtonTransparent'
-import { reorderByValue } from './helpers'
+import { getColumnName, reorderByValue } from './helpers'
 
 const SORT_BUTTON_SIZE = '16px'
 const SORT_BUTTON_ICON_SIZE = '8px'
@@ -89,7 +89,7 @@ export function TableColumnHeader<T>({ header, table }: TableColumnHeaderProps<T
   const [{ canDrop, isDragOver }, dropRef] = useDrop({
     accept: 'column',
     drop: (draggedColumn: Column<GeneCluster>) => {
-      const newColumnOrder = reorderByValue(columnOrder, draggedColumn.id, column.id)
+      const newColumnOrder = reorderByValue(columnOrder, getColumnName(draggedColumn), getColumnName(column))
       setColumnOrder(newColumnOrder)
     },
     canDrop: () => true,

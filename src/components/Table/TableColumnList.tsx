@@ -19,6 +19,7 @@ import {
   PopoverProps,
   Row,
 } from 'reactstrap'
+import { getColumnName } from 'src/components/Table/helpers'
 import styled, { useTheme } from 'styled-components'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 
@@ -37,7 +38,8 @@ export interface ColumnListItemProps<T> {
 
 export function ColumnListItem<T>({ column }: ColumnListItemProps<T>) {
   const theme = useTheme()
-  const id = useMemo(() => `column-toggle-${column.id}`, [column.id])
+  const name = getColumnName(column)
+  const id = useMemo(() => `column-toggle-${name}`, [name])
 
   return (
     <FormGroup check inline>
@@ -50,7 +52,7 @@ export function ColumnListItem<T>({ column }: ColumnListItemProps<T>) {
         onChange={column.getToggleVisibilityHandler()}
       />
       <Label htmlFor={id} check>
-        {column.id}
+        {name}
       </Label>
     </FormGroup>
   )
@@ -99,11 +101,14 @@ export function ColumnList<T>({ table, initialColumnOrder }: ColumnListProps<T>)
           </Button>
         </FormGroup>
       </ColumnListLi>
-      {columns.map((column) => (
-        <ColumnListLi key={column.id} value={column.id}>
-          <ColumnListItem key={column.id} column={column} />
-        </ColumnListLi>
-      ))}
+      {columns.map((column) => {
+        const name = getColumnName(column)
+        return (
+          <ColumnListLi key={name} value={name}>
+            <ColumnListItem column={column} />
+          </ColumnListLi>
+        )
+      })}
     </ColumnListUl>
   )
 }

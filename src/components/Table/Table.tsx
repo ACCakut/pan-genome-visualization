@@ -5,20 +5,48 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  RowData,
 } from '@tanstack/react-table'
 import copy from 'fast-copy'
 import fuzzysort from 'fuzzysort'
-import { get, isNil, isString, sortBy } from 'lodash'
+import { get, isNil, isString, sortBy, toString } from 'lodash'
 import React, { useCallback, useDeferredValue, useMemo, useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
 import { Col, Row } from 'reactstrap'
 
-import { reorder } from 'src/components/Table/helpers'
+import { getColumnDefName, reorder } from 'src/components/Table/helpers'
 import { TableHeading } from 'src/components/Table/TableHeading'
 import { TableRow } from 'src/components/Table/TableRow'
 import { TableWrapper, TableContainer, TableStyled, Tbody, Thead, Tr } from 'src/components/Table/TableStyles'
 import { TableColumnHeader } from './TableColumnHeader'
 import { TableSpacer } from './TableSpacer'
+
+export function sanitizeValue(value?: unknown) {
+  if (isNil(value)) {
+    return undefined
+  }
+  const s = toString(value).toLowerCase().trim()
+  if (['', 'unknown', '?', 'n/a', 'nan', 'inf', 'null', 'undefined', 'none'].includes(s)) {
+    return undefined
+  }
+  return value
+}
+
+function preprocessColumns<T extends RowData>(columnDefs: ColumnDef<T>[]): ColumnDef<T>[] {
+  return columnDefs.map((col) => {
+    const id = getColumnDefName(col)
+    if (!id) {
+      throw new Error('Either `header` or `id` required fro column def')
+    }
+
+    // HACK: ColumnDef type does not seem to have accessorKey and accessorFn, so here is a bit of hackery to extract them safely:
+    const accessorKey = get(col, 'accessorKey') as string | undefined
+    const accessorFnOrig = get(col, 'accessorFn') as ((val: unknown) => unknown) | undefined
+    const accessorFn = (val: unknown) => sanitizeValue(get(val, accessorKey ?? '') ?? accessorFnOrig?.(val))
+
+    return { ...col, sortUndefined: 1, id, accessorFn }
+  })
+}
 
 export interface TableProps<T, I> {
   title: string
@@ -45,7 +73,7 @@ export function Table<T, I>({
 }: TableProps<T, I>) {
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columns] = React.useState(columns_)
+  const [columns] = React.useState(preprocessColumns(columns_))
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(() => copy(initialColumnOrder))
   const [columnVisibility, setColumnVisibility] = React.useState({})
 

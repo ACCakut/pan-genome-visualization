@@ -1,56 +1,43 @@
 import React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
-
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { MetadataEntry, SpeciesDesc, useSpeciesMetadata } from 'src/hooks/useDataIndexQuery'
-import { Table } from '../Table/Table'
-
-export function sanitizeTsvValue(value?: string) {
-  if (!value || value.toString().toLowerCase().trim() === 'unknown') {
-    return ''
-  }
-  return value
-}
+import { Table } from 'src/components/Table/Table'
+import { getColumnDefNames } from 'src/components/Table/helpers'
 
 const METADATA_TABLE_COLUMNS: ColumnDef<MetadataEntry>[] = [
   {
-    id: 'Accession',
     header: 'Accession',
-    accessorFn: (meta) => sanitizeTsvValue(meta.accession),
+    accessorFn: (meta) => meta.accession,
     size: 100,
   },
   {
-    id: 'Strain',
     header: 'Strain',
-    accessorFn: (meta) => sanitizeTsvValue(meta.strain),
+    accessorFn: (meta) => meta.strain,
     size: 100,
   },
   {
-    id: 'Collection date',
     header: 'Collection date',
-    accessorFn: (meta) => sanitizeTsvValue(meta.collection_date),
+    accessorFn: (meta) => meta.collection_date,
     size: 100,
   },
   {
-    id: 'Country',
     header: 'Country',
-    accessorFn: (meta) => sanitizeTsvValue(meta.country),
+    accessorFn: (meta) => meta.country,
     size: 100,
   },
   {
-    id: 'Host',
     header: 'Host',
-    accessorFn: (meta) => sanitizeTsvValue(meta.host),
+    accessorFn: (meta) => meta.host,
     size: 100,
   },
   {
-    id: 'Organism',
     header: 'Organism',
-    accessorFn: (meta) => sanitizeTsvValue(meta.organism),
+    accessorFn: (meta) => meta.organism,
   },
 ]
 
-const METADATA_TABLE_COLUMN_ORDER = METADATA_TABLE_COLUMNS.map((column) => column.id as string)
+const METADATA_TABLE_COLUMN_ORDER = getColumnDefNames(METADATA_TABLE_COLUMNS)
 
 const METADATA_TABLE_SEARCH_KEYS: Extract<keyof MetadataEntry, string>[] = [
   'accession',
