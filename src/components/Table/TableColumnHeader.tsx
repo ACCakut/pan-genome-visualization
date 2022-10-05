@@ -113,6 +113,7 @@ export function TableColumnHeader<T>({ header, table }: TableColumnHeaderProps<T
     [dropRef, previewRef],
   )
 
+  const canSort = column.getCanSort()
   const isAsc = column.getIsSorted() === 'asc'
   const isDesc = column.getIsSorted() === 'desc'
 
@@ -131,22 +132,26 @@ export function TableColumnHeader<T>({ header, table }: TableColumnHeaderProps<T
 
     return (
       <ColumnHeaderContent>
-        <div className="d-flex w-100">
-          <SortButton height={SORT_BUTTON_SIZE} onClick={sortDesc} $highlight={isDesc}>
-            <IconUp size={SORT_BUTTON_ICON_SIZE} />
-          </SortButton>
-        </div>
+        {canSort && (
+          <div className="d-flex w-100">
+            <SortButton height={SORT_BUTTON_SIZE} onClick={sortDesc} $highlight={isDesc}>
+              <IconUp size={SORT_BUTTON_ICON_SIZE} />
+            </SortButton>
+          </div>
+        )}
 
         <div className="w-100 text-center">{flexRender(column.columnDef.header, header.getContext())}</div>
 
-        <div className="d-flex w-100">
-          <SortButton height={SORT_BUTTON_SIZE} onClick={sortAsc} $highlight={isAsc}>
-            <IconDown size={SORT_BUTTON_ICON_SIZE} />
-          </SortButton>
-        </div>
+        {canSort && (
+          <div className="d-flex w-100">
+            <SortButton height={SORT_BUTTON_SIZE} onClick={sortAsc} $highlight={isAsc}>
+              <IconDown size={SORT_BUTTON_ICON_SIZE} />
+            </SortButton>
+          </div>
+        )}
       </ColumnHeaderContent>
     )
-  }, [column, header, isAsc, isDesc, isPlaceholder, sortAsc, sortDesc])
+  }, [canSort, column.columnDef.header, header, isAsc, isDesc, isPlaceholder, sortAsc, sortDesc])
 
   return (
     <Th
