@@ -1,5 +1,7 @@
+import React, { ReactNode } from 'react'
 import { Container, Table as TableBase } from 'reactstrap'
 import styled from 'styled-components'
+import { CellContext } from '@tanstack/react-table'
 
 export const TableWrapper = styled(Container)`
   display: flex;
@@ -35,19 +37,38 @@ export const Tbody = styled.tbody``
 
 export const Tr = styled.tr<{
   $isHighlighted?: boolean
+  $isEven?: boolean
   $isDragging?: boolean
   $canDrop?: boolean
   $isDragOver?: boolean
 }>`
   cursor: pointer;
-  background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
+  background-color: ${({ $isHighlighted, $isEven, theme }) =>
+    $isHighlighted ? theme.primary : $isEven ? theme.gray100 : theme.gray250};
   outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
   opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1.0)};
+  line-height: 1;
 `
 
 export const Td = styled.td<{ $isHighlighted?: boolean }>`
-  padding: 6px;
   overflow: hidden;
   white-space: nowrap;
   color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.white} !important;
+  border-left: ${(props) => !props.$isHighlighted && `1px solid ${props.theme.gray300}`};
 `
+
+export const TextCenter = styled.div`
+  text-align: center;
+`
+
+export const TextRight = styled.div`
+  text-align: right;
+`
+
+export function alignCenter<T, U>(context: CellContext<T, U>) {
+  return <TextCenter>{context.getValue<ReactNode>()}</TextCenter>
+}
+
+export function alignRight<T, U>(context: CellContext<T, U>) {
+  return <TextRight>{context.getValue<ReactNode>()}</TextRight>
+}

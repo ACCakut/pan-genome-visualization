@@ -1,6 +1,7 @@
 import React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useRecoilState } from 'recoil'
+import { alignCenter, alignRight } from 'src/components/Table/TableStyles'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { Table } from 'src/components/Table/Table'
@@ -15,12 +16,14 @@ const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 50,
     minSize: 40,
     maxSize: 200,
+    cell: alignRight,
   },
   {
     id: 'Mnemonic',
     header: 'Mnemonic',
     accessorFn: (gene) => gene.mnemonic,
     size: 100,
+    cell: alignCenter,
   },
   {
     id: 'Name',
@@ -35,6 +38,7 @@ const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 60,
     minSize: 50,
     maxSize: 200,
+    cell: alignRight,
   },
   {
     id: 'Duplicated',
@@ -43,6 +47,7 @@ const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 80,
     minSize: 50,
     maxSize: 200,
+    cell: alignCenter,
   },
   {
     id: 'Events',
@@ -51,6 +56,7 @@ const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 50,
     minSize: 30,
     maxSize: 200,
+    cell: alignRight,
   },
   {
     id: 'Diversity',
@@ -67,6 +73,7 @@ const GENE_CLUSTERS_TABLE_COLUMNS: ColumnDef<GeneCluster>[] = [
     size: 60,
     minSize: 50,
     maxSize: 200,
+    cell: alignRight,
   },
 ]
 

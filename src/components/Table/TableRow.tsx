@@ -4,13 +4,14 @@ import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
 import { Td, Tr } from 'src/components/Table/TableStyles'
 
 export interface TableRowProps<T> {
+  index: number
   row: ReactTableRow<T>
   isHighlighted: boolean
   onClick?: () => void
   onRowReorder: (srcRowIndex: number, dstRowIndex: number) => void
 }
 
-export function TableRow<T>({ row, isHighlighted, onClick, onRowReorder }: TableRowProps<T>) {
+export function TableRow<T>({ index, row, isHighlighted, onClick, onRowReorder }: TableRowProps<T>) {
   const [{ canDrop, isDragOver }, dropRef] = useDrop({
     accept: 'row',
     drop: (draggedRow: ReactTableRow<T>) => onRowReorder(draggedRow.index, row.index),
@@ -41,6 +42,7 @@ export function TableRow<T>({ row, isHighlighted, onClick, onRowReorder }: Table
       ref={attachRef}
       onClick={onClick}
       $isHighlighted={isHighlighted}
+      $isEven={index % 2 === 0}
       $isDragging={isDragging}
       $canDrop={canDrop}
       $isDragOver={isDragOver}

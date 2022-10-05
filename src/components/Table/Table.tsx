@@ -129,13 +129,20 @@ export function Table<T, I>({
     </Tr>
   ))
 
-  const rowComponents = virtualRows.map((virtualRow) => {
+  const rowComponents = virtualRows.map((virtualRow, i) => {
     const row = rows[virtualRow.index]
     const rowId = getRowId?.(row.original)
     const isHighlighted = !isNil(rowId) && !isNil(selectedRowId) && rowId === selectedRowId
     const onClick = rowId && setSelectedRowIndexFun(rowId)
     return (
-      <TableRow<T> key={row.id} row={row} isHighlighted={isHighlighted} onClick={onClick} onRowReorder={onRowReorder} />
+      <TableRow<T>
+        key={row.id}
+        row={row}
+        index={i}
+        isHighlighted={isHighlighted}
+        onClick={onClick}
+        onRowReorder={onRowReorder}
+      />
     )
   })
 
