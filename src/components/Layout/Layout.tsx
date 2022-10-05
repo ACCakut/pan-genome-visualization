@@ -14,8 +14,6 @@ export const Container = styled(ContainerBase)`
   overflow-y: scroll;
 `
 
-const Header = styled.header``
-
 const MainContent = styled.main`
   display: flex;
   flex-direction: column;
@@ -26,9 +24,7 @@ const MainContent = styled.main`
 export function Layout({ children }: PropsWithChildren<HTMLProps<HTMLDivElement>>) {
   return (
     <Container fluid>
-      <Header>
-        <NavigationBar />
-      </Header>
+      <NavigationBar />
 
       <MainContent>{children}</MainContent>
 

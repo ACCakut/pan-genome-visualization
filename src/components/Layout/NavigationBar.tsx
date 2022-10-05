@@ -20,8 +20,16 @@ const navLinksLeft: Record<string, string> = {
 }
 
 export const Navbar = styled(NavbarBase)`
-  box-shadow: ${({ theme }) => theme.shadows.medium};
+  position: sticky;
+  height: 40px;
+  top: 0;
+  width: 100%;
+  padding: 6px 10px;
+  box-shadow: ${(props) => props.theme.shadows.medium};
   margin-bottom: 1rem;
+  z-index: 100;
+  background-color: ${(props) => props.theme.white};
+  opacity: 1;
 `
 
 export const Nav = styled(NavBase)``

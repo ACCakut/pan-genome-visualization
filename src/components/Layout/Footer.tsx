@@ -22,6 +22,9 @@ const FooterContainer = styled(Container)`
   bottom: 0;
   padding: 6px 10px;
   box-shadow: ${(props) => props.theme.shadows.medium};
+  z-index: 100;
+  background-color: ${(props) => props.theme.white};
+  opacity: 1;
 `
 
 const CopyrightText = styled.div`
