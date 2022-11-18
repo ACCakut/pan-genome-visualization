@@ -42,9 +42,9 @@ def tar_add(tar, filepath):
 def tar_add_files(tar, gene_cluster_dir_path, gene_cluster_name):
     return {
         "aa_aln": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_aa_aln.fa")),
-        # "aa_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_aa_aln_reduced.fa")),
+        "aa_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_aa_aln_reduced.fa")),
         "na_aln": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_na_aln.fa")),
-        # "na_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_na_aln_reduced.fa")),
+        "na_aln_reduced": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_na_aln_reduced.fa")),
         "nwk": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}.nwk")),
         "patterns_json": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_patterns.json")),
         "tree_json": tar_add(tar, join(gene_cluster_dir_path, f"{gene_cluster_name}_tree.json")),
