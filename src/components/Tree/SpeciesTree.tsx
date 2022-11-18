@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
+import { Card, CardBody, CardHeader } from 'reactstrap'
 import styled from 'styled-components'
 import * as d3 from 'd3'
 
@@ -60,8 +61,15 @@ export function SpeciesTree({ species }: TreeProps) {
   }, [treeJson, width, height])
 
   return (
-    <div className="w-100 h-100" ref={containerRef}>
-      <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} ref={svgRef} />
-    </div>
+    <Card className="w-100 h-100">
+      <CardHeader>
+        <h4>{t('Strain tree (SNPs in all core genes)')}</h4>
+      </CardHeader>
+      <CardBody>
+        <div className="w-100 h-100" ref={containerRef}>
+          <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} ref={svgRef} />
+        </div>
+      </CardBody>
+    </Card>
   )
 }
