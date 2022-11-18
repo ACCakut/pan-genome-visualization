@@ -3,12 +3,13 @@ import { Col, Container, Row } from 'reactstrap'
 import { useRecoilValue } from 'recoil'
 
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
+import { currentGeneIdAtom } from 'src/state/genes'
 import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
+import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
-import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
-import { currentGeneIdAtom } from 'src/state/genes'
-import { MetadataTable } from './MetadataTable'
+import { Tree } from 'src/components/Tree/Tree'
+import { MetadataTable } from 'src/components/Species/MetadataTable'
 
 export interface SpeciesPageProps {
   species: SpeciesDesc
@@ -70,6 +71,12 @@ export function GeneClustersSection({ species, gene }: GeneClustersSectionProps)
   return (
     <Suspense fallback={LOADING}>
       <Container fluid>
+        <Row noGutters>
+          <Col>
+            <Tree species={species} gene={gene} />
+          </Col>
+        </Row>
+
         <Row noGutters>
           <Col>
             <MetadataTable species={species} />

@@ -107,6 +107,29 @@ export function useSpeciesMetadata(speciesId: string, options?: UseAxiosQueryOpt
   return useAxiosCsvQuery<MetadataEntry>(url, '\t', options)
 }
 
+export function useSpeciesTreeJson(speciesId: string, options?: UseAxiosQueryOptions<MetadataEntry[]>) {
+  const url = useMemo(() => urljoin(getDataRootUrl(), 'dataset', speciesId, 'coreGenomeTree.json'), [speciesId])
+  return useAxiosQuery(url, options)
+}
+
+export function useGeneTreeJson(
+  species: SpeciesDesc,
+  gene: GeneCluster,
+  options?: UseAxiosQueryOptions<MetadataEntry[]>,
+) {
+  const treeJsonFile = gene?.archive_files?.tree_json
+  if (!treeJsonFile) {
+    throw new Error(
+      `Unable to find gene tree JSON for species '${species.name}' and gene '${gene.name}' (gene id ${gene.id})`,
+    )
+  }
+  const url = useMemo(
+    () => urljoin(getDataRootUrl(), 'dataset', species.id, 'geneCluster', treeJsonFile),
+    [species.id, treeJsonFile],
+  )
+  return useAxiosQuery(url, options)
+}
+
 export interface GeneClusterData {
   aa_aln?: string
   aa_aln_reduced?: string
