@@ -23,11 +23,11 @@ aws s3 sync --only-show-errors --delete --cache-control "no-cache" \
   --exclude "*" --include "*.gz" \
   . "s3://${S3_BUCKET}"
 
-#echo "Upload non-gz"
-#aws s3 sync --only-show-errors --delete --cache-control "no-cache" \
-#  --metadata-directive REPLACE \
-#  --exclude "*.gz" \
-#  . "s3://${S3_BUCKET}"
+echo "Upload non-gz"
+aws s3 sync --only-show-errors --delete --cache-control "no-cache" \
+  --metadata-directive REPLACE \
+  --exclude "*.gz" \
+  . "s3://${S3_BUCKET}"
 
 # # Here is a slightly parallel version
 #
