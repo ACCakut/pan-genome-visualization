@@ -51,8 +51,6 @@ var species_dt = {
    "Bifidobacterium_bifidum",
    "Bifidobacterium_breve",
    "Bifidobacterium_longum",
-   "Blattabacterium_cuenoti",
-   "Blochmannia_endosymbiont",
    "Bordetella_bronchiseptica",
    "Bordetella_hinzii",
    "Bordetella_holmesii",
@@ -64,7 +62,6 @@ var species_dt = {
    "Brucella_abortus",
    "Brucella_melitensis",
    "Brucella_suis",
-   "Buchnera_aphidicola",
    "Burkholderia_cenocepacia",
    "Burkholderia_cepacia",
    "Burkholderia_glumae",
@@ -77,12 +74,8 @@ var species_dt = {
    "Campylobacter_fetus",
    "Campylobacter_jejuni",
    "Campylobacter_lari",
-   "Candidatus_Blochmannia",
-   "Candidatus_Carsonella",
    "Candidatus_Liberibacter",
-   "Candidatus_Planktophila",
    "Candidatus_Portiera",
-   "Candidatus_Sulcia",
    "Chlamydia_abortus",
    "Chlamydia_muridarum",
    "Chlamydia_pneumoniae",
@@ -204,7 +197,6 @@ var species_dt = {
    "Prevotella_intermedia",
    "Prevotella_melaninogenica",
    "Priestia_megaterium",
-   "Prochlorococcus_marinus",
    "Propionibacterium_freudenreichii",
    "Proteus_mirabilis",
    "Proteus_terrae",
@@ -269,7 +261,6 @@ var species_dt = {
    "Vibrio_vulnificus",
    "Weissella_cibaria",
    "Weizmannia_coagulans",
-   "Wolbachia_endosymbiont",
    "Xanthomonas_arboricola",
    "Xanthomonas_campestris",
    "Xanthomonas_citri",
@@ -342,8 +333,6 @@ var species_dt = {
  "Bifidobacterium_bifidum": "Bifidobacterium bifidum (11)",
  "Bifidobacterium_breve": "Bifidobacterium breve (41)",
  "Bifidobacterium_longum": "Bifidobacterium longum (39)",
- "Blattabacterium_cuenoti": "Blattabacterium cuenoti (20)",
- "Blochmannia_endosymbiont": "Blochmannia endosymbiont (12)",
  "Bordetella_bronchiseptica": "Bordetella bronchiseptica (20)",
  "Bordetella_hinzii": "Bordetella hinzii (16)",
  "Bordetella_holmesii": "Bordetella holmesii (33)",
@@ -355,7 +344,6 @@ var species_dt = {
  "Brucella_abortus": "Brucella abortus (19)",
  "Brucella_melitensis": "Brucella melitensis (32)",
  "Brucella_suis": "Brucella suis (19)",
- "Buchnera_aphidicola": "Buchnera aphidicola (32)",
  "Burkholderia_cenocepacia": "Burkholderia cenocepacia (22)",
  "Burkholderia_cepacia": "Burkholderia cepacia (15)",
  "Burkholderia_glumae": "Burkholderia glumae (10)",
@@ -368,12 +356,8 @@ var species_dt = {
  "Campylobacter_fetus": "Campylobacter fetus (20)",
  "Campylobacter_jejuni": "Campylobacter jejuni (120)",
  "Campylobacter_lari": "Campylobacter lari (10)",
- "Candidatus_Blochmannia": "Candidatus Blochmannia (9)",
- "Candidatus_Carsonella": "Candidatus Carsonella (9)",
  "Candidatus_Liberibacter": "Candidatus Liberibacter (10)",
- "Candidatus_Planktophila": "Candidatus Planktophila (11)",
  "Candidatus_Portiera": "Candidatus Portiera (11)",
- "Candidatus_Sulcia": "Candidatus Sulcia (28)",
  "Chlamydia_abortus": "Chlamydia abortus (9)",
  "Chlamydia_muridarum": "Chlamydia muridarum (20)",
  "Chlamydia_pneumoniae": "Chlamydia pneumoniae (10)",
@@ -495,7 +479,6 @@ var species_dt = {
  "Prevotella_intermedia": "Prevotella intermedia (12)",
  "Prevotella_melaninogenica": "Prevotella melaninogenica (12)",
  "Priestia_megaterium": "Priestia megaterium (28)",
- "Prochlorococcus_marinus": "Prochlorococcus marinus (9)",
  "Propionibacterium_freudenreichii": "Propionibacterium freudenreichii (16)",
  "Proteus_mirabilis": "Proteus mirabilis (42)",
  "Proteus_terrae": "Proteus terrae (10)",
@@ -560,7 +543,6 @@ var species_dt = {
  "Vibrio_vulnificus": "Vibrio vulnificus (20)",
  "Weissella_cibaria": "Weissella cibaria (11)",
  "Weizmannia_coagulans": "Weizmannia coagulans (13)",
- "Wolbachia_endosymbiont": "Wolbachia endosymbiont (27)",
  "Xanthomonas_arboricola": "Xanthomonas arboricola (17)",
  "Xanthomonas_campestris": "Xanthomonas campestris (22)",
  "Xanthomonas_citri": "Xanthomonas citri (46)",
@@ -741,14 +723,6 @@ var species_search_dt = [
   "linkName": "Bifidobacterium_longum"
  },
  {
-  "species": "Blattabacterium cuenoti",
-  "linkName": "Blattabacterium_cuenoti"
- },
- {
-  "species": "Blochmannia endosymbiont",
-  "linkName": "Blochmannia_endosymbiont"
- },
- {
   "species": "Bordetella bronchiseptica",
   "linkName": "Bordetella_bronchiseptica"
  },
@@ -791,10 +765,6 @@ var species_search_dt = [
  {
   "species": "Brucella suis",
   "linkName": "Brucella_suis"
- },
- {
-  "species": "Buchnera aphidicola",
-  "linkName": "Buchnera_aphidicola"
  },
  {
   "species": "Burkholderia cenocepacia",
@@ -845,28 +815,12 @@ var species_search_dt = [
   "linkName": "Campylobacter_lari"
  },
  {
-  "species": "Candidatus Blochmannia",
-  "linkName": "Candidatus_Blochmannia"
- },
- {
-  "species": "Candidatus Carsonella",
-  "linkName": "Candidatus_Carsonella"
- },
- {
   "species": "Candidatus Liberibacter",
   "linkName": "Candidatus_Liberibacter"
  },
  {
-  "species": "Candidatus Planktophila",
-  "linkName": "Candidatus_Planktophila"
- },
- {
   "species": "Candidatus Portiera",
   "linkName": "Candidatus_Portiera"
- },
- {
-  "species": "Candidatus Sulcia",
-  "linkName": "Candidatus_Sulcia"
  },
  {
   "species": "Chlamydia abortus",
@@ -1353,10 +1307,6 @@ var species_search_dt = [
   "linkName": "Priestia_megaterium"
  },
  {
-  "species": "Prochlorococcus marinus",
-  "linkName": "Prochlorococcus_marinus"
- },
- {
   "species": "Propionibacterium freudenreichii",
   "linkName": "Propionibacterium_freudenreichii"
  },
@@ -1611,10 +1561,6 @@ var species_search_dt = [
  {
   "species": "Weizmannia coagulans",
   "linkName": "Weizmannia_coagulans"
- },
- {
-  "species": "Wolbachia endosymbiont",
-  "linkName": "Wolbachia_endosymbiont"
  },
  {
   "species": "Xanthomonas arboricola",

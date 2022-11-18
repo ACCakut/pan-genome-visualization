@@ -452,28 +452,6 @@
             "core gene alignments": "dataset/Bifidobacterium_longum/core_gene_alignments.zip"
         },
         {
-            "panX link": "Blattabacterium_cuenoti",
-            "#strains": "20",
-            "gene cluster json": "dataset/Blattabacterium_cuenoti/geneCluster.json",
-            "metadata table": "dataset/Blattabacterium_cuenoti/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Blattabacterium_cuenoti/strain_tree.nwk",
-            "all gene alignments": "dataset/Blattabacterium_cuenoti/all_gene_alignments.zip",
-            "species name": "Blattabacterium cuenoti",
-            "core gene alignments": "dataset/Blattabacterium_cuenoti/core_gene_alignments.zip"
-        },
-        {
-            "panX link": "Blochmannia_endosymbiont",
-            "#strains": "12",
-            "gene cluster json": "dataset/Blochmannia_endosymbiont/geneCluster.json",
-            "metadata table": "dataset/Blochmannia_endosymbiont/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Blochmannia_endosymbiont/strain_tree.nwk",
-            "all gene alignments": "dataset/Blochmannia_endosymbiont/all_gene_alignments.zip",
-            "species name": "Blochmannia endosymbiont",
-            "core gene alignments": "dataset/Blochmannia_endosymbiont/core_gene_alignments.zip"
-        },
-        {
             "panX link": "Bordetella_bronchiseptica",
             "#strains": "20",
             "gene cluster json": "dataset/Bordetella_bronchiseptica/geneCluster.json",
@@ -593,17 +571,6 @@
             "all gene alignments": "dataset/Brucella_suis/all_gene_alignments.zip",
             "species name": "Brucella suis",
             "core gene alignments": "dataset/Brucella_suis/core_gene_alignments.zip"
-        },
-        {
-            "panX link": "Buchnera_aphidicola",
-            "#strains": "32",
-            "gene cluster json": "dataset/Buchnera_aphidicola/geneCluster.json",
-            "metadata table": "dataset/Buchnera_aphidicola/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Buchnera_aphidicola/strain_tree.nwk",
-            "all gene alignments": "dataset/Buchnera_aphidicola/all_gene_alignments.zip",
-            "species name": "Buchnera aphidicola",
-            "core gene alignments": "dataset/Buchnera_aphidicola/core_gene_alignments.zip"
         },
         {
             "panX link": "Burkholderia_cenocepacia",
@@ -738,28 +705,6 @@
             "core gene alignments": "dataset/Campylobacter_lari/core_gene_alignments.zip"
         },
         {
-            "panX link": "Candidatus_Blochmannia",
-            "#strains": "9",
-            "gene cluster json": "dataset/Candidatus_Blochmannia/geneCluster.json",
-            "metadata table": "dataset/Candidatus_Blochmannia/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Candidatus_Blochmannia/strain_tree.nwk",
-            "all gene alignments": "dataset/Candidatus_Blochmannia/all_gene_alignments.zip",
-            "species name": "Candidatus Blochmannia",
-            "core gene alignments": "dataset/Candidatus_Blochmannia/core_gene_alignments.zip"
-        },
-        {
-            "panX link": "Candidatus_Carsonella",
-            "#strains": "9",
-            "gene cluster json": "dataset/Candidatus_Carsonella/geneCluster.json",
-            "metadata table": "dataset/Candidatus_Carsonella/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Candidatus_Carsonella/strain_tree.nwk",
-            "all gene alignments": "dataset/Candidatus_Carsonella/all_gene_alignments.zip",
-            "species name": "Candidatus Carsonella",
-            "core gene alignments": "dataset/Candidatus_Carsonella/core_gene_alignments.zip"
-        },
-        {
             "panX link": "Candidatus_Liberibacter",
             "#strains": "10",
             "gene cluster json": "dataset/Candidatus_Liberibacter/geneCluster.json",
@@ -771,17 +716,6 @@
             "core gene alignments": "dataset/Candidatus_Liberibacter/core_gene_alignments.zip"
         },
         {
-            "panX link": "Candidatus_Planktophila",
-            "#strains": "11",
-            "gene cluster json": "dataset/Candidatus_Planktophila/geneCluster.json",
-            "metadata table": "dataset/Candidatus_Planktophila/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Candidatus_Planktophila/strain_tree.nwk",
-            "all gene alignments": "dataset/Candidatus_Planktophila/all_gene_alignments.zip",
-            "species name": "Candidatus Planktophila",
-            "core gene alignments": "dataset/Candidatus_Planktophila/core_gene_alignments.zip"
-        },
-        {
             "panX link": "Candidatus_Portiera",
             "#strains": "11",
             "gene cluster json": "dataset/Candidatus_Portiera/geneCluster.json",
@@ -791,17 +725,6 @@
             "all gene alignments": "dataset/Candidatus_Portiera/all_gene_alignments.zip",
             "species name": "Candidatus Portiera",
             "core gene alignments": "dataset/Candidatus_Portiera/core_gene_alignments.zip"
-        },
-        {
-            "panX link": "Candidatus_Sulcia",
-            "#strains": "28",
-            "gene cluster json": "dataset/Candidatus_Sulcia/geneCluster.json",
-            "metadata table": "dataset/Candidatus_Sulcia/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Candidatus_Sulcia/strain_tree.nwk",
-            "all gene alignments": "dataset/Candidatus_Sulcia/all_gene_alignments.zip",
-            "species name": "Candidatus Sulcia",
-            "core gene alignments": "dataset/Candidatus_Sulcia/core_gene_alignments.zip"
         },
         {
             "panX link": "Chlamydia_abortus",
@@ -2135,17 +2058,6 @@
             "core gene alignments": "dataset/Priestia_megaterium/core_gene_alignments.zip"
         },
         {
-            "panX link": "Prochlorococcus_marinus",
-            "#strains": "9",
-            "gene cluster json": "dataset/Prochlorococcus_marinus/geneCluster.json",
-            "metadata table": "dataset/Prochlorococcus_marinus/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Prochlorococcus_marinus/strain_tree.nwk",
-            "all gene alignments": "dataset/Prochlorococcus_marinus/all_gene_alignments.zip",
-            "species name": "Prochlorococcus marinus",
-            "core gene alignments": "dataset/Prochlorococcus_marinus/core_gene_alignments.zip"
-        },
-        {
             "panX link": "Propionibacterium_freudenreichii",
             "#strains": "16",
             "gene cluster json": "dataset/Propionibacterium_freudenreichii/geneCluster.json",
@@ -2848,17 +2760,6 @@
             "all gene alignments": "dataset/Weizmannia_coagulans/all_gene_alignments.zip",
             "species name": "Weizmannia coagulans",
             "core gene alignments": "dataset/Weizmannia_coagulans/core_gene_alignments.zip"
-        },
-        {
-            "panX link": "Wolbachia_endosymbiont",
-            "#strains": "27",
-            "gene cluster json": "dataset/Wolbachia_endosymbiont/geneCluster.json",
-            "metadata table": "dataset/Wolbachia_endosymbiont/metainfo.tsv",
-            "source": "RefSeq",
-            "strain/species tree": "dataset/Wolbachia_endosymbiont/strain_tree.nwk",
-            "all gene alignments": "dataset/Wolbachia_endosymbiont/all_gene_alignments.zip",
-            "species name": "Wolbachia endosymbiont",
-            "core gene alignments": "dataset/Wolbachia_endosymbiont/core_gene_alignments.zip"
         },
         {
             "panX link": "Xanthomonas_arboricola",
