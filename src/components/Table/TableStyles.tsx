@@ -37,17 +37,23 @@ export const Tbody = styled.tbody``
 
 export const Tr = styled.tr<{
   $isHighlighted?: boolean
-  $isEven?: boolean
   $isDragging?: boolean
   $canDrop?: boolean
   $isDragOver?: boolean
 }>`
   cursor: pointer;
-  background-color: ${({ $isHighlighted, $isEven, theme }) =>
-    $isHighlighted ? theme.primary : $isEven ? theme.gray100 : theme.gray250};
+  background-color: ${({ $isHighlighted, theme }) => $isHighlighted && theme.primary};
   outline: ${({ $isDragOver, theme }) => $isDragOver && theme.outline.drop};
   opacity: ${({ $isDragging }) => ($isDragging ? 0.5 : 1.0)};
   line-height: 1;
+
+  :nth-child(odd) {
+    background-color: ${({ $isHighlighted, theme }) => !$isHighlighted && theme.gray100};
+  }
+
+  :nth-child(even) {
+    background-color: ${({ $isHighlighted, theme }) => !$isHighlighted && theme.gray250};
+  }
 `
 
 export const Td = styled.td<{ $isHighlighted?: boolean }>`

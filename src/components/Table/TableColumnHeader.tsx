@@ -4,7 +4,6 @@ import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
 import styled from 'styled-components'
 import { BsCaretDownFill as IconDown, BsCaretUpFill as IconUp } from 'react-icons/bs'
 
-import { GeneCluster } from 'src/hooks/useDataIndexQuery'
 import { ButtonTransparent } from 'src/components/Common/ButtonTransparent'
 import { getColumnName, reorderByValue } from './helpers'
 
@@ -88,7 +87,7 @@ export function TableColumnHeader<T>({ header, table }: TableColumnHeaderProps<T
 
   const [{ canDrop, isDragOver }, dropRef] = useDrop({
     accept: 'column',
-    drop: (draggedColumn: Column<GeneCluster>) => {
+    drop: (draggedColumn: Column<T>) => {
       const newColumnOrder = reorderByValue(columnOrder, getColumnName(draggedColumn), getColumnName(column))
       setColumnOrder(newColumnOrder)
     },
