@@ -8,6 +8,8 @@
 /data
 /node_modules
 /public
+/src/components/Msa/*.js
+/src/components/Msa/msa
 /src/components/Tree/*.js
 /src/components/Tree/phyloTree
 /tsconfig.json
