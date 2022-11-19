@@ -34,13 +34,7 @@ export interface DataIndexJson {
 
 export interface GeneCluster {
   archive: string
-  archive_files: {
-    aa_aln?: string
-    na_aln?: string
-    nwk?: string
-    patterns_json?: string
-    tree_json?: string
-  }
+  archive_files: GeneClusterData
   divers: number
   dup_detail?: string
   dupli?: string
@@ -51,6 +45,16 @@ export interface GeneCluster {
   name: string
   num_events: number
   num_strains: number
+}
+
+export interface GeneClusterData {
+  aa_aln?: string
+  aa_aln_reduced?: string
+  na_aln?: string
+  na_aln_reduced?: string
+  nwk?: string
+  patterns_json?: string
+  tree_json?: string
 }
 
 export function geneClusterEquals(left: GeneCluster, right: GeneCluster): boolean {
@@ -128,16 +132,6 @@ export function useGeneTreeJson(
     [species.id, treeJsonFile],
   )
   return useAxiosQuery(url, options)
-}
-
-export interface GeneClusterData {
-  aa_aln?: string
-  aa_aln_reduced?: string
-  na_aln?: string
-  na_aln_reduced?: string
-  nwk?: string
-  patterns_json?: string
-  tree_json?: string
 }
 
 export function useGeneClusterData(

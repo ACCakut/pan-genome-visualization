@@ -1,4 +1,5 @@
 import React, { Suspense, useMemo } from 'react'
+import dynamic from 'next/dynamic'
 import { Col, Container, Row } from 'reactstrap'
 import { useRecoilValue } from 'recoil'
 
@@ -10,6 +11,8 @@ import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
 import { Tree } from 'src/components/Tree/Tree'
 import { MetadataTable } from 'src/components/Species/MetadataTable'
+
+const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
 
 export interface SpeciesPageProps {
   species: SpeciesDesc
@@ -71,6 +74,12 @@ export function GeneClustersSection({ species, gene }: GeneClustersSectionProps)
   return (
     <Suspense fallback={LOADING}>
       <Container fluid>
+        <Row noGutters>
+          <Col>
+            <Msa species={species} gene={gene} seqType="nuc" />
+          </Col>
+        </Row>
+
         <Row noGutters>
           <Col>
             <Tree species={species} gene={gene} />
