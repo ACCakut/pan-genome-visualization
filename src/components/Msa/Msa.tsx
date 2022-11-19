@@ -25,7 +25,7 @@ export default function Msa({ species, gene, seqType }: MsaProps) {
       return
     }
 
-    const alnFilename = gene.archive_files?.aa_aln_reduced
+    const alnFilename = seqType === 'aa' ? gene.archive_files?.aa_aln_reduced : gene.archive_files?.na_aln_reduced
     if (!alnFilename) {
       return
     }
