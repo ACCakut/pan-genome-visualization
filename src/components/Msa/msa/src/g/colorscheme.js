@@ -1,7 +1,7 @@
 var Colorscheme;
-var Colors = require("msa-colorschemes");
+import Colors from 'msa-colorschemes';
 
-var Model = require("backbone-thin").Model;
+import { Model } from 'backbone-thin';
 
 // this is an example of how one could color the MSA
 // feel free to create your own color scheme in the /css/schemes folder

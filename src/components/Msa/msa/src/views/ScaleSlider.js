@@ -1,7 +1,7 @@
-const BoneView = require("backbone-viewj");
+import BoneView from 'backbone-viewj';
 import {template} from "lodash";
-const $ = require("jbone");
-//const Slider = require("bootstrap-slider");
+import $ from 'jbone';
+//import Slider from 'bootstrap-slider';
 
 const View = BoneView.extend({
 

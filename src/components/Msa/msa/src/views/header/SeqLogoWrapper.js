@@ -1,6 +1,6 @@
-const SeqLogoView = require("biojs-vis-seqlogo/light");
-const view = require("backbone-viewj");
-const dom = require("dom-helper");
+import SeqLogoView from 'biojs-vis-seqlogo/light';
+import view from 'backbone-viewj';
+import dom from 'dom-helper';
 
 // this is a bridge between the MSA and the seqlogo viewer
 const SeqLogoWrapper = view.extend({

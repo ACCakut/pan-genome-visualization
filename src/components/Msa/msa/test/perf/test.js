@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-var phantom = require('phantom');
+import phantom from 'phantom';
 
 phantom.create(function (ph) {
   ph.createPage(function (page) {
 
-    page.onConsoleMessage(function(msg) { 
-      console.log(msg); 
+    page.onConsoleMessage(function(msg) {
+      console.log(msg);
     })
     //page.set('onLoadFinished', function (status) {})
 

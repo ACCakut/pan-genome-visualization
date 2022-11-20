@@ -1,5 +1,5 @@
-var path = require('path');
-var webpack = require('webpack');
+import path from 'path';
+import webpack from 'webpack';
 var prod = process.argv.indexOf('-p') >= 0;
 
 module.exports = {
@@ -42,7 +42,7 @@ if(prod) {
             },
         sourceMap: true
     }));
-    var WebpackStrip = require('strip-loader');
+    import WebpackStrip from 'strip-loader';
     w.module.loaders.push(
         {   test: path.join(__dirname, 'src'),
          loader: WebpackStrip.loader('console.log') }

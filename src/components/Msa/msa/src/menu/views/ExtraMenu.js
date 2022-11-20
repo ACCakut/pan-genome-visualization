@@ -1,7 +1,7 @@
 import MenuBuilder from "../menubuilder";
 import Seq from "../../model/Sequence";
 import Loader from "../../utils/loader";
-const xhr = require("xhr");
+import xhr from 'xhr';
 
 const ExtraMenu = MenuBuilder.extend({
 

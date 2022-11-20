@@ -1,5 +1,5 @@
 var Visibility;
-var Model = require("backbone-thin").Model;
+import { Model } from 'backbone-thin';
 
 // visible areas
 module.exports = Visibility = Model.extend({

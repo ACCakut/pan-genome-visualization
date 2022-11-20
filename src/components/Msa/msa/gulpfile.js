@@ -1,12 +1,12 @@
-var path = require('path');
-var mkdirp = require('mkdirp-then');
-var gulp = require('gulp');
-var mocha = require('gulp-mocha');
-var concat = require('gulp-concat');
-var chmod = require('gulp-chmod');
-var rename = require('gulp-rename');
-var minifyCSS = require('gulp-clean-css');
-var gzip = require('gulp-gzip');
+import path from 'path';
+import mkdirp from 'mkdirp-then';
+import gulp from 'gulp';
+import mocha from 'gulp-mocha';
+import concat from 'gulp-concat';
+import chmod from 'gulp-chmod';
+import rename from 'gulp-rename';
+import minifyCSS from 'gulp-clean-css';
+import gzip from 'gulp-gzip';
 
 var buildDir = "dist";
 

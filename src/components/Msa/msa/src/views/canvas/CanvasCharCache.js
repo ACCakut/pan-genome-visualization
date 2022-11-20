@@ -1,4 +1,4 @@
-const Events = require("biojs-events");
+import Events from 'biojs-events';
 
 class CanvasCharCache {
 

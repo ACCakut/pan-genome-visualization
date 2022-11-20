@@ -1,6 +1,6 @@
 import Sequence from "./Sequence";
 import FeatureCol from "./FeatureCol";
-const Collection = require("backbone-thin").Collection;
+import { Collection }  from 'backbone-thin';
 
 const SeqCollection = Collection.extend({
   model: Sequence,

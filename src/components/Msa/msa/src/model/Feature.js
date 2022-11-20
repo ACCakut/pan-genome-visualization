@@ -1,4 +1,4 @@
-const Model = require("backbone-thin").Model;
+import { Model }  from 'backbone-thin';
 const Feature = Model.extend({
 
   defaults: {

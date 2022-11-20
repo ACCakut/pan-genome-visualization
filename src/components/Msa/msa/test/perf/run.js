@@ -1,5 +1,5 @@
-var through = require('through2');
-var phantom = require('phantom');
+import through from 'through2';
+import phantom from 'phantom';
 
 module.exports = function phantomRunner(options) {
   options = options || {};
@@ -12,8 +12,8 @@ module.exports = function phantomRunner(options) {
     phantom.create(function (ph) {
       ph.createPage(function (page) {
 
-        page.onConsoleMessage(function(msg) { 
-          console.log(msg); 
+        page.onConsoleMessage(function(msg) {
+          console.log(msg);
         })
         //page.set('onLoadFinished', function (status) {})
 

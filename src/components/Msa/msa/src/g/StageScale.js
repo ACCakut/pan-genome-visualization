@@ -1,6 +1,6 @@
 var StageScale;
-var Model = require("backbone-thin").Model;
-var LinearScale = require("linear-scale");
+import { Model } from 'backbone-thin';
+import LinearScale from 'linear-scale';
 
 // pixel properties for some components
 module.exports = StageScale = Model.extend({

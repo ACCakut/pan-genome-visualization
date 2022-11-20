@@ -1,6 +1,6 @@
 var Package;
-var Loader = require("../utils/loader");
-var Model = require("backbone-thin").Model;
+import Loader from '../utils/loader';
+import { Model } from 'backbone-thin';
 
 module.exports = Package = Model.extend({
 

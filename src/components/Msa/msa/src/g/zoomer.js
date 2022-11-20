@@ -1,5 +1,5 @@
 var Zoomer;
-var Model = require("backbone-thin").Model;
+import { Model } from 'backbone-thin';
 // pixel properties for some components
 module.exports = Zoomer = Model.extend({
 

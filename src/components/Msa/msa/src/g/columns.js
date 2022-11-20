@@ -1,5 +1,5 @@
 var Columns;
-var Model = require("backbone-thin").Model;
+import { Model } from 'backbone-thin';
 
 // model for column properties (like their hidden state)
 module.exports = Columns = Model.extend({

@@ -1,4 +1,4 @@
-const boneView = require("backbone-childs");
+import boneView from 'backbone-childs';
 import LabelHeader from "./LabelHeader";
 import RightLabelHeader from "./RightHeaderBlock";
 

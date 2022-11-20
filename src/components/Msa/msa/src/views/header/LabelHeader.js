@@ -1,6 +1,6 @@
-const k = require("koala-js");
-const view = require("backbone-viewj");
-const dom = require("dom-helper");
+import k from 'koala-js';
+import view from 'backbone-viewj';
+import dom from 'dom-helper';
 
 const LabelHeader = view.extend({
 

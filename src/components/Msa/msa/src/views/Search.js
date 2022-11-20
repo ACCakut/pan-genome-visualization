@@ -1,6 +1,6 @@
-const boneView = require("backbone-childs");
-const k = require('koala-js');
-const dom = require('dom-helper');
+import boneView from 'backbone-childs';
+import k from 'koala-js';
+import dom from 'dom-helper';
 import {possel} from "../g/selection/Selection";
 
 // this is a very simplistic approach to show search result

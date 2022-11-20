@@ -1,6 +1,6 @@
-const view = require("backbone-viewj");
-const dom = require("dom-helper");
-const jbone = require("jbone");
+import view from 'backbone-viewj';
+import dom from 'dom-helper';
+import jbone from 'jbone';
 import * as svg from "../../utils/svg";
 
 const MarkerView = view.extend({

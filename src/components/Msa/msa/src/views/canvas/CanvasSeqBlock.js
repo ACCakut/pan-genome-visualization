@@ -1,7 +1,7 @@
-const boneView = require("backbone-childs");
-const mouse = require("mouse-pos");
+import boneView from 'backbone-childs';
+import mouse from 'mouse-pos';
 import {throttle} from "lodash";
-const jbone = require("jbone");
+import jbone from 'jbone';
 
 import CharCache from "./CanvasCharCache";
 import SelectionClass from "./CanvasSelection";

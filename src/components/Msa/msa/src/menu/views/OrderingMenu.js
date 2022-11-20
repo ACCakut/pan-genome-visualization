@@ -1,5 +1,5 @@
 import MenuBuilder from "../menubuilder";
-const dom = require("dom-helper");
+import dom from 'dom-helper';
 const arrowUp = "\u2191";
 const arrowDown = "\u2193";
 

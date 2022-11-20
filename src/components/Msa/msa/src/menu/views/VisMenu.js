@@ -1,5 +1,5 @@
 import MenuBuilder from "../menubuilder";
-var dom = require("dom-helper");
+import dom from 'dom-helper';
 
 const VisMenu = MenuBuilder.extend({
 

@@ -1,6 +1,6 @@
 // File copied from https://github.com/wilzbach/stat.seqs/blob/99185e18009d1f08454cdd091e8eeb2206c7c0f0/lib/index.js
-var _ = require("underscore");
-const Collection = require("backbone-thin").Collection;
+import _ from 'underscore';
+import { Collection }  from 'backbone-thin';
 
 var stat = function(seqs, opts) {
   // if someone forgets new

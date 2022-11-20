@@ -1,4 +1,4 @@
-const boneView = require("backbone-childs");
+import boneView from 'backbone-childs';
 
 // menu views
 import ImportMenu from "./views/ImportMenu";

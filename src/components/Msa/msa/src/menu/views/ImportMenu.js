@@ -1,5 +1,5 @@
 import MenuBuilder from "../menubuilder";
-const k = require("koala-js");
+import k from 'koala-js';
 
 const ImportMenu = MenuBuilder.extend({
 

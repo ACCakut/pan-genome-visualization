@@ -1,4 +1,4 @@
-const Collection = require("backbone-thin").Collection;
+import { Collection }  from 'backbone-thin';
 import {max} from "lodash";
 
 import Feature from "./Feature";

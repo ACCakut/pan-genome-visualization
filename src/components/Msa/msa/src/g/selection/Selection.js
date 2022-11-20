@@ -1,5 +1,5 @@
 import {extend, pick} from "lodash";
-const Model = require("backbone-thin").Model;
+import { Model }  from 'backbone-thin';
 
 // holds the current user selection
 const Selection = Model.extend({

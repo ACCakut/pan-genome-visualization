@@ -1,5 +1,5 @@
-const jbone = require("jbone");
-const view = require("backbone-viewj");
+import jbone from 'jbone';
+import view from 'backbone-viewj';
 
 // This could has been inlined from https://github.com/wilzbach/menu-builder
 // It is intended to be replaced with in-MSA controls

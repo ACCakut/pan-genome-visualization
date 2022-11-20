@@ -15,17 +15,17 @@ import Zoomer from "./g/zoomer";
 import StageScale from "./g/StageScale";
 
 // MV from backbone
-const boneView = require("backbone-childs");
-const Eventhandler = require("biojs-events");
+import boneView from 'backbone-childs';
+import Eventhandler from 'biojs-events';
 
 // MSA views
 import Stage from "./views/Stage";
 
 // statistics
-const Stats = require("./statSeqs");
+import Stats from './statSeqs';
 
 // utils
-const $ = require("jbone");
+import $ from 'jbone';
 import FileHelper from "./utils/file";
 import TreeHelper from "./utils/tree";
 import ProxyHelper from "./utils/proxy";

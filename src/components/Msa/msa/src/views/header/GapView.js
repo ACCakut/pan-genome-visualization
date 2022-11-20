@@ -1,5 +1,5 @@
-const view = require("backbone-viewj");
-const dom = require("dom-helper");
+import view from 'backbone-viewj';
+import dom from 'dom-helper';
 import * as svg from "../../utils/svg";
 
 // TODO: merge this with the conservation view

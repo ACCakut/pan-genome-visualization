@@ -1,6 +1,6 @@
 import {sel, possel, rowsel, columnsel} from "./Selection";
 import {uniq, filter} from "lodash";
-const Collection = require("backbone-thin").Collection;
+import { Collection }  from 'backbone-thin';
 
 // holds the current user selection
 const SelectionManager = Collection.extend({

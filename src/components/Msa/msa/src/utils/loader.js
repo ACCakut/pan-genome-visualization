@@ -1,4 +1,4 @@
-const k = require("koala-js");
+import k from 'koala-js';
 
 const Loader =
 

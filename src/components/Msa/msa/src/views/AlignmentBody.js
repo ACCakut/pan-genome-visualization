@@ -1,4 +1,4 @@
-const boneView = require("backbone-childs");
+import boneView from 'backbone-childs';
 import SeqBlock from "./canvas/CanvasSeqBlock";
 import LabelBlock from "./labels/LabelBlock";
 

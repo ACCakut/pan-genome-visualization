@@ -1,5 +1,5 @@
 var Config;
-var Model = require("backbone-thin").Model;
+import { Model } from 'backbone-thin';
 
 // simple user config
 module.exports = Config = Model.extend({

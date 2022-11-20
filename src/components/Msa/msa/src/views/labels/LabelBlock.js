@@ -1,4 +1,4 @@
-const boneView = require("backbone-childs");
+import boneView from 'backbone-childs';
 import LabelRowView from "./LabelRowView";
 
 const View = boneView.extend({

@@ -2,8 +2,8 @@ import {fasta as Fasta,
         gff as GFF,
         xhr} from "bio.io";
 
-const blobURL = require("blueimp_canvastoblob");
-const saveAs = require("browser-saveas");
+import blobURL from 'blueimp_canvastoblob';
+import saveAs from 'browser-saveas';
 import {flatten, compact} from "lodash";
 import html2canvas from 'html2canvas';
 
