@@ -11,7 +11,7 @@ import copy from 'fast-copy'
 import fuzzysort from 'fuzzysort'
 import { get, isNil, isString, sortBy, toString } from 'lodash'
 import React, { useCallback, useDeferredValue, useMemo, useRef, useState } from 'react'
-import { useVirtual } from 'react-virtual'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { Col, Row } from 'reactstrap'
 
 import { getColumnDefName, reorder } from 'src/components/Table/helpers'
@@ -131,16 +131,18 @@ export function Table<T, I>({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  const { rows } = table.getRowModel()
+  const rowModel = table.getRowModel()
 
-  const { virtualItems: virtualRows, totalSize } = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 15,
+  const { getVirtualItems, getTotalSize } = useVirtualizer({
+    count: rowModel.rows.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 35,
   })
 
+  const virtualRows = getVirtualItems()
+
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
-  const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0
+  const paddingBottom = virtualRows.length > 0 ? getTotalSize() - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0
 
   const onRowReorder = useCallback(
     (srcRowIndex: number, dstRowIndex: number) => {
@@ -158,7 +160,7 @@ export function Table<T, I>({
   ))
 
   const rowComponents = virtualRows.map((virtualRow) => {
-    const row = rows[virtualRow.index]
+    const row = rowModel.rows[virtualRow.index]
     const rowId = getRowId?.(row.original)
     const isHighlighted = !isNil(rowId) && !isNil(selectedRowId) && rowId === selectedRowId
     const onClick = rowId && setSelectedRowIndexFun(rowId)
