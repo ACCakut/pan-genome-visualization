@@ -102,6 +102,14 @@ const MSA = boneView.extend({
       });
     }
 
+    if (data.importFasta) {
+      const [objs, type] = this.u.file.parseText(data.importFasta, {name: "input.fasta"});
+      this.seqs.reset(objs);
+      this.g.config.set("url", "userimport");
+      this.g.trigger("import:url", "userimport");
+      this.g.trigger("url:userImport");
+    }
+
     if (data.bootstrapMenu) {
       // pass menu configuration to defaultmenu
       if(data.menu){

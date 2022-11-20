@@ -34,7 +34,7 @@ export interface DataIndexJson {
 
 export interface GeneCluster {
   archive: string
-  archive_files: GeneClusterData
+  archive_files: GeneClusterDataRaw
   divers: number
   dup_detail?: string
   dupli?: string
@@ -47,7 +47,7 @@ export interface GeneCluster {
   num_strains: number
 }
 
-export interface GeneClusterData {
+export interface GeneClusterDataRaw {
   aa_aln?: string
   aa_aln_reduced?: string
   na_aln?: string
@@ -55,6 +55,16 @@ export interface GeneClusterData {
   nwk?: string
   patterns_json?: string
   tree_json?: string
+}
+
+export interface GeneClusterData {
+  aa_aln?: string
+  aa_aln_reduced?: string
+  na_aln?: string
+  na_aln_reduced?: string
+  nwk?: string
+  patterns_json?: Record<string, unknown>
+  tree_json?: Record<string, unknown>
 }
 
 export function geneClusterEquals(left: GeneCluster, right: GeneCluster): boolean {
@@ -116,37 +126,19 @@ export function useSpeciesTreeJson(speciesId: string, options?: UseAxiosQueryOpt
   return useAxiosQuery(url, options)
 }
 
-export function useGeneTreeJson(
-  species: SpeciesDesc,
-  gene: GeneCluster,
-  options?: UseAxiosQueryOptions<MetadataEntry[]>,
-) {
-  const treeJsonFile = gene?.archive_files?.tree_json
-  if (!treeJsonFile) {
-    throw new Error(
-      `Unable to find gene tree JSON for species '${species.name}' and gene '${gene.name}' (gene id ${gene.id})`,
-    )
-  }
-  const url = useMemo(
-    () => urljoin(getDataRootUrl(), 'dataset', species.id, 'geneCluster', treeJsonFile),
-    [species.id, treeJsonFile],
-  )
-  return useAxiosQuery(url, options)
-}
-
 export function useGeneClusterData(
-  speciesSlug: string,
+  species: SpeciesDesc,
   cluster: GeneCluster,
   options?: UseAxiosQueryOptions<Record<string, string>>,
 ): GeneClusterData {
   const archiveUrl = useMemo(
-    () => urljoin(getDataRootUrl(), 'dataset', speciesSlug, cluster.archive),
-    [cluster.archive, speciesSlug],
+    () => urljoin(getDataRootUrl(), 'dataset', species.id, cluster.archive),
+    [cluster.archive, species.id],
   )
 
   const clusterArchive = useAxiosTarQuery(archiveUrl, options)
 
-  return useMemo(
+  const { aa_aln, aa_aln_reduced, na_aln, na_aln_reduced, nwk, patterns_json, tree_json } = useMemo(
     () =>
       mapValues(cluster.archive_files, (filename) => {
         if (!filename) {
@@ -160,4 +152,14 @@ export function useGeneClusterData(
       }),
     [cluster.archive_files, clusterArchive],
   )
+
+  return {
+    aa_aln,
+    aa_aln_reduced,
+    na_aln,
+    na_aln_reduced,
+    nwk,
+    patterns_json: patterns_json ? JSON.parse(patterns_json) : undefined,
+    tree_json: tree_json ? JSON.parse(tree_json) : undefined,
+  }
 }

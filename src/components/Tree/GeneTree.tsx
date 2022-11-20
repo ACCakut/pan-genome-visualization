@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap'
 import styled from 'styled-components'
 import * as d3 from 'd3'
 
-import { GeneCluster, SpeciesDesc, useGeneTreeJson } from 'src/hooks/useDataIndexQuery'
+import { GeneCluster, SpeciesDesc, useGeneClusterData, useGeneTreeJson } from 'src/hooks/useDataIndexQuery'
 import phyloTree from 'src/components/Tree/phyloTree/src/phyloTree'
 import drawTree from 'src/components/Tree/phyloTree/src/drawTree'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
@@ -26,7 +26,7 @@ export interface GeneTreeProps {
 export function GeneTree({ species, gene }: GeneTreeProps) {
   const { t } = useTranslationSafe()
   const svgRef = useRef<SVGSVGElement>(null)
-  const treeJson = useGeneTreeJson(species, gene)
+  const { tree_json } = useGeneClusterData(species, gene)
 
   const {
     width,
@@ -38,12 +38,12 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
   })
 
   useEffect(() => {
-    if (!width || !height) {
+    if (!width || !height || !tree_json) {
       return
     }
 
     drawTree(
-      phyloTree(treeJson, {
+      phyloTree(tree_json, {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         svg: d3.select(svgRef.current),
@@ -59,7 +59,7 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
     )
     // tipLabels(myTree, tipText, tipFontSize(myTree), 3, 8)
     // myTree.showTipLabels = true
-  }, [treeJson, width, height])
+  }, [tree_json, width, height])
 
   return (
     <Card className="w-100 h-100">

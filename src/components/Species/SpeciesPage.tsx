@@ -107,29 +107,10 @@ export interface GeneClustersDataProps {
 }
 
 export function GeneClustersData({ species, gene }: GeneClustersDataProps) {
-  const geneClusterData = useGeneClusterData(species.id, gene)
-  const { aa_aln, aa_aln_reduced, na_aln, na_aln_reduced, nwk, patterns_json, tree_json } = geneClusterData
-
+  const geneData = useGeneClusterData(species, gene)
   return (
     <div className="d-flex w-100 overflow-x-scroll">
-      <pre className="overflow-x-scroll bg-dark text-light">
-        {JSON.stringify(
-          {
-            species,
-            data: {
-              aa_aln,
-              aa_aln_reduced,
-              na_aln,
-              na_aln_reduced,
-              nwk,
-              patterns_json,
-              tree_json,
-            },
-          },
-          null,
-          2,
-        )}
-      </pre>
+      <pre className="overflow-x-scroll bg-dark text-light">{JSON.stringify({ species, gene, geneData }, null, 2)}</pre>
     </div>
   )
 }
