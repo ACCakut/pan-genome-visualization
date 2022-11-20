@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { GeneCluster, SpeciesDesc, useGeneClusterData } from 'src/hooks/useDataIndexQuery'
 
-import { msa } from 'src/components/Msa/msa/src/index'
+import msa from 'src/components/Msa/msa/src/msa'
 
 // import { panXTree, msaViewerAsset } from '../Tree/global'
 // import {hideNonSelected} from './tree-init'

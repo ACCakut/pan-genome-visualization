@@ -1,5 +1,4 @@
 export * from './bmath'
-export * from './proxy'
 export * from './seqgen'
 export * from './file'
 export * from './exporter'

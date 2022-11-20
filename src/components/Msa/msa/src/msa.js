@@ -5,7 +5,6 @@ import SeqCollection from "./model/SeqCollection";
 import Colorator from "./g/colorscheme";
 import Columns from "./g/columns";
 import Config from "./g/config";
-import Package from "./g/package";
 import SelCol from "./g/selection/SelectionCol";
 import User from "./g/user";
 import Visibility from "./g/visibility";
@@ -17,6 +16,7 @@ import StageScale from "./g/StageScale";
 // MV from backbone
 import boneView from 'backbone-childs';
 import Eventhandler from 'biojs-events';
+import view from "backbone-viewj";
 
 // MSA views
 import Stage from "./views/Stage";
@@ -27,8 +27,10 @@ import Stats from './statSeqs';
 // utils
 import $ from 'jbone';
 import FileHelper from "./utils/file";
-import TreeHelper from "./utils/tree";
-import ProxyHelper from "./utils/proxy";
+
+import model from "./model";
+import selection from "./g/selection/Selection";
+import selcol from "./g/selection/SelectionCol";
 
 // opts is a dictionary consisting of
 // @param el [String] id or reference to a DOM element
@@ -59,7 +61,6 @@ const MSA = boneView.extend({
 
     // populate it and init the global models
     this.g.config = new Config(data.conf);
-    this.g.package = new Package(this.g);
     this.g.selcol = new SelCol([],{g:this.g});
     this.g.user = new User();
     this.g.vis = new Visibility(data.vis, {model: this.seqs});
@@ -81,8 +82,6 @@ const MSA = boneView.extend({
     // utils
     this.u = {};
     this.u.file = new FileHelper(this);
-    this.u.proxy = new ProxyHelper({g: this.g});
-    this.u.tree = new TreeHelper(this);
 
     if (this.g.config.get("eventBus") === true) {
       this.startEventBus();
@@ -144,13 +143,13 @@ const MSA = boneView.extend({
 
   // add models to the msa (convenience)
   m: function() {
-    var m = {};
-    m.model = require("./model");
-    m.selection = require("./g/selection/Selection");
-    m.selcol = require("./g/selection/SelectionCol");
-    m.view = require("backbone-viewj");
-    m.boneView = require("backbone-childs");
-    return this.m = m;
+    return this.m = {
+      model,
+      selection,
+      selcol,
+      view,
+      boneView,
+    };
   },
 
   draw: function() {

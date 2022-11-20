@@ -1,7 +1,7 @@
-//module.exports.VerticalSelection = require("./vertical_selection")
-//module.exports.HorizontalSelection = require("./horizontal_selection")
-//module.exports.RegionSelect = require("./region_select")
-//module.exports.PositionSelect = require("./position_selection")
-export {SelectionManager} from "./SelectionCol";
-//module.exports.SelectionList = require("./selectionlist")
-//module.exports.RectangularSelect = require("./rectangular_select")
+// export { VerticalSelection } from "./vertical_selection";
+// export { HorizontalSelection } from "./horizontal_selection";
+// export { RegionSelect } from "./region_select";
+// export { PositionSelect } from "./position_selection";
+export { SelectionManager } from "./SelectionCol";
+// export { SelectionList } from "./selectionlist";
+// export { RectangularSelect } from "./rectangular_select";

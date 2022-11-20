@@ -89,10 +89,6 @@ var funs =
       this.msa.g.trigger("url:userImport");
     } else if (type === "features") {
       this.msa.seqs.addFeatures(objs);
-    } else if (type === "newick") {
-      this.msa.u.tree.loadTree(() => {
-        return this.msa.u.tree.showTree(file);
-      });
     } else {
       alert("Unknown file!");
     }
@@ -101,7 +97,6 @@ var funs =
   },
 
   importURL: function(url, cb) {
-    url = this.msa.u.proxy.corsURL(url);
     this.msa.g.config.set("url", url);
     return xhr({
         url: url,

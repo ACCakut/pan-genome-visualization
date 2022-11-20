@@ -1,6 +1,7 @@
 // File copied from https://github.com/wilzbach/stat.seqs/blob/99185e18009d1f08454cdd091e8eeb2206c7c0f0/lib/index.js
 import _ from 'underscore';
 import { Collection }  from 'backbone-thin';
+import biojsEvents from "biojs-events";
 
 var stat = function(seqs, opts) {
   // if someone forgets new
@@ -400,6 +401,6 @@ _.mixin({
   }
 });
 
-require("biojs-events").mixin(stat.prototype);
+biojsEvents.mixin(stat.prototype);
 
 module.exports = stat;
