@@ -440,5 +440,9 @@
     "svgo": "2.8.0",
     "url-join": "4.0.1",
     "webpack": "5.72.0"
+  "name": "panX-visualization",
+  "version": "2.0.0",
+  "description": "pan-genome-visualization",
+  "private": true,
   }
 }

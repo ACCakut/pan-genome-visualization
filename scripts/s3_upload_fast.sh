@@ -48,7 +48,7 @@ function upload_one_directory() {
   name=$(bucket_path ${1})
   printf "Uploading '${name}'\n"
   upload_gzip "${name}"
-  # upload_non_gzip "${name}"
+  upload_non_gzip "${name}"
   printf "Uploading '${name}: done'\n"
 }
 export -f upload_one_directory
