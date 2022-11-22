@@ -13,6 +13,8 @@ import {unselect_clusterTable} from "./datatable-gc";
 
 const tipUnselected=panXTree.tipUnselected;
 
+export const DATA_ROOT_URL = process.env.DATA_ROOT_URL
+
 export const hideNonSelected =function(tree){
     tree.tipElements
         .attr('r',function(d){if (d.state.selected){return d.tipAttributes.r*1.5;}
@@ -216,7 +218,7 @@ export const attachButtons = function(myTree, buttons){
     if (buttons.download_coreTree){
         d3.select('#'+buttons.download_coreTree)
             .append('a')
-            .attr('href','./dataset/'+speciesAbbr+'/strain_tree.nwk')
+            .attr('href', `${DATA_ROOT_URL}/dataset/${speciesAbbr}/strain_tree.nwk`)
             .append('i')
             .attr('class','glyphicon glyphicon-download-alt')
     }
@@ -225,7 +227,7 @@ export const attachButtons = function(myTree, buttons){
             download_geneTree.selectAll('a').remove();
             download_geneTree.append('a')
                 .attr('id','#'+buttons.download_geneTree_id+'_href')
-                .attr('href','./dataset/'+speciesAbbr+'/geneCluster/'+buttons.clusterID+'.nwk')
+                .attr('href', `${DATA_ROOT_URL}/dataset/${speciesAbbr}/geneCluster/${buttons.clusterID}.nwk`)
                 .append('i')
                 .attr('class','glyphicon glyphicon-download-alt')
     }
