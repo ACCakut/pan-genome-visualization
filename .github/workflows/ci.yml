@@ -1,14 +1,21 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches:
-      - static-app
+      - '*'
+
+  pull_request:
+    branches:
+      - '*'
+
+  repository_dispatch:
+    types: build
+
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref_type }}-${{ github.event.pull_request.number || github.ref || github.run_id }}
   cancel-in-progress: true
 
 defaults:
@@ -34,7 +41,7 @@ jobs:
           echo "PLAUSIBLE_IO_DOMAIN=pangenome.org" >> $GITHUB_ENV
 
       - name: Setup environment (master)
-        if: endsWith(github.ref, '/static-app')
+        if: endsWith(github.ref, '/master')
         run: |
           echo "ENVIRONMENT=master" >> $GITHUB_ENV
           echo "DATA_ROOT_URL=${{ secrets.MASTER_DATA_ROOT_URL }}" >> $GITHUB_ENV
@@ -79,7 +86,7 @@ jobs:
           npm run build
 
       - name: Check requirements
-        if: endsWith(github.ref, '/static-app') || endsWith(github.ref, '/release')
+        if: endsWith(github.ref, '/master') || endsWith(github.ref, '/release')
         run: |
           : ${AWS_ACCESS_KEY_ID?"Environment variable is required"}
           : ${AWS_SECRET_ACCESS_KEY?"Environment variable is required"}
@@ -88,6 +95,6 @@ jobs:
           : ${AWS_CLOUDFRONT_DISTRIBUTION_ID?"Environment variable is required"}
 
       - name: Precompress files
-        if: endsWith(github.ref, '/static-app') || endsWith(github.ref, '/release')
+        if: endsWith(github.ref, '/master') || endsWith(github.ref, '/release')
         run: |
           ./scripts/deploy_app.sh
