@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useRef } from 'react'
 
-import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { GeneCluster, SpeciesDesc, useGeneClusterData } from 'src/hooks/useDataIndexQuery'
 
+// @ts-ignore
 import msa from 'src/components/Msa/msa/src/msa'
 
 // import { panXTree, msaViewerAsset } from '../Tree/global'
@@ -16,7 +17,6 @@ export interface MsaProps {
 }
 
 export default function Msa({ species, gene, seqType }: MsaProps) {
-  const { t } = useTranslationSafe()
   const ref = useRef<HTMLDivElement>(null)
   const { aa_aln_reduced, na_aln_reduced } = useGeneClusterData(species, gene)
 
@@ -37,6 +37,7 @@ export default function Msa({ species, gene, seqType }: MsaProps) {
 }
 
 function msaLoad(rootDiv: HTMLDivElement, seqType: string, fasta: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,new-cap
   const m = new msa({
     el: rootDiv,
     importFasta: fasta,
@@ -96,5 +97,6 @@ function msaLoad(rootDiv: HTMLDivElement, seqType: string, fasta: string) {
   // }
   // button_tooltip('#msa_legend', msa_button_tooltip_dict)
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   m.render()
 }

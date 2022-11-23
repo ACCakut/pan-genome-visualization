@@ -3,7 +3,6 @@ import { Col, Container, Row } from 'reactstrap'
 import styled from 'styled-components'
 
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
-import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { GeneTree } from 'src/components/Tree/GeneTree'
 import { SpeciesTree } from 'src/components/Tree/SpeciesTree'
 
@@ -17,8 +16,6 @@ export interface TreeProps {
 }
 
 export function Tree({ species, gene }: TreeProps) {
-  const { t } = useTranslationSafe()
-
   return (
     <TreeContainer fluid>
       <Row noGutters className="w-100 h-100">

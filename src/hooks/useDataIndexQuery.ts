@@ -159,7 +159,7 @@ export function useGeneClusterData(
     na_aln,
     na_aln_reduced,
     nwk,
-    patterns_json: patterns_json ? JSON.parse(patterns_json) : undefined,
-    tree_json: tree_json ? JSON.parse(tree_json) : undefined,
+    patterns_json: patterns_json ? (JSON.parse(patterns_json) as Record<string, unknown>) : undefined,
+    tree_json: tree_json ? (JSON.parse(tree_json) as Record<string, unknown>) : undefined,
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useEffect, useRef } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 import { Card, CardBody, CardHeader } from 'reactstrap'
@@ -5,9 +6,13 @@ import styled from 'styled-components'
 import * as d3 from 'd3'
 
 import { SpeciesDesc, useSpeciesTreeJson } from 'src/hooks/useDataIndexQuery'
-import phyloTree from 'src/components/Tree/phyloTree/src/phyloTree'
-import drawTree from 'src/components/Tree/phyloTree/src/drawTree'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
+
+// @ts-ignore
+import phyloTree from 'src/components/Tree/phyloTree/src/phyloTree'
+// @ts-ignore
+import drawTree from 'src/components/Tree/phyloTree/src/drawTree'
+// @ts-ignore
 import speciesTreeCallbacks from './speciesTreeCallbacks'
 
 const Svg = styled.svg`
@@ -45,7 +50,6 @@ export function SpeciesTree({ species }: TreeProps) {
 
     drawTree(
       phyloTree(treeJson, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         svg: d3.select(svgRef.current),
         margins: { top: 10, bottom: 10, left: 10, right: 10 },
