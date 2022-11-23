@@ -4,7 +4,7 @@ import { ErrorInternal } from 'src/helpers/ErrorInternal'
 import { sanitizeError } from 'src/helpers/sanitizeError'
 
 export class HttpRequestError extends Error {
-  public readonly request: AxiosRequestConfig
+  public readonly request?: AxiosRequestConfig
   public readonly response?: AxiosResponse
 
   constructor(error_: AxiosError) {

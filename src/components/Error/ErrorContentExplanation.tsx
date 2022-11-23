@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { useTranslation } from 'react-i18next'
+import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { LinkExternal } from 'src/components/Link/LinkExternal'
 import { URL_GITHUB_ISSUES } from 'src/constants'
 
 export function ErrorContentExplanation() {
-  const { t } = useTranslation()
+  const { t } = useTranslationSafe()
 
   return (
     <section className="mt-3">

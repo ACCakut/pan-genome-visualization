@@ -28,7 +28,6 @@ import withoutMinification from './withoutMinification'
 import withFriendlyChunkNames from './withFriendlyChunkNames'
 import withResolve from './withResolve'
 import withUrlAsset from './withUrlAsset'
-import withWasm from './withWasm'
 
 // Ignore recoil warning messages in stdout
 // https://github.com/facebookexperimental/Recoil/issues/733

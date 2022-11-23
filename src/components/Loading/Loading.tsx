@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { useTranslation } from 'react-i18next'
+import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 
 import LogoPangenome from 'src/assets/img/pangenome.svg'
 import styled from 'styled-components'
@@ -35,7 +35,7 @@ const SpinningLogo = styled(LogoPangenome)`
 `
 
 function Loading() {
-  const { t } = useTranslation()
+  const { t } = useTranslationSafe()
 
   const [show, setShow] = useState(false)
 

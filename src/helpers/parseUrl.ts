@@ -11,7 +11,7 @@ export function getLocationOrigin() {
 export function searchParamsToUrlQuery(searchParams: URLSearchParams): ParsedUrlQuery {
   const query: ParsedUrlQuery = {}
   searchParams.forEach((value, key) => {
-    if (typeof query[key] === 'undefined') {
+    if (query[key] === undefined) {
       query[key] = value
     } else if (Array.isArray(query[key])) {
       ;(query[key] as string[]).push(value)

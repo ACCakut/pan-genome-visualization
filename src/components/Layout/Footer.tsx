@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useTranslation } from 'react-i18next'
+import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { Col, Container, Row } from 'reactstrap'
 import styled from 'styled-components'
 
@@ -52,7 +52,7 @@ const VersionText = styled.div`
 `
 
 export function Footer() {
-  const { t } = useTranslation()
+  const { t } = useTranslationSafe()
   const copyrightYearRange = getCopyrightYearRange()
 
   return (

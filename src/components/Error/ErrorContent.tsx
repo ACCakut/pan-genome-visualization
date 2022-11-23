@@ -11,7 +11,7 @@ import { ErrorStack } from './ErrorStyles'
 
 export function ErrorContentMessage({ error }: { error: Error }) {
   if (error instanceof HttpRequestError) {
-    const url = error.request.url ?? 'Unknown URL'
+    const url = error.request?.url ?? 'Unknown URL'
     const status = error.response?.status
     if (!status) {
       return <ErrorNetworkConnectionFailure url={url} />

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { UncontrolledAlert } from 'reactstrap'
 
 import { RELEASE_URL } from 'src/constants'
@@ -10,7 +10,7 @@ export function shouldRenderPreviewWarning(): boolean {
 }
 
 export function PreviewWarning() {
-  const { t } = useTranslation()
+  const { t } = useTranslationSafe()
 
   const warningText = useMemo(() => t('This is a preview version. For official website please visit '), [t])
 

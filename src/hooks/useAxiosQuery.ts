@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-identical-functions */
 import type { QueriesOptions, QueryKey, UseQueryOptions } from '@tanstack/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { concurrent } from 'fasy'

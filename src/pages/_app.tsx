@@ -6,7 +6,7 @@ import { isNil, memoize } from 'lodash'
 import { useRouter } from 'next/router'
 import React, { Suspense, useMemo } from 'react'
 import type { AppProps } from 'next/app'
-import type { NextComponentType } from 'next'
+import type { NextComponentType, NextPageContext } from 'next'
 import dynamic from 'next/dynamic'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -52,12 +52,12 @@ const SPECIES_ROUTE = new Route<{ species: string }>('/species/:species')
 
 export type Obj = Record<string, unknown>
 
-export interface ClientSideRouterProps<T, U> {
-  Component: NextComponentType<T, U, Obj>
+export interface ClientSideRouterProps {
+  Component: NextComponentType<NextPageContext>
   pageProps: Obj
 }
 
-export function ClientSideRouter<T, U>({ Component, pageProps }: ClientSideRouterProps<T, U>) {
+export function ClientSideRouter({ Component, pageProps }: ClientSideRouterProps) {
   const router = useRouter()
   const { asPath } = router
 

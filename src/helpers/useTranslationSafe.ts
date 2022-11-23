@@ -1,12 +1,15 @@
-import type { StringMap, TOptions } from 'i18next'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export function useTranslationSafe<TInterpolationMap extends object = StringMap>() {
+export function useTranslationSafe() {
   const response = useTranslation()
 
-  function t(key: string, options?: TOptions<TInterpolationMap> | string) {
-    return response.t(key, options) ?? key
-  }
+  const t = useCallback(
+    (key: string, options?: Record<string, unknown>) => {
+      return response.t(key, options) ?? key
+    },
+    [response],
+  )
 
-  return { ...response, t }
+  return { t }
 }
