@@ -61,8 +61,6 @@ const clientEnv = {
   DATA_ROOT_URL,
 }
 
-console.info(`Client-side Environment:\n${JSON.stringify(clientEnv, null, 2)}`)
-
 const nextConfig: NextConfig = {
   distDir: `.build/${process.env.NODE_ENV}/tmp`,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx', 'all-contributorsrc'],

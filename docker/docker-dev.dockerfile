@@ -54,15 +54,19 @@ ENV PATH="${HOME}/.bin:${HOME}/.local/bin:${NODE_DIR}/bin:${PATH}"
 
 # Install Node.js
 COPY .nvmrc /
-RUN set -eux >dev/null \
-&& if [ "$(lsb_release -cs)" != "wheezy" ]; then \
-  mkdir -p "${NODE_DIR}" \
-  && cd "${NODE_DIR}" \
-  && NODE_VERSION=$(cat /.nvmrc) \
-  && curl -fsSL  "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ --strip-components=1 \
-  && npm install -g nodemon@${NODEMON_VERSION} yarn@${YARN_VERSION} >/dev/null \
-  && npm config set scripts-prepend-node-path auto \
-;fi
+RUN set -euxo pipefail >/dev/null \
+&& mkdir -p "${NODE_DIR}" \
+&& cd "${NODE_DIR}" \
+&& NODE_VERSION=$(cat /.nvmrc) \
+&& curl -fsSL  "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ --strip-components=1 \
+&& npm install -g nodemon@${NODEMON_VERSION} yarn@${YARN_VERSION} >/dev/null \
+&& npm config set scripts-prepend-node-path auto \
+
+# Calm down the (in)famous chatter from yarn
+RUN set -euxo pipefail >/dev/null \
+&& sed -i'' "s/this.reporter.warn(this.reporter.lang('incompatibleResolutionVersion', pattern, reqPattern));//g" "${NODE_DIR}/lib/node_modules/yarn/lib/cli.js" \
+&& sed -i'' "s/_this2\.reporter.warn(_this2\.reporter.lang('ignoredScripts'));//g" "${NODE_DIR}/lib/node_modules/yarn/lib/cli.js" \
+&& sed -i'' 's/_this3\.reporter\.warn(_this3\.reporter\.lang(peerError.*;//g' "/opt/node/lib/node_modules/yarn/lib/cli.js"
 
 # Make a user and group
 RUN set -euxo pipefail >/dev/null \

@@ -1,4 +1,4 @@
-/* eslint-disable no-template-curly-in-string,unicorn/prefer-top-level-await */
+/* eslint-disable no-template-curly-in-string,unicorn/prefer-top-level-await,sonarjs/no-duplicate-string */
 
 /**
  *
@@ -41,9 +41,27 @@ export async function main() {
     // Removes warning about babel codegen skipping optimizations. We only use babel in form of babel-node, to transpile
     // dev scripts on the fly, so this is not at all worth any attention.
     // Reason: too noisy
+    concurrent.forEach(
+      async (file) => {
+        await replace(
+          file,
+          'console.error("[BABEL] Note: The code generator has deoptimised the styling of " + `${opts.filename} as it exceeds the max of ${"500KB"}.`);',
+        )
+        await replace(
+          file,
+          'console.error(\n' +
+            '        "[BABEL] Note: The code generator has deoptimised the styling of " +\n' +
+            '          `${opts.filename} as it exceeds the max of ${"500KB"}.`,\n' +
+            '      );',
+        )
+      },
+      ['node_modules/@babel/generator/lib/index.js', 'node_modules/next/dist/compiled/babel/bundle.js'],
+    ),
+
     replace(
-      'node_modules/@babel/generator/lib/index.js',
-      'console.error("[BABEL] Note: The code generator has deoptimised the styling of " + `${opts.filename} as it exceeds the max of ${"500KB"}.`);',
+      'node_modules/next/dist/build/index.js',
+      "`${Log.prefixes.info} ${ignoreTypeScriptErrors ? 'Skipping validation of types' : 'Checking validity of types'}`",
+      '""',
     ),
 
     // Removes reminder about upgrading caniuse database. Nice, but not that important. Will be handled along with
@@ -62,6 +80,42 @@ export async function main() {
 
     removeAuspiceTimers(),
   ])
+
+  // More useless messages from Next.js
+  await replace('node_modules/next/dist/server/config.js', 'console.warn();')
+  await replace(
+    'node_modules/next/dist/server/config.js',
+    "Log.warn('SWC minify release candidate enabled. https://nextjs.org/docs/messages/swc-minify-enabled');",
+  )
+  await replace(
+    'node_modules/next/dist/server/config.js',
+    "Log.warn(_chalk.default.bold('You have enabled experimental feature(s).'));",
+  )
+  await replace(
+    'node_modules/next/dist/server/config.js',
+    'Log.warn(`Experimental features are not covered by semver, and may cause unexpected or broken application behavior. ` + `Use them at your own risk.`);',
+  )
+  await replace(
+    'node_modules/next/dist/build/webpack-config.js',
+    "Log.info(`automatically enabled Fast Refresh for ${injections} custom loader${injections > 1 ? 's' : ''}`);",
+  )
+  await replace('node_modules/@next/env/dist/index.js', 'n.info(`Loaded env from ${t.join(r||"",_.path)}`)')
+  await replace('node_modules/next/dist/build/output/store.js', "Log.wait('compiling...');")
+  await replace('node_modules/next/dist/build/output/store.js', 'Log.wait(`compiling ${state.trigger}...`);')
+  await replace(
+    'node_modules/next/dist/build/output/store.js',
+    'Log.info(`bundled${partialMessage} successfully${timeMessage}${modulesMessage}, waiting for typecheck results...`);',
+  )
+  await replace(
+    'node_modules/next/dist/build/output/store.js',
+    'Log.event(`compiled${partialMessage} successfully${timeMessage}${modulesMessage}`);',
+  )
+
+  // From fork-ts-checker-webpack-plugin
+  await replace(
+    'node_modules/fork-ts-checker-webpack-plugin/lib/hooks/tapDoneToAsyncGetIssues.js',
+    "configuration.logger.issues.log(chalk_1.default.cyan('Issues checking in progress...'));",
+  )
 }
 
 main().catch(console.error)
