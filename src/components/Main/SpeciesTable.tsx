@@ -43,12 +43,12 @@ const SPECIES_TABLE_SEARCH_KEYS: Extract<keyof SpeciesDesc, string>[] = ['name']
 
 export function SpeciesTable() {
   const { t } = useTranslationSafe()
-  const { records } = useDataIndexQuery()
+  const { species } = useDataIndexQuery()
   return (
     <Table
       title={t('Select species')}
       searchTitle={t('Search species')}
-      data_={records}
+      data_={species}
       columns_={SPECIES_TABLE_COLUMNS}
       initialColumnOrder={SPECIES_TABLE_COLUMN_ORDER}
       searchKeys={SPECIES_TABLE_SEARCH_KEYS}

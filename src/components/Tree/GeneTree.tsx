@@ -31,7 +31,7 @@ export interface GeneTreeProps {
 export function GeneTree({ species, gene }: GeneTreeProps) {
   const { t } = useTranslationSafe()
   const svgRef = useRef<SVGSVGElement>(null)
-  const { tree_json } = useGeneClusterData(species, gene)
+  const { tree } = useGeneClusterData(species, gene)
 
   const {
     width,
@@ -43,12 +43,12 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
   })
 
   useEffect(() => {
-    if (!width || !height || !tree_json) {
+    if (!width || !height || !tree) {
       return
     }
 
     drawTree(
-      phyloTree(tree_json, {
+      phyloTree(tree, {
         // @ts-ignore
         svg: d3.select(svgRef.current),
         margins: { top: 10, bottom: 10, left: 10, right: 10 },
@@ -63,7 +63,7 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
     )
     // tipLabels(myTree, tipText, tipFontSize(myTree), 3, 8)
     // myTree.showTipLabels = true
-  }, [tree_json, width, height])
+  }, [tree, width, height])
 
   return (
     <Card className="w-100 h-100">

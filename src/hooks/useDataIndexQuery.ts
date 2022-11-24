@@ -29,7 +29,7 @@ export interface DataIndexJson {
   created_at: string
   orders: SpeciesDesc[]
   case_studies: SpeciesDesc[]
-  records: SpeciesDesc[]
+  species: SpeciesDesc[]
 }
 
 export interface GeneCluster {
@@ -63,8 +63,8 @@ export interface GeneClusterData {
   na_aln?: string
   na_aln_reduced?: string
   nwk?: string
-  patterns_json?: Record<string, unknown>
-  tree_json?: Record<string, unknown>
+  patterns?: Record<string, unknown>
+  tree?: Record<string, unknown>
 }
 
 export function geneClusterEquals(left: GeneCluster, right: GeneCluster): boolean {
@@ -89,7 +89,7 @@ export function getDataRootUrl(): string {
 }
 
 export function getDataIndexJsonUrl(): string {
-  return urljoin(getDataRootUrl(), 'index_v2.json')
+  return urljoin(getDataRootUrl(), 'index.json')
 }
 
 export function useDataIndexQuery(options?: UseAxiosQueryOptions<DataIndexJson>): DataIndexJson {
@@ -97,10 +97,7 @@ export function useDataIndexQuery(options?: UseAxiosQueryOptions<DataIndexJson>)
 }
 
 export function useGeneClusterJson(speciesId: string, options?: UseAxiosQueryOptions<GeneClusterJson>) {
-  return useAxiosQuery<GeneClusterJson>(
-    urljoin(getDataRootUrl(), 'dataset', speciesId, 'gene_cluster_v2.json'),
-    options,
-  )
+  return useAxiosQuery<GeneClusterJson>(urljoin(getDataRootUrl(), 'dataset', speciesId, 'gene_cluster.json'), options)
 }
 
 export interface MetadataEntry {
@@ -121,8 +118,13 @@ export function useSpeciesMetadata(speciesId: string, options?: UseAxiosQueryOpt
   return useAxiosCsvQuery<MetadataEntry>(url, '\t', options)
 }
 
-export function useSpeciesTreeJson(speciesId: string, options?: UseAxiosQueryOptions<MetadataEntry[]>) {
-  const url = useMemo(() => urljoin(getDataRootUrl(), 'dataset', speciesId, 'coreGenomeTree.json'), [speciesId])
+export interface SpeciesTree {
+  meta: Record<string, unknown>
+  tree: Record<string, unknown>
+}
+
+export function useSpeciesTreeJson(speciesId: string, options?: UseAxiosQueryOptions<SpeciesTree>) {
+  const url = useMemo(() => urljoin(getDataRootUrl(), 'dataset', speciesId, 'strain_tree.json'), [speciesId])
   return useAxiosQuery(url, options)
 }
 
@@ -159,7 +161,7 @@ export function useGeneClusterData(
     na_aln,
     na_aln_reduced,
     nwk,
-    patterns_json: patterns_json ? (JSON.parse(patterns_json) as Record<string, unknown>) : undefined,
-    tree_json: tree_json ? (JSON.parse(tree_json) as Record<string, unknown>) : undefined,
+    patterns: patterns_json ? (JSON.parse(patterns_json) as Record<string, unknown>) : undefined,
+    tree: tree_json ? (JSON.parse(tree_json) as Record<string, unknown>) : undefined,
   }
 }

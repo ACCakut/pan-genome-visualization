@@ -72,7 +72,7 @@ export function ClientSideRouter({ Component, pageProps }: ClientSideRouterProps
   return useMemo(() => {
     const routeMatch = SPECIES_ROUTE.match(asPath)
     if (!isNil(routeMatch) && routeMatch?.species) {
-      const datasets = [...indexJson.records, ...indexJson.case_studies, ...indexJson.orders]
+      const datasets = [...indexJson.species, ...indexJson.case_studies, ...indexJson.orders]
       const species = datasets.find(({ id }) => id === routeMatch?.species)
       if (species) {
         return <SpeciesPage species={species} />
