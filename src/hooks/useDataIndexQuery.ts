@@ -10,19 +10,10 @@ export interface SpeciesDesc {
   description: string
   num_strains?: string
   source?: string
-  downloads?: SpeciesDownloads
 }
 
 export function speciesEquals(left: SpeciesDesc, right: SpeciesDesc): boolean {
   return left.id === right.id
-}
-
-export interface SpeciesDownloads {
-  'gene cluster json'?: string
-  'metadata table'?: string
-  'strain/species tree'?: string
-  'all gene alignments'?: string
-  'core gene alignments'?: string
 }
 
 export interface DataIndexJson {

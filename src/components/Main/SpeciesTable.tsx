@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
-import { SpeciesDesc, SpeciesDownloads, useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
+import { SpeciesDesc, useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import { Table } from 'src/components/Table/Table'
 import { getColumnDefNames } from 'src/components/Table/helpers'
@@ -29,10 +29,10 @@ const SPECIES_TABLE_COLUMNS: ColumnDef<SpeciesDesc>[] = [
   },
   {
     header: 'Downloads',
-    accessorFn: (row) => row.downloads,
+    accessorFn: (row) => row,
     minSize: 75,
     size: 75,
-    cell: (context) => <SpeciesTableCellDownloadList downloads={context.getValue<SpeciesDownloads>()} />,
+    cell: (context) => <SpeciesTableCellDownloadList species={context.getValue<SpeciesDesc>()} />,
     enableSorting: false,
   },
 ]

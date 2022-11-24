@@ -12,15 +12,8 @@ export interface LinkExternalProps extends StrictOmit<HTMLProps<HTMLAnchorElemen
 }
 
 export function LinkExternal({ children, download, ...restProps }: PropsWithChildren<LinkExternalProps>) {
-  let target: string | undefined = '_blank'
-  let rel: string | undefined = 'noopener noreferrer'
-  if (download) {
-    target = undefined
-    rel = undefined
-  }
-
   return (
-    <A target={target} rel={rel} download {...restProps}>
+    <A target="_blank" rel="noopener noreferrer" download={download} {...restProps}>
       {children}
     </A>
   )

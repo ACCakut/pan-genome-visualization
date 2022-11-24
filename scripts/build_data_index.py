@@ -97,13 +97,6 @@ def generate_index_entry(species_dir_path, all_downloads_table, species_list_inf
     species_info.update({
       "num_strains": int(table_entry["#strains"]),
       "source": table_entry["source"],
-      "downloads": {
-        "gene cluster json": table_entry["gene cluster json"],
-        "metadata table": table_entry["metadata table"],
-        "strain/species tree": table_entry["strain/species tree"],
-        "all gene alignments": table_entry["all gene alignments"],
-        "core gene alignments": table_entry["core gene alignments"],
-      },
     })
   else:
     warning(f"table entry is empty for species '{species_id}'")

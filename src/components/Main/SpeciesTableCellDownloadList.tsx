@@ -1,48 +1,50 @@
-import { isNil } from 'lodash'
 import React, { PropsWithChildren, useMemo } from 'react'
 import { LinkExternal } from 'src/components/Link/LinkExternal'
 
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
-import { getDataRootUrl, SpeciesDownloads } from 'src/hooks/useDataIndexQuery'
+import { getDataRootUrl, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import urljoin from 'url-join'
 
 export interface SpeciesTableCellDownloadListProps {
-  downloads?: SpeciesDownloads
+  species: SpeciesDesc
 }
 
-export function SpeciesTableCellDownloadList({ downloads }: SpeciesTableCellDownloadListProps) {
+export function SpeciesTableCellDownloadList({ species }: SpeciesTableCellDownloadListProps) {
   const { t } = useTranslationSafe()
 
   const links = useMemo(() => {
     const links = [
-      { key: 'G', text: t('Gene cluster JSON'), url: downloads?.['gene cluster json'] },
-      { key: 'M', text: t('Metadata table'), url: downloads?.['metadata table'] },
-      { key: 'S', text: t('Strain/species tree'), url: downloads?.['strain/species tree'] },
-      { key: 'A', text: t('All gene alignments'), url: downloads?.['all gene alignments'] },
-      { key: 'C', text: t('Core gene alignments'), url: downloads?.['core gene alignments'] },
+      { key: 'G', text: t('Gene cluster JSON'), filename: 'gene_cluster.json' },
+      { key: 'M', text: t('Metadata table'), filename: 'metainfo.tsv' },
+      { key: 'T', text: t('Strain/species tree'), filename: 'strain_tree.nwk' },
+      { key: 'J', text: t('Strain/species tree'), filename: 'strain_tree.json' },
+      { key: 'A', text: t('All gene alignments'), filename: 'all_gene_alignments.zip' },
+      { key: 'C', text: t('Core gene alignments'), filename: 'core_gene_alignments.zip' },
     ]
 
-    return links.map(({ key, text, url }) => (
-      <SpeciesTableDownloadLink key={key} url={url} title={text}>
+    return links.map(({ key, text, filename }) => (
+      <SpeciesTableDownloadLink key={key} speciesId={species.id} filename={filename} title={text}>
         {key}
       </SpeciesTableDownloadLink>
     ))
-  }, [downloads, t])
+  }, [species.id, t])
 
   return <span>{links}</span>
 }
 
 export interface SpeciesTableDownloadLinkProps {
   title: string
-  url?: string
+  filename: string
+  speciesId: string
 }
 
-export function SpeciesTableDownloadLink({ url, children, title }: PropsWithChildren<SpeciesTableDownloadLinkProps>) {
-  const fullUrl = useMemo(() => urljoin(getDataRootUrl(), url ?? ''), [url])
-
-  if (isNil(url)) {
-    return null
-  }
+export function SpeciesTableDownloadLink({
+  speciesId,
+  filename,
+  children,
+  title,
+}: PropsWithChildren<SpeciesTableDownloadLinkProps>) {
+  const fullUrl = useMemo(() => urljoin(getDataRootUrl(), 'dataset', speciesId, filename), [filename, speciesId])
 
   return (
     <span className="mx-1" title={title}>
