@@ -74,7 +74,7 @@ const View = BoneView.extend({
   },
 
   clickButton: function(e) {
-    console.log( "clickButton", this, e );
+    // console.log( "clickButton", this, e );
     const target = e.target;
     const action = $(target).data('action');
     const method = this.model[action];

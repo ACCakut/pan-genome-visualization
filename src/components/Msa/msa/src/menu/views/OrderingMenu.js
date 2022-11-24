@@ -88,7 +88,7 @@ const OrderingMenu = MenuBuilder.extend({
 
     models.push({text: "Identity " + arrowUp,comparator: ((a,b) => {
       var val = this.ident[a.id] - this.ident[b.id];
-      console.log(this.ident[a.id],this.ident[b.id]);
+      // console.log(this.ident[a.id],this.ident[b.id]);
       if (val > 0) { return 1; }
       if (val < 0) { return -1; }
       return 0;

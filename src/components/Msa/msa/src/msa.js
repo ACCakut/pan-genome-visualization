@@ -232,7 +232,7 @@ const MSA = boneView.extend({
 
   render: function() {
     if (this.seqs === undefined || this.seqs.length === 0) {
-      console.log("warning. empty seqs.");
+      // console.log("warning. empty seqs.");
     }
     this.renderSubviews();
     this.g.vis.set("loaded", true);

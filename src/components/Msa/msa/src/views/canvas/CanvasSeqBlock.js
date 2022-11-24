@@ -59,7 +59,7 @@ const View = boneView.extend({
         this.throttleCounts++;
         if (this.throttleCounts > 15) {
           const tTime = Math.ceil(this.throttleTime / this.throttleCounts);
-          console.log("avgDrawTime/WebKit", tTime);
+          // console.log("avgDrawTime/WebKit", tTime);
           // remove perf analyser
           return this.throttledDraw = this.draw;
         }
@@ -84,7 +84,7 @@ const View = boneView.extend({
     // remove itself after analysis
     if (this.throttleCounts > 15) {
       let tTime = Math.ceil(this.throttleTime / this.throttleCounts);
-      console.log("avgDrawTime", tTime);
+      // console.log("avgDrawTime", tTime);
       tTime *=  1.2; // add safety time
       tTime = Math.max(20, tTime); // limit for ultra fast computers
       return this.throttledDraw = _.throttle(this.draw, tTime);
@@ -362,7 +362,7 @@ const View = boneView.extend({
       const features = this.model.at(y).get("features").getFeatureOnRow(rowNumber - 1, x);
       if (!(features.length === 0)) {
         const feature = features[0];
-        console.log(features[0].attributes);
+        // console.log(features[0].attributes);
         return {seqId:seqId, feature: feature, rowPos: x, evt:e};
       }
     } else {

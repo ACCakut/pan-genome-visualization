@@ -25,7 +25,7 @@ const View  = boneView.extend({
 
     this.listenTo(this.model,"sort", this.rerender);
     this.listenTo(this.model,"add", function() {
-      return console.log("seq add");
+      // return console.log("seq add");
     });
 
     this.listenTo(this.g.vis,"change:sequences", this.rerender);

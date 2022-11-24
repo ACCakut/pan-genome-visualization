@@ -17,7 +17,7 @@ const DebugMenu = MenuBuilder.extend({
     this.addNode("Toggle mouseover events", () => {
       this.g.config.set("registerMouseHover", !this.g.config.get("registerMouseHover"));
       return this.g.onAll(function() {
-        return console.log(arguments);
+        // return console.log(arguments);
       });
     });
 

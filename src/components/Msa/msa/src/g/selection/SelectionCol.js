@@ -250,7 +250,7 @@ const SelectionManager = Collection.extend({
       }
 
       if (lefts.length > 0 || rights.length > 0) {
-        console.log("removed el");
+        // console.log("removed el");
         return el.collection.remove(el);
       }
     });

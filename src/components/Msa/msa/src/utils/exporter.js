@@ -70,7 +70,7 @@ const Exporter =
 
   saveSelection: function(that,name) {
     let selection = that.g.selcol.pluck("seqId");
-    console.log(selection);
+    // console.log(selection);
     if (selection.length > 0) {
       // filter those seqids
       selection = that.seqs.filter((el) => selection.indexOf(el.get("id")) >= 0);
