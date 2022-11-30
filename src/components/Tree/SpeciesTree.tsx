@@ -1,38 +1,23 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import React, { useEffect, useRef } from 'react'
+import React, { useMemo } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 import { Card, CardBody, CardHeader } from 'reactstrap'
-import styled from 'styled-components'
-import * as d3 from 'd3'
 
-import { SpeciesDesc, useSpeciesTreeJson } from 'src/hooks/useDataIndexQuery'
+import type { SpeciesDesc } from 'src/hooks/useDataIndexQuery'
+import { useSpeciesTreeJson } from 'src/hooks/useDataIndexQuery'
+import { convertPhyloTreeToGraph } from 'src/components/Tree/PhyloGraph/convertPhyloTreeToGraph'
+import { PhyloGraph } from 'src/components/Tree/PhyloGraph/PhyloGraph'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 
-// @ts-ignore
-import phyloTree from 'src/components/Tree/phyloTree/src/phyloTree'
-// @ts-ignore
-import drawTree from 'src/components/Tree/phyloTree/src/drawTree'
-// @ts-ignore
-import speciesTreeCallbacks from './speciesTreeCallbacks'
-
-const Svg = styled.svg`
-  font-family: sans-serif;
-  font-size: 1.25rem;
-  margin: 0;
-  padding: 0;
-  border: none;
-  width: 100%;
-  height: 100%;
-`
-
-export interface TreeProps {
+export interface SpeciesTreeProps {
   species: SpeciesDesc
 }
 
-export function SpeciesTree({ species }: TreeProps) {
+export function SpeciesTree({ species }: SpeciesTreeProps) {
   const { t } = useTranslationSafe()
-  const svgRef = useRef<SVGSVGElement>(null)
   const { tree, meta } = useSpeciesTreeJson(species.id)
+  const graph = useMemo(() => convertPhyloTreeToGraph(tree, meta), [meta, tree])
+
+  // const [showTooltip, setShowTooltip] = useState(false)
 
   const {
     width,
@@ -43,35 +28,20 @@ export function SpeciesTree({ species }: TreeProps) {
     refreshOptions: { leading: true, trailing: true },
   })
 
-  useEffect(() => {
-    if (!width || !height) {
-      return
-    }
-
-    drawTree(
-      phyloTree(tree, {
-        // @ts-ignore
-        svg: d3.select(svgRef.current),
-        margins: { top: 10, bottom: 10, left: 10, right: 10 },
-        scaleBar: true,
-        autoTipSize: false,
-        tipStrokeWidth: 0.5,
-        callbacks: speciesTreeCallbacks,
-        orientation: { x: 1, y: 1 },
-      }),
-    )
-    // tipLabels(myTree, tipText, tipFontSize(myTree), 3, 8)
-    // myTree.showTipLabels = true
-  }, [tree, width, height])
+  // const id = getSafeId('species-tree', { speciesId: species.id })
 
   return (
     <Card className="w-100 h-100">
       <CardHeader>
-        <h4>{t('Strain tree (SNPs in all core genes)')}</h4>
+        <h4>{t('Strain graph')}</h4>
+        <p>{t('SNPs in all core genes')}</p>
       </CardHeader>
       <CardBody>
         <div className="w-100 h-100" ref={containerRef}>
-          <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} ref={svgRef} />
+          {width && height && <PhyloGraph width={width} height={height} graph={graph} />}
+          {/*<Tooltip id={id} isOpen={showTooltip} target={id}>*/}
+          {/*  <div>{'Hello!'}</div>*/}
+          {/*</Tooltip>*/}
         </div>
       </CardBody>
     </Card>

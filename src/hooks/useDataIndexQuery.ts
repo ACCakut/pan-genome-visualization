@@ -48,6 +48,14 @@ export interface GeneClusterDataRaw {
   tree_json?: string
 }
 
+export interface TreeNodeOld {
+  name: string
+  children?: TreeNodeOld[]
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface TreeMetadataOld {}
+
 export interface GeneClusterData {
   aa_aln?: string
   aa_aln_reduced?: string
@@ -55,7 +63,8 @@ export interface GeneClusterData {
   na_aln_reduced?: string
   nwk?: string
   patterns?: Record<string, unknown>
-  tree?: Record<string, unknown>
+  tree?: TreeNodeOld
+  meta?: TreeMetadataOld
 }
 
 export function geneClusterEquals(left: GeneCluster, right: GeneCluster): boolean {
@@ -110,8 +119,8 @@ export function useSpeciesMetadata(speciesId: string, options?: UseAxiosQueryOpt
 }
 
 export interface SpeciesTree {
-  meta: Record<string, unknown>
-  tree: Record<string, unknown>
+  tree: TreeNodeOld
+  meta: TreeMetadataOld
 }
 
 export function useSpeciesTreeJson(speciesId: string, options?: UseAxiosQueryOptions<SpeciesTree>) {
@@ -153,6 +162,7 @@ export function useGeneClusterData(
     na_aln_reduced,
     nwk,
     patterns: patterns_json ? (JSON.parse(patterns_json) as Record<string, unknown>) : undefined,
-    tree: tree_json ? (JSON.parse(tree_json) as Record<string, unknown>) : undefined,
+    tree: tree_json ? (JSON.parse(tree_json) as TreeNodeOld) : undefined,
+    meta: {} as TreeMetadataOld,
   }
 }

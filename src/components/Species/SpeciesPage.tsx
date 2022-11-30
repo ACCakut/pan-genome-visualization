@@ -6,13 +6,13 @@ import { useRecoilValue } from 'recoil'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import { currentGeneIdAtom } from 'src/state/genes'
 import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
-import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
+// import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
-import { Tree } from 'src/components/Tree/Tree'
-import { MetadataTable } from 'src/components/Species/MetadataTable'
+// import { MetadataTable } from 'src/components/Species/MetadataTable'
 
-const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
+// const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
+const Tree = dynamic(() => import('src/components/Tree/Tree'), { suspense: true, ssr: false })
 
 export interface SpeciesPageProps {
   species: SpeciesDesc
@@ -49,11 +49,11 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
         </Col>
       </Row>
 
-      <Row noGutters>
-        <Col>
-          <GeneClustersTable species={species} clusters={geneJson.clusters} />
-        </Col>
-      </Row>
+      {/*<Row noGutters>*/}
+      {/*  <Col>*/}
+      {/*    <GeneClustersTable species={species} clusters={geneJson.clusters} />*/}
+      {/*  </Col>*/}
+      {/*</Row>*/}
 
       <Row noGutters className="my-4">
         <Col>{gene && <GeneClustersSection species={species} gene={gene} />}</Col>
@@ -74,11 +74,11 @@ export function GeneClustersSection({ species, gene }: GeneClustersSectionProps)
   return (
     <Suspense fallback={LOADING}>
       <Container fluid>
-        <Row noGutters>
-          <Col>
-            <Msa species={species} gene={gene} seqType="nuc" />
-          </Col>
-        </Row>
+        {/*<Row noGutters>*/}
+        {/*  <Col>*/}
+        {/*    <Msa species={species} gene={gene} seqType="nuc" />*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
 
         <Row noGutters>
           <Col>
@@ -86,16 +86,16 @@ export function GeneClustersSection({ species, gene }: GeneClustersSectionProps)
           </Col>
         </Row>
 
-        <Row noGutters>
-          <Col>
-            <MetadataTable species={species} />
-          </Col>
-        </Row>
-        <Row noGutters>
-          <Col>
-            <GeneClustersData species={species} gene={gene} />
-          </Col>
-        </Row>
+        {/*<Row noGutters>*/}
+        {/*  <Col>*/}
+        {/*    <MetadataTable species={species} />*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
+        {/*<Row noGutters>*/}
+        {/*  <Col>*/}
+        {/*    <GeneClustersData species={species} gene={gene} />*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
       </Container>
     </Suspense>
   )

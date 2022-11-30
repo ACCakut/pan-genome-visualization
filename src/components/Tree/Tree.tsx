@@ -15,7 +15,7 @@ export interface TreeProps {
   gene: GeneCluster
 }
 
-export function Tree({ species, gene }: TreeProps) {
+export default function Tree({ species, gene }: TreeProps) {
   return (
     <TreeContainer fluid>
       <Row noGutters className="w-100 h-100">
