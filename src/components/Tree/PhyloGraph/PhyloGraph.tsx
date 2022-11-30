@@ -43,11 +43,3 @@ export function PhyloGraph({ width, height, graph: graphRaw }: PhyloGraphProps) 
     </Svg>
   )
 }
-
-//   onMouseEnter={() => onMouseEnter(edge)}
-//   onMouseLeave={() => onMouseLeave(edge)}
-//   onClick={() => onClick(edge)}
-
-//   onMouseEnter(edge: GraphEdge): void
-//   onMouseLeave(edge: GraphEdge): void
-//   onClick(edge: GraphEdge): void

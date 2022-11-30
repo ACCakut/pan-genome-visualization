@@ -1,6 +1,8 @@
-import React, { ReactElement, useMemo } from 'react'
+import React, { ReactElement, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 
+import { useEnable } from 'src/hooks/useEnable'
+import { Tooltip } from 'src/components/Common/Tooltip'
 import type { Graph, GraphNode } from './graph'
 import { isLeafNode } from './graph'
 import { PHYLO_GRAPH_NODE_LABEL_FONT_SIZE, PHYLO_GRAPH_NODE_RADIUS } from './constants'
@@ -17,6 +19,9 @@ export interface CladeTreeNodeProps {
 
 export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
   const { x, y, name, id } = node
+  const ref = useRef<SVGCircleElement>(null)
+  const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
+
   const text = useMemo(() => {
     if (!isLeafNode(graph, id)) {
       return null
@@ -36,10 +41,31 @@ export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
     )
   }, [graph, id, x, y, name])
 
+  const circle = useMemo(() => {
+    return <NodeCircle ref={ref} cx={x} cy={y} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} />
+  }, [closeTooltip, openTooltip, x, y])
+
+  const elements = useMemo(() => {
+    return (
+      <g>
+        {circle}
+        {text}
+      </g>
+    )
+  }, [circle, text])
+
+  const tooltip = useMemo(() => {
+    return (
+      <Tooltip target={ref} isOpen={isTooltipOpen} fullWidth>
+        <pre>{JSON.stringify(node, null, 2)}</pre>
+      </Tooltip>
+    )
+  }, [isTooltipOpen, node])
+
   return (
-    <g>
-      <NodeCircle cx={x} cy={y} />
-      {text}
-    </g>
+    <>
+      {elements}
+      {tooltip}
+    </>
   )
 }

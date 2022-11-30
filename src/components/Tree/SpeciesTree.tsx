@@ -17,8 +17,6 @@ export function SpeciesTree({ species }: SpeciesTreeProps) {
   const { tree, meta } = useSpeciesTreeJson(species.id)
   const graph = useMemo(() => convertPhyloTreeToGraph(tree, meta), [meta, tree])
 
-  // const [showTooltip, setShowTooltip] = useState(false)
-
   const {
     width,
     height,
@@ -27,8 +25,6 @@ export function SpeciesTree({ species }: SpeciesTreeProps) {
     handleHeight: true,
     refreshOptions: { leading: true, trailing: true },
   })
-
-  // const id = getSafeId('species-tree', { speciesId: species.id })
 
   return (
     <Card className="w-100 h-100">
@@ -39,9 +35,6 @@ export function SpeciesTree({ species }: SpeciesTreeProps) {
       <CardBody>
         <div className="w-100 h-100" ref={containerRef}>
           {width && height && <PhyloGraph width={width} height={height} graph={graph} />}
-          {/*<Tooltip id={id} isOpen={showTooltip} target={id}>*/}
-          {/*  <div>{'Hello!'}</div>*/}
-          {/*</Tooltip>*/}
         </div>
       </CardBody>
     </Card>

@@ -30,3 +30,7 @@ body {
 .btn:disabled {
   cursor: not-allowed;
 }
+
+.popover {
+  pointer-events: none;
+}

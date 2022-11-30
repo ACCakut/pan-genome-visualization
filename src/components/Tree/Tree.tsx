@@ -19,10 +19,10 @@ export default function Tree({ species, gene }: TreeProps) {
   return (
     <TreeContainer fluid>
       <Row noGutters className="w-100 h-100">
-        <Col className="h-100">
+        <Col className="h-100 m-1">
           <SpeciesTree species={species} />
         </Col>
-        <Col className="h-100">
+        <Col className="h-100 m-1">
           <GeneTree species={species} gene={gene} />
         </Col>
       </Row>

@@ -23,8 +23,6 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
     return convertPhyloTreeToGraph(tree, meta)
   }, [meta, tree])
 
-  // const [showTooltip, setShowTooltip] = useState(false)
-
   const {
     width,
     height,
@@ -34,8 +32,6 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
     refreshOptions: { leading: true, trailing: true },
   })
 
-  // const id = getSafeId('species-tree', { speciesId: species.id })
-
   return (
     <Card className="w-100 h-100">
       <CardHeader>
@@ -44,9 +40,6 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
       <CardBody>
         <div className="w-100 h-100" ref={containerRef}>
           {graph && width && height && <PhyloGraph width={width} height={height} graph={graph} />}
-          {/*<Tooltip id={id} isOpen={showTooltip} target={id}>*/}
-          {/*  <div>{'Hello!'}</div>*/}
-          {/*</Tooltip>*/}
         </div>
       </CardBody>
     </Card>
