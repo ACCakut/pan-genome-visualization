@@ -1,5 +1,4 @@
-import React, { PropsWithChildren, RefObject } from 'react'
-import { StrictOmit } from 'ts-essentials'
+import React, { PropsWithChildren } from 'react'
 import styled from 'styled-components'
 import { Popover as ReactstrapPopover, PopoverBody as ReactstrapPopoverBody, PopoverProps } from 'reactstrap'
 
@@ -20,8 +19,9 @@ export const Popover = styled(ReactstrapPopover)<
   }
 `
 
-export interface TooltipProps extends StrictOmit<PropsWithChildren<PopoverProps>, 'target'> {
-  target: RefObject<HTMLElement> | RefObject<SVGElement>
+export type PopoverPropsWithChildren = PropsWithChildren<PopoverProps>
+
+export interface TooltipProps extends PopoverPropsWithChildren {
   wide?: boolean
   fullWidth?: boolean
   tooltipWidth?: string
@@ -30,7 +30,7 @@ export interface TooltipProps extends StrictOmit<PropsWithChildren<PopoverProps>
 export function Tooltip({ children, placement, hideArrow, wide, fullWidth, tooltipWidth, ...restProps }: TooltipProps) {
   return (
     <Popover
-      placement={placement}
+      placement={placement ?? 'auto'}
       hideArrow={hideArrow ?? true}
       delay={0}
       fade={false}
