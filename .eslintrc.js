@@ -153,6 +153,7 @@ module.exports = {
     'unicorn/no-fn-reference-in-iterator': 'off',
     'unicorn/no-null': 'off',
     'unicorn/no-reduce': 'off',
+    'unicorn/no-typeof-undefined': 'off',
     'unicorn/no-useless-undefined': 'off',
     'unicorn/no-zero-fractions': 'off',
     'unicorn/prefer-node-protocol': 'off',
