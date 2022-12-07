@@ -7,8 +7,8 @@ import type { Graph, GraphNode } from './graph'
 import { isLeafNode } from './graph'
 import { PHYLO_GRAPH_NODE_LABEL_FONT_SIZE, PHYLO_GRAPH_NODE_RADIUS } from './constants'
 
-const NodeCircle = styled.circle`
-  fill: #555;
+const NodeCircle = styled.circle<{ fill?: string }>`
+  fill: ${(props) => props.fill ?? '#555'};
   r: ${PHYLO_GRAPH_NODE_RADIUS};
 `
 
@@ -18,7 +18,7 @@ export interface CladeTreeNodeProps {
 }
 
 export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
-  const { x, y, name, id } = node
+  const { x, y, id, color } = node
   const ref = useRef<SVGCircleElement>(null)
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
@@ -36,14 +36,14 @@ export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
         fontSize={PHYLO_GRAPH_NODE_LABEL_FONT_SIZE}
         textAnchor="left"
       >
-        {name}
+        {id}
       </text>
     )
-  }, [graph, id, x, y, name])
+  }, [graph, id, x, y])
 
   const circle = useMemo(() => {
-    return <NodeCircle ref={ref} cx={x} cy={y} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} />
-  }, [closeTooltip, openTooltip, x, y])
+    return <NodeCircle ref={ref} cx={x} cy={y} fill={color} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} />
+  }, [closeTooltip, color, openTooltip, x, y])
 
   const elements = useMemo(() => {
     return (

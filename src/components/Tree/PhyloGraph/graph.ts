@@ -25,6 +25,7 @@ export interface GraphNodeRaw {
 export interface GraphNode extends GraphNodeRaw {
   x: number
   y: number
+  color?: string
   layout: {
     numLeaves: number
     meanDepth: number
