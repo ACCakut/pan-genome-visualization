@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
 
-import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
-
 import LogoPangenome from 'src/assets/img/pangenome.svg'
 import styled from 'styled-components'
 
@@ -35,8 +33,6 @@ const SpinningLogo = styled(LogoPangenome)`
 `
 
 function Loading() {
-  const { t } = useTranslationSafe()
-
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -51,7 +47,7 @@ function Loading() {
   }
 
   return (
-    <Container title={t('Loading...')}>
+    <Container>
       <SpinningLogo />
     </Container>
   )
