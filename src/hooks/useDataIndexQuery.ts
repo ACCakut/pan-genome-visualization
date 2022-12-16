@@ -50,6 +50,16 @@ export interface GeneClusterDataRaw {
 
 export interface TreeNodeOld {
   name: string
+  branch_length?: number
+  clade?: string
+  attr?: {
+    strain?: string
+    collection_date?: string
+    country?: string
+    host?: string
+    organism?: string
+    [k: string]: unknown
+  }
   children?: TreeNodeOld[]
 }
 

@@ -20,6 +20,16 @@ export interface Graph {
 export interface GraphNodeRaw {
   id: string
   name: string
+  branch_length?: number
+  clade?: string
+  attr?: {
+    strain?: string
+    collection_date?: string
+    country?: string
+    host?: string
+    organism?: string
+    [k: string]: unknown
+  }
 }
 
 export interface GraphNode extends GraphNodeRaw {

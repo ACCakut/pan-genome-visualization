@@ -18,7 +18,7 @@ export interface CladeTreeNodeProps {
 }
 
 export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
-  const { x, y, id, color } = node
+  const { x, y, id, color, attr } = node
   const ref = useRef<SVGCircleElement>(null)
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
@@ -36,10 +36,10 @@ export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
         fontSize={PHYLO_GRAPH_NODE_LABEL_FONT_SIZE}
         textAnchor="left"
       >
-        {id}
+        {attr?.strain ?? ''}
       </text>
     )
-  }, [graph, id, x, y])
+  }, [attr?.strain, graph, id, x, y])
 
   const circle = useMemo(() => {
     return <NodeCircle ref={ref} cx={x} cy={y} fill={color} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} />
