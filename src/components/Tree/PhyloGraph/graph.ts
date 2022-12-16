@@ -1,11 +1,7 @@
 /* eslint-disable no-loops/no-loops,unused-imports/no-unused-vars */
 import { max, min, cloneDeep, sumBy, meanBy } from 'lodash'
 
-import {
-  PHYLO_GRAPH_NODE_SPACING_HORIZONTAL,
-  PHYLO_GRAPH_NODE_RADIUS,
-  PHYLO_GRAPH_NODE_SPACING_VERTICAL,
-} from './constants'
+import { PHYLO_GRAPH_NODE_RADIUS } from './constants'
 
 export interface GraphRaw {
   nodes: GraphNodeRaw[]
@@ -51,7 +47,7 @@ export interface GraphNode extends GraphNodeRaw {
   }
 }
 
-export function convertNodeToInternal(nodeRaw: GraphNodeRaw): GraphNode {
+export function convertNode(nodeRaw: GraphNodeRaw): GraphNode {
   return {
     ...nodeRaw,
     x: 0,
@@ -79,9 +75,10 @@ export interface GraphEdge {
 }
 
 export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: number): Graph {
-  const graph: Graph = { ...cloneDeep(graphRaw), nodes: graphRaw.nodes.map(convertNodeToInternal) }
+  const graph: Graph = { ...cloneDeep(graphRaw), nodes: graphRaw.nodes.map(convertNode) }
 
   let rank = 0
+  let depth = 0
   traverseDepthFirstPostOrder(graph, ({ node, children, parents, siblings, isLeaf, isRoot }) => {
     if (isLeaf) {
       node.layout.numLeaves = 1
@@ -108,17 +105,21 @@ export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: 
       node.layout.minDepth = (min(parents.map(([parent, _]) => parent.layout.meanDepth)) ?? 0) + 1
       node.layout.maxDepth = (max(parents.map(([parent, _]) => parent.layout.meanDepth)) ?? 0) + 1
     }
+    depth = Math.max(depth, node.layout.maxDepth)
     return node
   })
 
+  const xSpacing = (width - PHYLO_GRAPH_NODE_RADIUS * 2) / depth
+  const ySpacing = (height - PHYLO_GRAPH_NODE_RADIUS * 2) / rank
+
   traverseDepthFirstPreOrder(graph, ({ node, children, parents, siblings, isLeaf, isRoot }) => {
-    node.x = node.layout.meanDepth * PHYLO_GRAPH_NODE_SPACING_HORIZONTAL + PHYLO_GRAPH_NODE_RADIUS
-    node.y = node.layout.meanRank * PHYLO_GRAPH_NODE_SPACING_VERTICAL + PHYLO_GRAPH_NODE_RADIUS
+    node.x = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+    node.y = node.layout.meanRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
     if (!isLeaf) {
-      node.layout.xTBarStart = node.layout.meanDepth * PHYLO_GRAPH_NODE_SPACING_HORIZONTAL + PHYLO_GRAPH_NODE_RADIUS
-      node.layout.yTBarStart = node.layout.minRank * PHYLO_GRAPH_NODE_SPACING_VERTICAL + PHYLO_GRAPH_NODE_RADIUS
-      node.layout.xTBarEnd = node.layout.meanDepth * PHYLO_GRAPH_NODE_SPACING_HORIZONTAL + PHYLO_GRAPH_NODE_RADIUS
-      node.layout.yTBarEnd = node.layout.maxRank * PHYLO_GRAPH_NODE_SPACING_VERTICAL + PHYLO_GRAPH_NODE_RADIUS
+      node.layout.xTBarStart = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+      node.layout.yTBarStart = node.layout.minRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
+      node.layout.xTBarEnd = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+      node.layout.yTBarEnd = node.layout.maxRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
     }
   })
 
