@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Convert pangenome data from the old to the new format
+"""
+
 from datetime import datetime
 from glob import glob
 from itertools import zip_longest
@@ -14,7 +21,7 @@ import tarfile
 
 logging.basicConfig(level=INFO)
 
-BATCH_SIZE = 50  # Number of gene clusters packaged in one archive. This might need some tuning.
+BATCH_SIZE = 100  # Number of gene clusters packaged in one archive. This might need some tuning.
 
 
 def list_unique_files(dataset_path):
