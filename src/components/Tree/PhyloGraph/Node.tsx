@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useEnable } from 'src/hooks/useEnable'
 import { Tooltip } from 'src/components/Common/Tooltip'
 import type { Graph, GraphNode } from './graph'
-import { isLeafNode } from './graph'
+import { getLeaves, isLeafNode } from './graph'
 import { PHYLO_GRAPH_NODE_LABEL_FONT_SIZE, PHYLO_GRAPH_NODE_RADIUS } from './constants'
 
 const NodeCircle = styled.circle<{ fill?: string }>`
@@ -23,7 +23,7 @@ export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
   const text = useMemo(() => {
-    if (!isLeafNode(graph, id)) {
+    if (!isLeafNode(graph, id) || getLeaves(graph).length > 50) {
       return null
     }
     return (
