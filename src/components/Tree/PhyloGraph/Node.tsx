@@ -1,16 +1,9 @@
-import React, { ReactElement, useMemo, useRef } from 'react'
-import styled from 'styled-components'
-
+import React, { ReactElement, useMemo } from 'react'
+import { Circle, Text } from 'react-konva'
 import { useEnable } from 'src/hooks/useEnable'
-import { Tooltip } from 'src/components/Common/Tooltip'
-import type { Graph, GraphNode } from './graph'
-import { getLeaves, isLeafNode } from './graph'
-import { PHYLO_GRAPH_NODE_LABEL_FONT_SIZE, PHYLO_GRAPH_NODE_RADIUS } from './constants'
-
-const NodeCircle = styled.circle<{ fill?: string }>`
-  fill: ${(props) => props.fill ?? '#555'};
-  r: ${PHYLO_GRAPH_NODE_RADIUS};
-`
+import { PHYLO_GRAPH_NODE_LABEL_FONT_SIZE, PHYLO_GRAPH_NODE_RADIUS } from 'src/components/Tree/PhyloGraph/constants'
+import { CanvasTooltip, CanvasTooltipPre } from 'src/components/Tree/PhyloGraph/CanvasTooltip'
+import { isLeafNode, getLeaves, Graph, GraphNode } from 'src/components/Tree/PhyloGraph/graph'
 
 export interface CladeTreeNodeProps {
   node: GraphNode
@@ -18,8 +11,7 @@ export interface CladeTreeNodeProps {
 }
 
 export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
-  const { x, y, id, color, attr } = node
-  const ref = useRef<SVGCircleElement>(null)
+  const { x, y, id, color } = node
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
   const text = useMemo(() => {
@@ -27,7 +19,7 @@ export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
       return null
     }
     return (
-      <text
+      <Text
         x={x + PHYLO_GRAPH_NODE_RADIUS * 2}
         y={y + PHYLO_GRAPH_NODE_LABEL_FONT_SIZE / 2 - 2}
         width={PHYLO_GRAPH_NODE_RADIUS * 2}
@@ -35,37 +27,38 @@ export function Node({ node, graph }: CladeTreeNodeProps): ReactElement {
         fill="#222"
         fontSize={PHYLO_GRAPH_NODE_LABEL_FONT_SIZE}
         textAnchor="left"
-      >
-        {attr?.strain ?? ''}
-      </text>
+        text={id}
+      />
     )
-  }, [attr?.strain, graph, id, x, y])
+  }, [graph, id, x, y])
 
   const circle = useMemo(() => {
-    return <NodeCircle ref={ref} cx={x} cy={y} fill={color} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} />
-  }, [closeTooltip, color, openTooltip, x, y])
+    return (
+      <>
+        <Circle
+          x={x}
+          y={y}
+          radius={PHYLO_GRAPH_NODE_RADIUS}
+          fill={color}
+          onMouseEnter={openTooltip}
+          onMouseLeave={closeTooltip}
+        />
+        <CanvasTooltip isOpen={isTooltipOpen}>
+          <CanvasTooltipPre>{JSON.stringify(node, null, 2)}</CanvasTooltipPre>
+        </CanvasTooltip>
+      </>
+    )
+  }, [closeTooltip, color, isTooltipOpen, node, openTooltip, x, y])
 
   const elements = useMemo(() => {
     return (
-      <g>
+      <>
         {circle}
         {text}
-      </g>
+      </>
     )
   }, [circle, text])
 
-  const tooltip = useMemo(() => {
-    return (
-      <Tooltip target={ref} isOpen={isTooltipOpen} fullWidth>
-        <pre>{JSON.stringify(node, null, 2)}</pre>
-      </Tooltip>
-    )
-  }, [isTooltipOpen, node])
-
-  return (
-    <>
-      {elements}
-      {tooltip}
-    </>
-  )
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{elements}</>
 }

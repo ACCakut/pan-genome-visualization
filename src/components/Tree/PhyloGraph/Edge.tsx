@@ -1,31 +1,8 @@
-import React, { useMemo, useRef } from 'react'
-import { Tooltip } from 'src/components/Common/Tooltip'
+import React, { useMemo } from 'react'
+import { Line } from 'react-konva'
 import { useEnable } from 'src/hooks/useEnable'
-import styled from 'styled-components'
-
+import { CanvasTooltip, CanvasTooltipPre } from './CanvasTooltip'
 import { getNodesForEdge, Graph, GraphEdge } from './graph'
-
-const PathT = styled.path`
-  fill: none;
-  stroke-width: 4px;
-  stroke: #aaa;
-  pointer-events: auto;
-  cursor: pointer;
-`
-
-const PathS = styled.path`
-  fill: none;
-  stroke-width: 4px;
-  stroke: #aaa;
-  pointer-events: auto;
-  cursor: pointer;
-  stroke-linecap: round;
-`
-
-export interface Point {
-  x: number
-  y: number
-}
 
 export interface EdgeProps {
   edge: GraphEdge
@@ -33,62 +10,32 @@ export interface EdgeProps {
 }
 
 export function Edge({ edge, graph }: EdgeProps) {
-  const refVertical = useRef<SVGCircleElement>(null)
-  const [isVerticalTooltipOpen, openVerticalTooltip, closeVerticalTooltip] = useEnable(false)
+  const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
-  const refHorizontal = useRef<SVGCircleElement>(null)
-  const [isHorizontalTooltipOpen, openHorizontalTooltip, closeHorizontalTooltip] = useEnable(false)
-
-  const paths = useMemo(() => {
+  const line = useMemo(() => {
     const { source, target } = getNodesForEdge(graph, edge)
 
-    const pathVertical = (
-      <PathT
-        ref={refVertical}
-        d={`M ${source.layout.xTBarStart}, ${source.layout.yTBarStart} L ${source.layout.xTBarEnd}, ${source.layout.yTBarEnd}`}
-        onMouseEnter={openVerticalTooltip}
-        onMouseOut={closeVerticalTooltip}
-      />
-    )
+    // prettier-ignore
+    const points = [ // eslint-disable-line react-perf/jsx-no-new-array-as-prop
+      // Vertical line
+      source.layout.xTBarStart, source.layout.yTBarStart,
+      source.layout.xTBarEnd, source.layout.yTBarEnd,
 
-    const pathHorizontal = (
-      <PathS
-        ref={refHorizontal}
-        d={`M ${source.layout.xTBarStart}, ${target.y} L ${target.x}, ${target.y}`}
-        onMouseEnter={openHorizontalTooltip}
-        onMouseOut={closeHorizontalTooltip}
-      />
-    )
+      // Horizontal line
+      source.layout.xTBarStart, target.y,
+      target.x, target.y
+    ];
 
     return (
-      <g>
-        {pathVertical}
-        {pathHorizontal}
-      </g>
+      <>
+        <Line points={points} stroke="#aaa" strokeWidth={5} onMouseEnter={openTooltip} onMouseOut={closeTooltip} />
+        <CanvasTooltip isOpen={isTooltipOpen}>
+          <CanvasTooltipPre>{JSON.stringify(edge, null, 2)}</CanvasTooltipPre>
+        </CanvasTooltip>
+      </>
     )
-  }, [closeHorizontalTooltip, closeVerticalTooltip, edge, graph, openHorizontalTooltip, openVerticalTooltip])
+  }, [closeTooltip, edge, graph, isTooltipOpen, openTooltip])
 
-  const tooltipVertical = useMemo(() => {
-    return (
-      <Tooltip target={refVertical} isOpen={isVerticalTooltipOpen} fullWidth>
-        <pre>{JSON.stringify(edge, null, 2)}</pre>
-      </Tooltip>
-    )
-  }, [edge, isVerticalTooltipOpen])
-
-  const tooltipHorizontal = useMemo(() => {
-    return (
-      <Tooltip target={refHorizontal} isOpen={isHorizontalTooltipOpen} fullWidth>
-        <pre>{JSON.stringify(edge, null, 2)}</pre>
-      </Tooltip>
-    )
-  }, [edge, isHorizontalTooltipOpen])
-
-  return (
-    <>
-      {paths}
-      {tooltipVertical}
-      {tooltipHorizontal}
-    </>
-  )
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{line}</>
 }

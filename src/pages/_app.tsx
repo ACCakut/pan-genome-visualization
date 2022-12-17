@@ -25,6 +25,7 @@ import { theme } from 'src/theme'
 import { configureStore } from 'src/state/store'
 import { useDataIndexQuery } from 'src/hooks/useDataIndexQuery'
 import i18n from 'src/i18n/i18n'
+import { OverlayAnchor } from 'src/components/Common/OverlayAnchor'
 import { ErrorPopup } from 'src/components/Error/ErrorPopup'
 import { LOADING } from 'src/components/Loading/Loading'
 import { SEO } from 'src/components/Common/SEO'
@@ -110,6 +111,7 @@ export function MyApp({ Component, pageProps }: MyAppProps) {
                       <SEO />
                       <PreviewWarning />
                       <ClientSideRouter Component={Component} pageProps={pageProps} />
+                      <OverlayAnchor />
                       <ErrorPopup />
                     </ErrorBoundary>
                   </I18nextProvider>
