@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import { currentGeneIdAtom } from 'src/state/genes'
 import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
-// import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
+import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
 // import { MetadataTable } from 'src/components/Species/MetadataTable'
@@ -49,11 +49,11 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
         </Col>
       </Row>
 
-      {/*<Row noGutters>*/}
-      {/*  <Col>*/}
-      {/*    <GeneClustersTable species={species} clusters={geneJson.clusters} />*/}
-      {/*  </Col>*/}
-      {/*</Row>*/}
+      <Row noGutters>
+        <Col>
+          <GeneClustersTable species={species} clusters={geneJson.clusters} />
+        </Col>
+      </Row>
 
       <Row noGutters className="my-4">
         <Col>{gene && <GeneClustersSection species={species} gene={gene} />}</Col>
