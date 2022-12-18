@@ -1,35 +1,36 @@
-require('../dotenv')
-
-const { findModuleRoot } = require('../../lib/findModuleRoot')
+import type { JestConfigWithTsJest } from 'ts-jest'
+import { findModuleRoot } from '../../lib/findModuleRoot'
 
 const { moduleRoot } = findModuleRoot()
 
-module.exports = {
+export const configCommon: JestConfigWithTsJest = {
   rootDir: moduleRoot,
   roots: ['<rootDir>/src'],
-  displayName: { name: 'test', color: 'cyan' },
-  testEnvironment: 'jest-environment-jsdom',
-  preset: 'ts-jest',
-  globals: {
-    'ts-jest': {
-      babelConfig: true,
-      diagnostics: {
-        pathRegex: /(\/__tests?__\/.*|([./])(test|spec))\.[jt]sx?$/,
-        warnOnly: true,
-      },
-    },
-  },
+  preset: 'ts-jest/presets/default-esm',
   transform: {
-    '^.+\\.[t|j]sx?$': 'ts-jest',
+    '^.+\\.cm?[jt]sx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          useESM: true,
+          module: 'esnext',
+          target: 'esnext',
+          allowSyntheticDefaultImports: true,
+          esModuleInterop: true,
+        },
+        babelConfig: false,
+        diagnostics: {
+          pathRegex: /(\/__tests?__\/.*|([./])(test|spec))\.[jt]sx?$/,
+          warnOnly: true,
+        },
+      },
+    ],
     '^.+\\.(md|mdx)$': 'jest-transformer-mdx',
     '\\.(txt|fasta|csv|tsv)': 'jest-raw-loader',
   },
   testMatch: [
-    '<rootDir>/src/**/*.(spec|test).{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/__test__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/test/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/tests/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.(spec|test).{cjs,js,jsx,mjs,ts,tsx}',
+    '<rootDir>/src/**/(__)?(spec|test)s?(__)?/**/*.{cjs,js,jsx,mjs,ts,tsx}',
   ],
   transformIgnorePatterns: ['node_modules/(?!(d3-scale)/)'],
   moduleNameMapper: {
@@ -49,5 +50,4 @@ module.exports = {
     'jest-axe/extend-expect',
     '@testing-library/jest-dom/extend-expect',
   ],
-  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
 }
