@@ -1,4 +1,4 @@
-/* eslint-disable no-loops/no-loops,unused-imports/no-unused-vars */
+/* eslint-disable no-loops/no-loops */
 import { max, min, cloneDeep, sumBy, meanBy, isEmpty, last } from 'lodash'
 import { ErrorInternal } from 'src/helpers/ErrorInternal'
 
@@ -80,7 +80,9 @@ export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: 
 
   let rank = 0
   let depth = 0
-  traverseDepthFirstPostOrder(graph, ({ node, children, parents, siblings, isLeaf, isRoot }) => {
+  traverseDepthFirstPostOrder(graph, ({ node }) => {
+    const children = getChildren(graph, node.id)
+    const isLeaf = isEmpty(children)
     if (isLeaf) {
       node.layout.numLeaves = 1
       rank += 1
@@ -96,7 +98,9 @@ export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: 
     return node
   })
 
-  traverseDepthFirstPreOrder(graph, ({ node, children, parents, siblings, isLeaf, isRoot }) => {
+  traverseDepthFirstPreOrder(graph, ({ node }) => {
+    const parents = getParents(graph, node.id)
+    const isRoot = isEmpty(parents)
     if (isRoot) {
       node.layout.meanDepth = 0
       node.layout.maxDepth = 0
@@ -129,11 +133,6 @@ export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: 
 
 export interface ExplorerParams {
   node: GraphNode
-  children: [GraphNode, GraphEdge][]
-  parents: [GraphNode, GraphEdge][]
-  siblings: GraphNode[]
-  isLeaf: boolean
-  isRoot: boolean
 }
 
 // Explore graph in breadth-first fashion given an explorer function.
@@ -161,28 +160,13 @@ export function traverseBreadthFirst<T>(
 
     const { node, depth } = item
 
-    let parents: [GraphNode, GraphEdge][] = getParents(graph, node.id)
-    parents = options?.backward ? parents : parents.reverse()
-
-    let children: [GraphNode, GraphEdge][] = getChildren(graph, node.id)
-    children = options?.backward ? children : children.reverse()
-
-    let siblings: GraphNode[] = getSiblings(graph, node.id)
-    siblings = options?.backward ? siblings : siblings.reverse()
-
-    // Leaf is the node that has no children
-    const isLeaf = children.length === 0
-
-    // Root is the node that has no parents
-    const isRoot = parents.length === 0
-
     // Perform the exploration as defined by the caller function
-    const result = explorer({ node, children, parents, siblings, isLeaf, isRoot })
+    const result = explorer({ node })
     explored.add(node.id)
     results.push(result)
 
     // Next, proceed with either children or parents, depending on which direction we are traversing
-    const successors = options?.backward ? parents : children
+    const successors = options?.backward ? getParents(graph, node.id) : getChildren(graph, node.id)
 
     // Enqueue children (unless already explored)
     successors.forEach(([child, _]) => {
@@ -222,22 +206,17 @@ export function traverseDepthFirstPreOrder<T>(graph: Graph, explorer: (params: E
       return results
     }
 
-    const children: [GraphNode, GraphEdge][] = getChildren(graph, node.id)
-    {
-      const parents: [GraphNode, GraphEdge][] = getParents(graph, node.id)
-      const siblings: GraphNode[] = getSiblings(graph, node.id)
-      const isLeaf = children.length === 0 // Leaf is the node that has no children
-      const isRoot = parents.length === 0 // Root is the node that has no parents
-      results.push(explorer({ node, children, parents, siblings, isLeaf, isRoot }))
-      explored.add(node.id)
-    }
+    results.push(explorer({ node }))
+    explored.add(node.id)
 
-    children.reverse().forEach(([child]) => {
-      if (!explored.has(child.id)) {
-        stack.push(child)
-        explored.add(child.id)
-      }
-    })
+    getChildren(graph, node.id)
+      .reverse()
+      .forEach(([child]) => {
+        if (!explored.has(child.id)) {
+          stack.push(child)
+          explored.add(child.id)
+        }
+      })
   }
 }
 
@@ -262,10 +241,8 @@ export function traverseDepthFirstPostOrder<T>(graph: Graph, explorer: (params: 
 
   let node
   while ((node = last(stack))) {
-    const children: [GraphNode, GraphEdge][] = getChildren(graph, node.id)
-
     let isTail = true
-    for (const [child, _] of children) {
+    for (const [child, _] of getChildren(graph, node.id)) {
       if (!explored.has(child.id)) {
         isTail = false
         stack.push(child)
@@ -276,13 +253,7 @@ export function traverseDepthFirstPostOrder<T>(graph: Graph, explorer: (params: 
 
     if (isTail) {
       stack.pop()
-
-      const parents: [GraphNode, GraphEdge][] = getParents(graph, node.id)
-      const siblings: GraphNode[] = getSiblings(graph, node.id)
-      const isLeaf = children.length === 0 // Leaf is the node that has no children
-      const isRoot = parents.length === 0 // Root is the node that has no parents
-
-      results.push(explorer({ node, children, parents, siblings, isLeaf, isRoot }))
+      results.push(explorer({ node }))
       explored.add(node.id)
     }
   }
