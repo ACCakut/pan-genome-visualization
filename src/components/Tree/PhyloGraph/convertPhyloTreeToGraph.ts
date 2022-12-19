@@ -16,7 +16,11 @@ export function convertPhyloTreeToGraph(tree: TreeNodeOld, meta: TreeMetadataOld
   const edges: GraphEdge[] = []
   flattenPhyloTreeEdgesRecursive(treeWithIds, meta, nodesRaw, edges)
 
-  const nodes = nodesRaw.map((node) => ({ ...node, id: node.id, color: colorHash(node.id.toString()) }))
+  const nodes = nodesRaw.map((node) => ({
+    ...node,
+    id: node.id,
+    color: colorHash(node.name, { reverse: true }),
+  }))
 
   return { nodes, edges }
 }

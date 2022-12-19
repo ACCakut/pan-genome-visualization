@@ -18,7 +18,7 @@ export const Node = memo(NodeUnmemo)
 
 function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
   const { x, y, id, color = '#222', name } = node
-  const circleAnimatedProps = useSpring({ x, y })
+  const animatedProps = useSpring({ x, y, fill: color })
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
   const [isHighlighted, setIsHighlighted] = useRecoilState(highlightedNodeAtom(name))
 
@@ -52,14 +52,13 @@ function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
 
   const circle = useMemo(() => {
     const stroke = isHighlighted ? 'lime' : undefined
-    const fill = isHighlighted ? lighten(0.2)(color) : color
     return (
       <>
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore*/}
         <animated.Circle
           radius={PHYLO_GRAPH_NODE_RADIUS}
-          fill={fill}
+          fill={animatedProps.fill}
           stroke={stroke}
           strokeWidth={3}
           fillAfterStrokeEnabled
@@ -79,12 +78,12 @@ function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
 
   const elements = useMemo(
     () => (
-      <animated.Group {...circleAnimatedProps}>
+      <animated.Group {...animatedProps}>
         {circle}
         {text}
       </animated.Group>
     ),
-    [circle, circleAnimatedProps, text],
+    [circle, animatedProps, text],
   )
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
