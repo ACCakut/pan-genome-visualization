@@ -113,10 +113,10 @@ export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: 
   const xSpacing = (width - PHYLO_GRAPH_NODE_RADIUS * 2) / depth
   const ySpacing = (height - PHYLO_GRAPH_NODE_RADIUS * 2) / rank
 
-  traverseDepthFirstPreOrder(graph, ({ node, children, parents, siblings, isLeaf, isRoot }) => {
+  graph.nodes.forEach((node) => {
     node.x = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
     node.y = node.layout.meanRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
-    if (!isLeaf) {
+    if (!isLeafNode(graph, node.id)) {
       node.layout.xTBarStart = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
       node.layout.yTBarStart = node.layout.minRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
       node.layout.xTBarEnd = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
