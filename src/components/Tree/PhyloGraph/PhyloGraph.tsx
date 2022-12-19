@@ -6,8 +6,8 @@ import { Node } from './Node'
 import { Edge } from './Edge'
 
 export interface PhyloGraphProps {
-  width: number
-  height: number
+  width?: number
+  height?: number
   graph: GraphRaw
 }
 
