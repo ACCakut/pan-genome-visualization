@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { Stage, Layer } from 'react-konva'
 import { verifyGraph } from 'src/components/Tree/PhyloGraph/verifyGraph'
 import { calculateGraphLayout, GraphRaw } from './graph'
@@ -11,7 +11,7 @@ export interface PhyloGraphProps {
   graph: GraphRaw
 }
 
-export function PhyloGraph({ width, height, graph: graphRaw }: PhyloGraphProps) {
+function PhyloGraphUnmemo({ width, height, graph: graphRaw }: PhyloGraphProps) {
   const { nodeComponents, edgeComponents } = useMemo(() => {
     if (!width || !height) {
       return { nodeComponents: [], edgeComponents: [] }
@@ -32,3 +32,5 @@ export function PhyloGraph({ width, height, graph: graphRaw }: PhyloGraphProps) 
     </Stage>
   )
 }
+
+export const PhyloGraph = memo(PhyloGraphUnmemo)

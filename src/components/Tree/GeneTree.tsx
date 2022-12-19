@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 import { useGeneClusterData } from 'src/hooks/useDataIndexQuery'
@@ -13,7 +13,7 @@ export interface GeneTreeProps {
   gene: GeneCluster
 }
 
-export function GeneTree({ species, gene }: GeneTreeProps) {
+function GeneTreeUnmemo({ species, gene }: GeneTreeProps) {
   const { t } = useTranslationSafe()
   const { tree, meta } = useGeneClusterData(species, gene)
   const graph = useMemo(() => {
@@ -32,6 +32,11 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
     refreshOptions: { leading: true, trailing: true },
   })
 
+  const graphView = useMemo(() => {
+    if (!(graph && width && height)) return null
+    return <PhyloGraph width={width} height={height} graph={graph} />
+  }, [graph, height, width])
+
   return (
     <Card className="w-100 h-100">
       <CardHeader>
@@ -39,9 +44,11 @@ export function GeneTree({ species, gene }: GeneTreeProps) {
       </CardHeader>
       <CardBody>
         <div className="w-100 h-100" ref={containerRef}>
-          {graph && width && height && <PhyloGraph width={width} height={height} graph={graph} />}
+          {graphView}
         </div>
       </CardBody>
     </Card>
   )
 }
+
+export const GeneTree = memo(GeneTreeUnmemo)

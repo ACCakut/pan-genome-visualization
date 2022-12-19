@@ -29,17 +29,7 @@ export function SpeciesPage({ species }: SpeciesPageProps) {
 }
 
 export function SpeciesInfo({ species }: SpeciesPageProps) {
-  const geneJson = useGeneClusterJson(species.id)
-  const currentGeneId = useRecoilValue(currentGeneIdAtom(species.id))
-
-  const gene = useMemo(
-    () => geneJson.clusters.find((cluster) => cluster.id === currentGeneId),
-    [currentGeneId, geneJson.clusters],
-  )
-
-  if (!gene) {
-    return null
-  }
+  const geneClusterJson = useGeneClusterJson(species.id)
 
   return (
     <Container fluid>
@@ -51,12 +41,14 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
 
       <Row noGutters>
         <Col>
-          <GeneClustersTable species={species} clusters={geneJson.clusters} />
+          <GeneClustersTable species={species} clusters={geneClusterJson.clusters} />
         </Col>
       </Row>
 
       <Row noGutters className="my-4">
-        <Col>{gene && <GeneClustersSection species={species} gene={gene} />}</Col>
+        <Col>
+          <GeneClustersSection species={species} />
+        </Col>
       </Row>
     </Container>
   )
@@ -64,10 +56,15 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
 
 export interface GeneClustersSectionProps {
   species: SpeciesDesc
-  gene?: GeneCluster
 }
 
-export function GeneClustersSection({ species, gene }: GeneClustersSectionProps) {
+export function GeneClustersSection({ species }: GeneClustersSectionProps) {
+  const geneClusterJson = useGeneClusterJson(species.id)
+  const currentGeneId = useRecoilValue(currentGeneIdAtom(species.id))
+  const gene = useMemo(
+    () => geneClusterJson.clusters.find((cluster) => cluster.id === currentGeneId),
+    [currentGeneId, geneClusterJson.clusters],
+  )
   if (!gene) {
     return null
   }

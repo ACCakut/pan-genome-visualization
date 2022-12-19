@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 import { Card, CardBody, CardHeader } from 'reactstrap'
 
@@ -12,7 +12,7 @@ export interface SpeciesTreeProps {
   species: SpeciesDesc
 }
 
-export function SpeciesTree({ species }: SpeciesTreeProps) {
+function SpeciesTreeUnmemo({ species }: SpeciesTreeProps) {
   const { t } = useTranslationSafe()
   const { tree, meta } = useSpeciesTreeJson(species.id)
   const graph = useMemo(() => convertPhyloTreeToGraph(tree, meta), [meta, tree])
@@ -40,3 +40,5 @@ export function SpeciesTree({ species }: SpeciesTreeProps) {
     </Card>
   )
 }
+
+export const SpeciesTree = memo(SpeciesTreeUnmemo)

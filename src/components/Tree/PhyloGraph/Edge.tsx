@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { Line } from 'react-konva'
 import { useEnable } from 'src/hooks/useEnable'
 import { CanvasTooltip, CanvasTooltipPre } from './CanvasTooltip'
@@ -9,7 +9,9 @@ export interface EdgeProps {
   graph: Graph
 }
 
-export function Edge({ edge, graph }: EdgeProps) {
+export const Edge = memo(EdgeUnmemo)
+
+export function EdgeUnmemo({ edge, graph }: EdgeProps) {
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
   const line = useMemo(() => {
