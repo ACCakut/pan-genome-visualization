@@ -1,5 +1,6 @@
 /* eslint-disable no-loops/no-loops,unused-imports/no-unused-vars */
-import { max, min, cloneDeep, sumBy, meanBy } from 'lodash'
+import { max, min, cloneDeep, sumBy, meanBy, isEmpty, last } from 'lodash'
+import { ErrorInternal } from 'src/helpers/ErrorInternal'
 
 import { PHYLO_GRAPH_NODE_RADIUS } from './constants'
 
@@ -194,11 +195,6 @@ export function traverseBreadthFirst<T>(
   return results
 }
 
-export enum DepthFirstTraversalOrder {
-  Pre,
-  Post,
-}
-
 // Explore graph in breadth-first fashion, backwards
 export function traverseBreadthFirstBackwards<T>(
   graph: Graph,
@@ -210,53 +206,87 @@ export function traverseBreadthFirstBackwards<T>(
 
 // Explore graph in depth-first pre-order fashion
 export function traverseDepthFirstPreOrder<T>(graph: Graph, explorer: (params: ExplorerParams) => T) {
-  const results: T[] = []
+  const roots = getRoots(graph)
+  if (isEmpty(roots)) {
+    return []
+  }
+
+  const stack: GraphNode[] = roots
   const explored = new Set<string>()
-  return getRoots(graph).forEach((node) => {
-    traverseDepthFirstRecursively(graph, node, explorer, results, explored, DepthFirstTraversalOrder.Pre)
-  })
-  return results
+  const results = []
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const node = stack.pop()
+    if (!node) {
+      return results
+    }
+
+    const children: [GraphNode, GraphEdge][] = getChildren(graph, node.id)
+    {
+      const parents: [GraphNode, GraphEdge][] = getParents(graph, node.id)
+      const siblings: GraphNode[] = getSiblings(graph, node.id)
+      const isLeaf = children.length === 0 // Leaf is the node that has no children
+      const isRoot = parents.length === 0 // Root is the node that has no parents
+      results.push(explorer({ node, children, parents, siblings, isLeaf, isRoot }))
+      explored.add(node.id)
+    }
+
+    children.reverse().forEach(([child]) => {
+      if (!explored.has(child.id)) {
+        stack.push(child)
+        explored.add(child.id)
+      }
+    })
+  }
 }
 
 // Explore graph in depth-first post-order fashion
 export function traverseDepthFirstPostOrder<T>(graph: Graph, explorer: (params: ExplorerParams) => T) {
-  const results: T[] = []
+  const roots = getRoots(graph)
+
+  if (isEmpty(roots)) {
+    return []
+  }
+
+  // TODO: Implement post-order traversal with multiple roots
+  if (roots.length > 1) {
+    throw new ErrorInternal('Not implemented: multiple tree roots are not yet implmented')
+  }
+  const root = roots[0]
+
+  const stack: GraphNode[] = []
   const explored = new Set<string>()
-  return getRoots(graph).forEach((node) => {
-    traverseDepthFirstRecursively(graph, node, explorer, results, explored, DepthFirstTraversalOrder.Post)
-  })
+  const results = []
+  stack.push(root)
+
+  let node
+  while ((node = last(stack))) {
+    const children: [GraphNode, GraphEdge][] = getChildren(graph, node.id)
+
+    let isTail = true
+    for (const [child, _] of children) {
+      if (!explored.has(child.id)) {
+        isTail = false
+        stack.push(child)
+        explored.add(child.id)
+        break
+      }
+    }
+
+    if (isTail) {
+      stack.pop()
+
+      const parents: [GraphNode, GraphEdge][] = getParents(graph, node.id)
+      const siblings: GraphNode[] = getSiblings(graph, node.id)
+      const isLeaf = children.length === 0 // Leaf is the node that has no children
+      const isRoot = parents.length === 0 // Root is the node that has no parents
+
+      results.push(explorer({ node, children, parents, siblings, isLeaf, isRoot }))
+      explored.add(node.id)
+    }
+  }
   return results
-}
-
-// Implements graph traversal in depth-first pre-order or post-order fashion. Recursive implementation.
-function traverseDepthFirstRecursively<T>(
-  graph: Graph,
-  node: GraphNode,
-  explorer: (params: ExplorerParams) => T,
-  results: T[],
-  explored: Set<string>,
-  order: DepthFirstTraversalOrder,
-) {
-  const parents: [GraphNode, GraphEdge][] = getParents(graph, node.id)
-  const children: [GraphNode, GraphEdge][] = getChildren(graph, node.id)
-  const siblings: GraphNode[] = getSiblings(graph, node.id)
-  const isLeaf = children.length === 0 // Leaf is the node that has no children
-  const isRoot = parents.length === 0 // Root is the node that has no parents
-
-  // Explore current node if pre-order
-  if (order === DepthFirstTraversalOrder.Pre) {
-    explored.add(node.id)
-    results.push(explorer({ node, children, parents, siblings, isLeaf, isRoot }))
-  }
-
-  // Explore child nodes recursively
-  children.forEach(([child]) => traverseDepthFirstRecursively(graph, child, explorer, results, explored, order))
-
-  // Explore current node if post-order
-  if (order === DepthFirstTraversalOrder.Post) {
-    explored.add(node.id)
-    results.push(explorer({ node, children, parents, siblings, isLeaf, isRoot }))
-  }
 }
 
 export function getNodesForEdge(graph: Graph, edge: GraphEdge) {
