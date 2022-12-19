@@ -1,5 +1,6 @@
 import React, { memo, ReactElement, useCallback, useMemo } from 'react'
-import { Circle, Text } from 'react-konva'
+import { Text } from 'react-konva'
+import { animated, useSpring } from '@react-spring/konva'
 import { useRecoilState } from 'recoil'
 import { lighten } from 'polished'
 import { useEnable } from 'src/hooks/useEnable'
@@ -17,6 +18,7 @@ export const Node = memo(NodeUnmemo)
 
 function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
   const { x, y, id, color = '#222', name } = node
+  const circleAnimatedProps = useSpring({ x, y })
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
   const [isHighlighted, setIsHighlighted] = useRecoilState(highlightedNodeAtom(name))
 
@@ -36,8 +38,8 @@ function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
     }
     return (
       <Text
-        x={x + PHYLO_GRAPH_NODE_RADIUS * 2}
-        y={y + PHYLO_GRAPH_NODE_LABEL_FONT_SIZE / 2 - 2}
+        x={PHYLO_GRAPH_NODE_RADIUS * 2}
+        y={PHYLO_GRAPH_NODE_LABEL_FONT_SIZE / 2 - 2}
         width={PHYLO_GRAPH_NODE_RADIUS * 2}
         height={PHYLO_GRAPH_NODE_RADIUS * 2}
         fill="#222"
@@ -46,16 +48,16 @@ function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
         text={id}
       />
     )
-  }, [graph, id, x, y])
+  }, [graph, id])
 
   const circle = useMemo(() => {
     const stroke = isHighlighted ? 'lime' : undefined
     const fill = isHighlighted ? lighten(0.2)(color) : color
     return (
       <>
-        <Circle
-          x={x}
-          y={y}
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore*/}
+        <animated.Circle
           radius={PHYLO_GRAPH_NODE_RADIUS}
           fill={fill}
           stroke={stroke}
@@ -73,16 +75,17 @@ function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
         </CanvasTooltip>
       </>
     )
-  }, [color, isHighlighted, isTooltipOpen, node, onHover, onLeave, x, y])
+  }, [color, isHighlighted, isTooltipOpen, node, onHover, onLeave])
 
-  const elements = useMemo(() => {
-    return (
-      <>
+  const elements = useMemo(
+    () => (
+      <animated.Group {...circleAnimatedProps}>
         {circle}
         {text}
-      </>
-    )
-  }, [circle, text])
+      </animated.Group>
+    ),
+    [circle, circleAnimatedProps, text],
+  )
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{elements}</>

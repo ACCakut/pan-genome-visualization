@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react'
-import { Line } from 'react-konva'
+import { animated, useSpring } from '@react-spring/konva'
 import { useEnable } from 'src/hooks/useEnable'
 import { CanvasTooltip, CanvasTooltipPre } from './CanvasTooltip'
 import { getNodesForEdge, Graph, GraphEdge } from './graph'
@@ -14,11 +14,11 @@ export const Edge = memo(EdgeUnmemo)
 export function EdgeUnmemo({ edge, graph }: EdgeProps) {
   const [isTooltipOpen, openTooltip, closeTooltip] = useEnable(false)
 
-  const line = useMemo(() => {
+  const points = useMemo(() => {
     const { source, target } = getNodesForEdge(graph, edge)
 
     // prettier-ignore
-    const points = [ // eslint-disable-line react-perf/jsx-no-new-array-as-prop
+    return [
       // Vertical line
       source.layout.xTBarStart, source.layout.yTBarStart,
       source.layout.xTBarEnd, source.layout.yTBarEnd,
@@ -26,17 +26,29 @@ export function EdgeUnmemo({ edge, graph }: EdgeProps) {
       // Horizontal line
       source.layout.xTBarStart, target.y,
       target.x, target.y
-    ];
+    ]
+  }, [edge, graph])
 
+  const lineAnimatedProps = useSpring({ points })
+
+  const line = useMemo(() => {
     return (
       <>
-        <Line points={points} stroke="#aaa" strokeWidth={5} onMouseEnter={openTooltip} onMouseOut={closeTooltip} />
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore */}
+        <animated.Line
+          {...lineAnimatedProps}
+          stroke="#aaa"
+          strokeWidth={5}
+          onMouseEnter={openTooltip}
+          onMouseOut={closeTooltip}
+        />
         <CanvasTooltip isOpen={isTooltipOpen}>
           <CanvasTooltipPre>{JSON.stringify(edge, null, 2)}</CanvasTooltipPre>
         </CanvasTooltip>
       </>
     )
-  }, [closeTooltip, edge, graph, isTooltipOpen, openTooltip])
+  }, [closeTooltip, edge, isTooltipOpen, lineAnimatedProps, openTooltip])
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{line}</>

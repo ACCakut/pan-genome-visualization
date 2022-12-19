@@ -11,6 +11,8 @@ export interface PhyloGraphProps {
   graph: GraphRaw
 }
 
+export const PhyloGraph = memo(PhyloGraphUnmemo)
+
 function PhyloGraphUnmemo({ width, height, graph: graphRaw }: PhyloGraphProps) {
   const { nodeComponents, edgeComponents } = useMemo(() => {
     if (!width || !height) {
@@ -25,12 +27,10 @@ function PhyloGraphUnmemo({ width, height, graph: graphRaw }: PhyloGraphProps) {
 
   return (
     <Stage width={width} height={height}>
-      <Layer>
+      <Layer clearBeforeDraw>
         {edgeComponents}
         {nodeComponents}
       </Layer>
     </Stage>
   )
 }
-
-export const PhyloGraph = memo(PhyloGraphUnmemo)

@@ -127,7 +127,8 @@ module.exports = {
     'react-hooks/exhaustive-deps': [
       'warn',
       {
-        additionalHooks: '(useRecoilCallback|useRecoilTransaction|useRecoilTransaction_UNSTABLE)',
+        additionalHooks:
+          '(useRecoilCallback|useRecoilTransaction|useRecoilTransaction_UNSTABLE|useSpring|useSprings|useTrail)',
       },
     ],
     'react/jsx-curly-brace-presence': 'off',
