@@ -2,7 +2,6 @@ import React, { memo, ReactElement, useCallback, useMemo } from 'react'
 import { Text } from 'react-konva'
 import { animated, useSpring } from '@react-spring/konva'
 import { useRecoilState } from 'recoil'
-import { lighten } from 'polished'
 import { useEnable } from 'src/hooks/useEnable'
 import { PHYLO_GRAPH_NODE_LABEL_FONT_SIZE, PHYLO_GRAPH_NODE_RADIUS } from 'src/components/Tree/PhyloGraph/constants'
 import { CanvasTooltip, CanvasTooltipPre } from 'src/components/Tree/PhyloGraph/CanvasTooltip'
@@ -74,7 +73,7 @@ function NodeUnmemo({ node, graph }: CladeTreeNodeProps): ReactElement {
         </CanvasTooltip>
       </>
     )
-  }, [color, isHighlighted, isTooltipOpen, node, onHover, onLeave])
+  }, [animatedProps.fill, isHighlighted, isTooltipOpen, node, onHover, onLeave])
 
   const elements = useMemo(
     () => (
