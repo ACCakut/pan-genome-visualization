@@ -37,7 +37,7 @@ export default function Msa({ species, gene, seqType }: MsaProps) {
 }
 
 function msaLoad(rootDiv: HTMLDivElement, seqType: string, fasta: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,new-cap
+  // eslint-disable-next-line new-cap
   const m = new msa({
     el: rootDiv,
     importFasta: fasta,
@@ -97,6 +97,5 @@ function msaLoad(rootDiv: HTMLDivElement, seqType: string, fasta: string) {
   // }
   // button_tooltip('#msa_legend', msa_button_tooltip_dict)
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   m.render()
 }
