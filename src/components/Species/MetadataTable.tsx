@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
+import { LinkExternal } from 'src/components/Link/LinkExternal'
 import { MetadataEntry, SpeciesDesc, useSpeciesMetadata } from 'src/hooks/useDataIndexQuery'
 import { Table } from 'src/components/Table/Table'
 import { getColumnDefNames } from 'src/components/Table/helpers'
+import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 
 const METADATA_TABLE_COLUMNS: ColumnDef<MetadataEntry>[] = [
   {
     header: 'Accession',
     accessorFn: (meta) => meta.accession,
     size: 100,
+    cell: (context) => <NuccoreUrl accession={context.getValue<string>()} />,
   },
   {
     header: 'Strain',
@@ -65,5 +67,20 @@ export function MetadataTable({ species }: MetadataTableProps) {
       initialColumnOrder={METADATA_TABLE_COLUMN_ORDER}
       searchKeys={METADATA_TABLE_SEARCH_KEYS}
     />
+  )
+}
+
+export interface NuccoreUrlProps {
+  accession: string
+}
+
+export function NuccoreUrl({ accession }: NuccoreUrlProps) {
+  const { t } = useTranslationSafe()
+  const href = useMemo(() => `https://www.ncbi.nlm.nih.gov/nuccore/${accession}`, [accession])
+  const title = useMemo(() => t('Open in NCBI Nuccore'), [t])
+  return (
+    <LinkExternal href={href} title={title}>
+      {accession}
+    </LinkExternal>
   )
 }

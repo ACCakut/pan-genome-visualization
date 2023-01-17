@@ -9,6 +9,7 @@ import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQu
 import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
+import { MetadataTable } from './MetadataTable'
 // import { MetadataTable } from 'src/components/Species/MetadataTable'
 
 // const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
@@ -83,16 +84,16 @@ export function GeneClustersSection({ species }: GeneClustersSectionProps) {
           </Col>
         </Row>
 
-        {/*<Row noGutters>*/}
-        {/*  <Col>*/}
-        {/*    <MetadataTable species={species} />*/}
-        {/*  </Col>*/}
-        {/*</Row>*/}
-        {/*<Row noGutters>*/}
-        {/*  <Col>*/}
-        {/*    <GeneClustersData species={species} gene={gene} />*/}
-        {/*  </Col>*/}
-        {/*</Row>*/}
+        <Row noGutters>
+          <Col>
+            <MetadataTable species={species} />
+          </Col>
+        </Row>
+        <Row noGutters>
+          <Col>
+            <GeneClustersData species={species} gene={gene} />
+          </Col>
+        </Row>
       </Container>
     </Suspense>
   )
