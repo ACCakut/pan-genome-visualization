@@ -75,7 +75,16 @@ export interface GraphEdge {
   target: string
 }
 
-export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: number): Graph {
+export interface GraphLayoutOptions {
+  mirrored?: boolean
+}
+
+export function calculateGraphLayout(
+  graphRaw: GraphRaw,
+  width: number,
+  height: number,
+  options?: GraphLayoutOptions,
+): Graph {
   const graph: Graph = { ...cloneDeep(graphRaw), nodes: graphRaw.nodes.map(convertNode) }
 
   let rank = 0
@@ -118,12 +127,17 @@ export function calculateGraphLayout(graphRaw: GraphRaw, width: number, height: 
   const ySpacing = (height - PHYLO_GRAPH_NODE_RADIUS * 2) / rank
 
   graph.nodes.forEach((node) => {
-    node.x = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+    const x = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+    node.x = options?.mirrored ? width - x : x
     node.y = node.layout.meanRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
     if (!isLeafNode(graph, node.id)) {
-      node.layout.xTBarStart = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+      const xTBarStart = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+      const xTBarEnd = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
+
+      node.layout.xTBarStart = options?.mirrored ? width - xTBarStart : xTBarStart
+      node.layout.xTBarEnd = options?.mirrored ? width - xTBarEnd : xTBarEnd
+
       node.layout.yTBarStart = node.layout.minRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
-      node.layout.xTBarEnd = node.layout.meanDepth * xSpacing + PHYLO_GRAPH_NODE_RADIUS
       node.layout.yTBarEnd = node.layout.maxRank * ySpacing + PHYLO_GRAPH_NODE_RADIUS
     }
   })
