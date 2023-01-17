@@ -28,11 +28,17 @@ export function convertPhyloTreeToGraph(tree: TreeNodeOld, meta: TreeMetadataOld
 /** Index tree nodes with unique IDs */
 function flattenPhyloTreeNodesRecursive(node: TreeNodeOld, nodes: GraphNodeRaw[]): TreeNodeOldWithIds {
   const id = nodes.length.toString()
-  nodes.push({ id, ...omit(node, 'children') })
+
+  // HACK: override gene tree name to be the same as accession
+  // TODO: figure out whatever the mess is `name` vs `accession` and clarify the rules on how they need to be matched on the 2 trees. All that needs to be computed offline.
+  const name = node.accession ?? node.name
+
+  nodes.push({ id, ...omit(node, 'children'), name })
 
   const children = node.children ?? []
   const childrenWithIds = children.map((child) => flattenPhyloTreeNodesRecursive(child, nodes))
-  return { ...node, id, children: childrenWithIds }
+
+  return { ...node, name, id, children: childrenWithIds }
 }
 
 /** Convert tree node hierarchy into flat lists of nodes and edges */

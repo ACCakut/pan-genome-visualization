@@ -52,6 +52,7 @@ export interface TreeNodeOld {
   name: string
   branch_length?: number
   clade?: string
+  accession?: string
   attr?: {
     strain?: string
     collection_date?: string
