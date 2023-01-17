@@ -1,5 +1,5 @@
 /* eslint-disable no-loops/no-loops */
-import { max, min, cloneDeep, sumBy, meanBy, isEmpty, last } from 'lodash'
+import { max, min, cloneDeep, sumBy, meanBy, isEmpty, last, isNil } from 'lodash'
 import { ErrorInternal } from 'src/helpers/ErrorInternal'
 
 import { PHYLO_GRAPH_NODE_RADIUS } from './constants'
@@ -77,6 +77,7 @@ export interface GraphEdge {
 
 export interface GraphLayoutOptions {
   mirrored?: boolean
+  scaleBranches?: boolean
 }
 
 export function calculateGraphLayout(
@@ -115,9 +116,10 @@ export function calculateGraphLayout(
       node.layout.maxDepth = 0
       node.layout.minDepth = 0
     } else {
-      node.layout.meanDepth = meanBy(parents, ([parent]) => parent.layout.meanDepth) + 1
-      node.layout.minDepth = (min(parents.map(([parent, _]) => parent.layout.meanDepth)) ?? 0) + 1
-      node.layout.maxDepth = (max(parents.map(([parent, _]) => parent.layout.meanDepth)) ?? 0) + 1
+      const depth = options?.scaleBranches && !isNil(node.branch_length) ? node.branch_length : 1
+      node.layout.meanDepth = meanBy(parents, ([parent]) => parent.layout.meanDepth) + depth
+      node.layout.minDepth = (min(parents.map(([parent, _]) => parent.layout.meanDepth)) ?? 0) + depth
+      node.layout.maxDepth = (max(parents.map(([parent, _]) => parent.layout.meanDepth)) ?? 0) + depth
     }
     depth = Math.max(depth, node.layout.maxDepth)
     return node

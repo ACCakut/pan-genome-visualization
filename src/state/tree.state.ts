@@ -6,9 +6,18 @@ export const highlightedNodeAtom = atomFamily<boolean, string>({
   default: false,
 })
 
+export const speciesTreeOptionsAtom = atom<GraphLayoutOptions>({
+  key: 'speciesTreeOptionsAtom',
+  default: {
+    mirrored: false,
+    scaleBranches: true,
+  },
+})
+
 export const geneTreeOptionsAtom = atom<GraphLayoutOptions>({
   key: 'geneTreeOptionsAtom',
   default: {
     mirrored: true,
+    scaleBranches: true,
   },
 })
