@@ -22,9 +22,12 @@ export function MsaCharacter({ character, seqType, ...restProps }: MsaCharacterP
     return { textColor: getTextColor(theme, fillColor), fillColor }
   }, [character, seqType, theme])
 
-  return (
-    <Group {...restProps}>
-      <Rect width={MSA_CHAR_WIDTH} height={MSA_CHAR_HEIGHT} fill={fillColor} strokeWidth={0.5} stroke="#ffffffaa" />
+  const text = useMemo(() => {
+    if (character === ' ') {
+      return null
+    }
+
+    return (
       <Text
         width={MSA_CHAR_WIDTH}
         height={MSA_CHAR_HEIGHT}
@@ -35,6 +38,13 @@ export function MsaCharacter({ character, seqType, ...restProps }: MsaCharacterP
         align="center"
         verticalAlign="middle"
       />
+    )
+  }, [character, textColor])
+
+  return (
+    <Group {...restProps}>
+      <Rect width={MSA_CHAR_WIDTH} height={MSA_CHAR_HEIGHT} fill={fillColor} strokeWidth={0.5} stroke="#ccca" />
+      {text}
     </Group>
   )
 }

@@ -1,6 +1,5 @@
 import React, { ComponentProps, useMemo } from 'react'
 import { Group } from 'react-konva'
-import { MsaMutations } from 'src/components/Msa/MsaMutations'
 import { MsaSequence } from 'src/components/Msa/MsaSequence'
 import { SequenceType } from 'src/hooks/useDataIndexQuery'
 import { FastaEntry, Mutation, SequenceEntry } from 'src/io/parseFasta'
@@ -18,7 +17,8 @@ export function MsaRow({ refEntry, entry, mutationsOnly, seqType, ...restProps }
     if (mutationsOnly) {
       return <MsaSequence seq={applyMutations(refEntry.seq, mutations)} seqType={seqType} />
     }
-    return <MsaMutations mutations={mutations} seqType={seqType} />
+    const blank = ' '.repeat(refEntry.seq.length)
+    return <MsaSequence seq={applyMutations(blank, mutations)} seqType={seqType} />
   }, [entry.mutations, mutationsOnly, refEntry.seq, seqType])
   return <Group {...restProps}>{component}</Group>
 }

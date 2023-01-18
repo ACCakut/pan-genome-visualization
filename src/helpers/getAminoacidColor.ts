@@ -32,5 +32,5 @@ export const AMINOACID_COLORS: Record<string, string> = {
 export const AMINOACID_GAP_COLOR = AMINOACID_COLORS['-']
 
 export function getAminoacidColor(aa: string): string {
-  return get(AMINOACID_COLORS, aa) ?? AMINOACID_COLORS['-']
+  return get(AMINOACID_COLORS, aa) ?? 'transparent'
 }

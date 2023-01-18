@@ -6,13 +6,14 @@ import { useRecoilValue } from 'recoil'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import { SequenceType, useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
 import { currentGeneIdAtom } from 'src/state/genes'
-import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
-import { MetadataTable } from 'src/components/Species/MetadataTable'
+// import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
+// import { MetadataTable } from 'src/components/Species/MetadataTable'
 
 const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
-const Tree = dynamic(() => import('src/components/Tree/Tree'), { suspense: true, ssr: false })
+
+// const Tree = dynamic(() => import('src/components/Tree/Tree'), { suspense: true, ssr: false })
 
 export interface SpeciesPageProps {
   species: SpeciesDesc
@@ -29,7 +30,7 @@ export function SpeciesPage({ species }: SpeciesPageProps) {
 }
 
 export function SpeciesInfo({ species }: SpeciesPageProps) {
-  const geneClusterJson = useGeneClusterJson(species.id)
+  // const geneClusterJson = useGeneClusterJson(species.id)
 
   return (
     <Container fluid>
@@ -39,11 +40,11 @@ export function SpeciesInfo({ species }: SpeciesPageProps) {
         </Col>
       </Row>
 
-      <Row noGutters>
-        <Col>
-          <GeneClustersTable species={species} clusters={geneClusterJson.clusters} />
-        </Col>
-      </Row>
+      {/*<Row noGutters>*/}
+      {/*  <Col>*/}
+      {/*    <GeneClustersTable species={species} clusters={geneClusterJson.clusters} />*/}
+      {/*  </Col>*/}
+      {/*</Row>*/}
 
       <Row noGutters className="my-4">
         <Col>
@@ -77,22 +78,23 @@ export function GeneClustersSection({ species }: GeneClustersSectionProps) {
           </Col>
         </Row>
 
-        <Row noGutters className="mb-2">
-          <Col>
-            <Tree species={species} gene={gene} />
-          </Col>
-        </Row>
+        {/*<Row noGutters className="mb-2">*/}
+        {/*  <Col>*/}
+        {/*    <Tree species={species} gene={gene} />*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
 
-        <Row noGutters className="mb-2">
-          <Col>
-            <MetadataTable species={species} />
-          </Col>
-        </Row>
-        <Row noGutters className="mb-2">
-          <Col>
-            <GeneClustersData species={species} gene={gene} />
-          </Col>
-        </Row>
+        {/*<Row noGutters className="mb-2">*/}
+        {/*  <Col>*/}
+        {/*    <MetadataTable species={species} />*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
+
+        {/*<Row noGutters className="mb-2">*/}
+        {/*  <Col>*/}
+        {/*    <GeneClustersData species={species} gene={gene} />*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
       </Container>
     </Suspense>
   )

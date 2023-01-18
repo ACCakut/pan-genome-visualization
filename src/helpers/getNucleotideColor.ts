@@ -10,5 +10,5 @@ export const NUCLEOTIDE_COLORS: Record<string, string> = {
 } as const
 
 export function getNucleotideColor(nuc: string) {
-  return get(NUCLEOTIDE_COLORS, nuc) ?? NUCLEOTIDE_COLORS.N
+  return get(NUCLEOTIDE_COLORS, nuc) ?? 'transparent'
 }
