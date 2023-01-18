@@ -55,7 +55,9 @@ export function parseFastaToRefAndMutations(fasta: string): ReferenceAndMutation
 
   const refEntry = fastaEntries.find((entry) => entry.accession.toLowerCase() === 'consensus') ?? fastaEntries[0]
 
-  const entries = fastaEntries.slice(1).map((qryEntry) => {
+  const qryEntries = fastaEntries.filter((entry) => entry.index !== refEntry.index)
+
+  const entries = qryEntries.map((qryEntry) => {
     if (qryEntry.seq.length === 0) {
       return { ...qryEntry, mutations: [] }
     }
