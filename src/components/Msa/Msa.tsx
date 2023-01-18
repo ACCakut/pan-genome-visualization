@@ -8,8 +8,8 @@ import styled from 'styled-components'
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap'
 import { LOADING } from 'src/components/Loading/Loading'
 import { MSA_CHAR_HEIGHT, MSA_CHAR_WIDTH } from 'src/components/Msa/MsaCharacter'
+import { MsaRefSequence } from 'src/components/Msa/MsaPositionRow'
 import { MsaRow } from 'src/components/Msa/MsaRow'
-import { MsaSequence } from 'src/components/Msa/MsaSequence'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import { SequenceType, useGeneClusterData } from 'src/hooks/useDataIndexQuery'
@@ -151,7 +151,7 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
         <Stage width={width + PADDING} height={height + PADDING} ref={stage}>
           <Layer clearBeforeDraw>
             {rows}
-            <MsaSequence seq={data.refEntry.seq} seqType={seqType} ref={refSeqRow} />
+            <MsaRefSequence seq={data.refEntry.seq} seqType={seqType} ref={refSeqRow} />
           </Layer>
         </Stage>
       </MsaLargeContainer>
