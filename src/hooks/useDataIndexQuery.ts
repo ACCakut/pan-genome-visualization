@@ -4,6 +4,11 @@ import urljoin from 'url-join'
 import { ErrorInternal } from 'src/helpers/ErrorInternal'
 import { useAxiosQuery, UseAxiosQueryOptions, useAxiosTarQuery, useAxiosCsvQuery } from 'src/hooks/useAxiosQuery'
 
+export enum SequenceType {
+  Nuc,
+  Aa,
+}
+
 export interface SpeciesDesc {
   id: string
   name: string
