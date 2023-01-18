@@ -1,16 +1,16 @@
-import React, { ComponentProps, Suspense, useMemo } from 'react'
-import { Stage, Layer, Rect, Text, Group } from 'react-konva'
+import React, { Suspense, useMemo } from 'react'
+import { Group, Layer, Stage } from 'react-konva'
 import { useResizeDetector } from 'react-resize-detector'
-import { CardHeader, Card, Col, Container, Row, CardBody } from 'reactstrap'
-import styled, { useTheme } from 'styled-components'
-import { getAminoacidColor } from 'src/helpers/getAminoacidColor'
-import { getTextColor } from 'src/helpers/getTextColor'
+import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap'
+import { LOADING } from 'src/components/Loading/Loading'
+import { MSA_CHAR_HEIGHT } from 'src/components/Msa/MsaCharacter'
+import { MsaRow } from 'src/components/Msa/MsaRow'
+import { MsaSequence } from 'src/components/Msa/MsaSequence'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
 import { SequenceType, useGeneClusterData } from 'src/hooks/useDataIndexQuery'
-import { FastaEntry, Mutation, parseFastaToRefAndMutations, SequenceEntry } from 'src/io/parseFasta'
-import { LOADING } from 'src/components/Loading/Loading'
-import { getNucleotideColor } from 'src/helpers/getNucleotideColor'
+import { parseFastaToRefAndMutations } from 'src/io/parseFasta'
+import styled from 'styled-components'
 
 const MsaContainer = styled(Container)`
   height: 600px;
@@ -97,114 +97,10 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
     <Stage width={width} height={height}>
       <Layer clearBeforeDraw>
         <Group>
-          <MsaRefRow refEntry={data.refEntry} seqType={seqType} />
+          <MsaSequence seq={data.refEntry.seq} seqType={seqType} />
           {rows}
         </Group>
       </Layer>
     </Stage>
-  )
-}
-
-const MSA_CHAR_HEIGHT = 20
-const MSA_CHAR_WIDTH = 20
-const MSA_CHAR_FONT_SIZE = 14
-
-export interface MsaRefRowProps {
-  refEntry: FastaEntry
-  seqType: SequenceType
-}
-
-function MsaRefRow({ refEntry, seqType }: MsaRefRowProps) {
-  const chars = useMemo(() => <MsaSequence seq={refEntry.seq} seqType={seqType} />, [refEntry.seq, seqType])
-  return <Group>{chars}</Group>
-}
-
-export interface MsaRowProps extends ComponentProps<typeof Group> {
-  refEntry: FastaEntry
-  entry: SequenceEntry
-  mutationsOnly?: boolean
-  seqType: SequenceType
-}
-
-function MsaRow({ refEntry, entry, mutationsOnly, seqType, ...restProps }: MsaRowProps) {
-  const component = useMemo(() => {
-    const mutations = entry.mutations.filter((mut) => mut.pos < refEntry.seq.length)
-    if (mutationsOnly) {
-      return <MsaSequence seq={applyMutations(refEntry.seq, mutations)} seqType={seqType} />
-    }
-    return <MsaMutations mutations={mutations} seqType={seqType} />
-  }, [entry.mutations, mutationsOnly, refEntry.seq, seqType])
-  return <Group {...restProps}>{component}</Group>
-}
-
-function applyMutations(refSeq: string, mutations: Mutation[]) {
-  const seq = refSeq.split('')
-  mutations
-    .filter((mut) => mut.pos < refSeq.length)
-    .forEach(({ pos, qry }) => {
-      seq[pos] = qry
-    })
-  return seq.join('')
-}
-
-export interface MsaMutationsProps extends ComponentProps<typeof Group> {
-  mutations: Mutation[]
-  seqType: SequenceType
-}
-
-function MsaMutations({ mutations, seqType, ...restProps }: MsaMutationsProps) {
-  const chars = useMemo(
-    () =>
-      mutations.map(({ pos, qry }) => (
-        <MsaCharacter key={pos} x={MSA_CHAR_WIDTH * pos} y={0} character={qry} seqType={seqType} />
-      )),
-    [mutations, seqType],
-  )
-  return <Group {...restProps}>{chars}</Group>
-}
-
-export interface MsaSequenceProps extends ComponentProps<typeof Group> {
-  seq: string
-  seqType: SequenceType
-}
-
-function MsaSequence({ seq, seqType, ...restProps }: MsaSequenceProps) {
-  const chars = useMemo(
-    () =>
-      seq.split('').map((c, pos) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <MsaCharacter key={`${c}-${pos}`} x={MSA_CHAR_WIDTH * pos} y={0} character={c} seqType={seqType} />
-      )),
-    [seq, seqType],
-  )
-  return <Group {...restProps}>{chars}</Group>
-}
-
-export interface MsaCharacterProps extends ComponentProps<typeof Group> {
-  character: string
-  seqType: SequenceType
-}
-
-function MsaCharacter({ character, seqType, ...restProps }: MsaCharacterProps) {
-  const theme = useTheme()
-  const { textColor, fillColor } = useMemo(() => {
-    const fillColor = seqType === SequenceType.Aa ? getAminoacidColor(character) : getNucleotideColor(character)
-    return { textColor: getTextColor(theme, fillColor), fillColor }
-  }, [character, seqType, theme])
-
-  return (
-    <Group {...restProps}>
-      <Rect width={MSA_CHAR_WIDTH} height={MSA_CHAR_HEIGHT} fill={fillColor} strokeWidth={0.5} stroke="#ffffffaa" />
-      <Text
-        width={MSA_CHAR_WIDTH}
-        height={MSA_CHAR_HEIGHT}
-        fill={textColor}
-        text={character}
-        fontSize={MSA_CHAR_FONT_SIZE}
-        fontFamily="monospace"
-        align="center"
-        verticalAlign="middle"
-      />
-    </Group>
   )
 }
