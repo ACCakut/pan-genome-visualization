@@ -9,10 +9,9 @@ import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQu
 import { GeneClustersTable } from 'src/components/Species/GeneClustersTable'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
-import { MetadataTable } from './MetadataTable'
-// import { MetadataTable } from 'src/components/Species/MetadataTable'
+import { MetadataTable } from 'src/components/Species/MetadataTable'
 
-// const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
+const Msa = dynamic(() => import('src/components/Msa/Msa'), { suspense: true, ssr: false })
 const Tree = dynamic(() => import('src/components/Tree/Tree'), { suspense: true, ssr: false })
 
 export interface SpeciesPageProps {
@@ -72,24 +71,24 @@ export function GeneClustersSection({ species }: GeneClustersSectionProps) {
   return (
     <Suspense fallback={LOADING}>
       <Container fluid>
-        {/*<Row noGutters>*/}
-        {/*  <Col>*/}
-        {/*    <Msa species={species} gene={gene} seqType="nuc" />*/}
-        {/*  </Col>*/}
-        {/*</Row>*/}
-
         <Row noGutters>
+          <Col>
+            <Msa species={species} gene={gene} seqType="nuc" />
+          </Col>
+        </Row>
+
+        <Row noGutters className="mb-2">
           <Col>
             <Tree species={species} gene={gene} />
           </Col>
         </Row>
 
-        <Row noGutters>
+        <Row noGutters className="mb-2">
           <Col>
             <MetadataTable species={species} />
           </Col>
         </Row>
-        <Row noGutters>
+        <Row noGutters className="mb-2">
           <Col>
             <GeneClustersData species={species} gene={gene} />
           </Col>

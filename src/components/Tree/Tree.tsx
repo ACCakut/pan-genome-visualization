@@ -8,7 +8,7 @@ import { SpeciesTree } from 'src/components/Tree/SpeciesTree'
 import { LOADING } from 'src/components/Loading/Loading'
 
 const TreeContainer = styled(Container)`
-  height: 500px;
+  height: 600px;
 `
 
 export interface TreeProps {
@@ -21,9 +21,9 @@ export default function Tree({ species, gene }: TreeProps) {
 
   return (
     <TreeContainer fluid>
-      <Row noGutters className="w-100 h-100">
-        <Col className="h-100 m-1">
-          <Card className="w-100 h-100">
+      <Row noGutters className="w-100 h-100 m-0 p-0">
+        <Col className="m-0 p-0 pr-1">
+          <Card className="h-100">
             <CardHeader>
               <h4>{t('Strain graph')}</h4>
             </CardHeader>
@@ -34,8 +34,8 @@ export default function Tree({ species, gene }: TreeProps) {
             </CardBody>
           </Card>
         </Col>
-        <Col className="h-100 m-1">
-          <Card className="w-100 h-100">
+        <Col className="m-0 p-0 pl-1">
+          <Card className="h-100">
             <CardHeader>
               <h4>{t('Gene graph')}</h4>
             </CardHeader>
