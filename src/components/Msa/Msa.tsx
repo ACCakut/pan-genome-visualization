@@ -1,7 +1,7 @@
 import React, { Suspense, UIEvent, useCallback, useMemo, useRef } from 'react'
 import Konva from 'konva'
 import { clamp } from 'lodash'
-import { Group, Layer, Stage as StageBase } from 'react-konva'
+import { Layer, Stage as StageBase } from 'react-konva'
 import { useResizeDetector } from 'react-resize-detector'
 import { useDraggable } from 'src/hooks/useDraggable'
 import styled from 'styled-components'
@@ -104,6 +104,7 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
 
   const scrollContainer = useRef<HTMLDivElement>(null)
   const stage = useRef<Konva.Stage>(null)
+  const refSeqRow = useRef<Konva.Group>(null)
   const {
     events: { onMouseDown },
   } = useDraggable(scrollContainer, {
@@ -123,6 +124,10 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
         stage.current.container().style.transform = `translate(${dx}px, ${dy}px)`
         stage.current.x(-dx)
         stage.current.y(-dy)
+      }
+
+      if (refSeqRow.current) {
+        refSeqRow.current.y(scrollTop)
       }
     }
   }, [])
@@ -145,10 +150,8 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
       <MsaLargeContainer $width={largeWidth} $height={largeHeight}>
         <Stage width={width + PADDING} height={height + PADDING} ref={stage}>
           <Layer clearBeforeDraw>
-            <Group>
-              <MsaSequence seq={data.refEntry.seq} seqType={seqType} />
-              {rows}
-            </Group>
+            {rows}
+            <MsaSequence seq={data.refEntry.seq} seqType={seqType} ref={refSeqRow} />
           </Layer>
         </Stage>
       </MsaLargeContainer>
