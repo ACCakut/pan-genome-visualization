@@ -3,6 +3,7 @@ import Konva from 'konva'
 import { clamp } from 'lodash'
 import { Group, Layer, Stage as StageBase } from 'react-konva'
 import { useResizeDetector } from 'react-resize-detector'
+import { useDraggable } from 'src/hooks/useDraggable'
 import styled from 'styled-components'
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap'
 import { LOADING } from 'src/components/Loading/Loading'
@@ -103,6 +104,13 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
 
   const scrollContainer = useRef<HTMLDivElement>(null)
   const stage = useRef<Konva.Stage>(null)
+  const {
+    events: { onMouseDown },
+  } = useDraggable(scrollContainer, {
+    decayRate: 0.1,
+    safeDisplacement: 0,
+    applyRubberBandEffect: 'x',
+  })
 
   const onScroll = useCallback((_e: UIEvent<HTMLDivElement>) => {
     if (scrollContainer.current) {
@@ -127,7 +135,13 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
   const largeHeight = MSA_CHAR_HEIGHT * rows.length
 
   return (
-    <MsaScrollContainer $width={width} $height={height} ref={scrollContainer} onScroll={onScroll}>
+    <MsaScrollContainer
+      $width={width}
+      $height={height}
+      ref={scrollContainer}
+      onScroll={onScroll}
+      onMouseDown={onMouseDown}
+    >
       <MsaLargeContainer $width={largeWidth} $height={largeHeight}>
         <Stage width={width + PADDING} height={height + PADDING} ref={stage}>
           <Layer clearBeforeDraw>
