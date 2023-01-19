@@ -27,23 +27,29 @@ export function MsaCharacter({ character, showAa, ...restProps }: MsaCharacterPr
     }
 
     return (
-      <Text
-        width={MSA_CHAR_WIDTH}
-        height={MSA_CHAR_HEIGHT}
-        fill={textColor}
-        text={character}
-        fontSize={MSA_CHAR_FONT_SIZE}
-        fontFamily="monospace"
-        align="center"
-        verticalAlign="middle"
-      />
+      <>
+        <Rect
+          width={MSA_CHAR_WIDTH}
+          height={MSA_CHAR_HEIGHT}
+          fill={fillColor}
+          strokeWidth={0.5}
+          stroke="#ccca"
+          perfectDrawEnabled={false}
+        />
+        <Text
+          width={MSA_CHAR_WIDTH}
+          height={MSA_CHAR_HEIGHT}
+          fill={textColor}
+          text={character}
+          fontSize={MSA_CHAR_FONT_SIZE}
+          fontFamily="monospace"
+          align="center"
+          verticalAlign="middle"
+          perfectDrawEnabled={false}
+        />
+      </>
     )
-  }, [character, textColor])
+  }, [character, fillColor, textColor])
 
-  return (
-    <Group {...restProps}>
-      <Rect width={MSA_CHAR_WIDTH} height={MSA_CHAR_HEIGHT} fill={fillColor} strokeWidth={0.5} stroke="#ccca" />
-      {text}
-    </Group>
-  )
+  return <Group {...restProps}>{text}</Group>
 }

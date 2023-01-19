@@ -1,7 +1,7 @@
 import React, { Suspense, UIEvent, useCallback, useMemo, useRef } from 'react'
 import Konva from 'konva'
 import { clamp } from 'lodash'
-import { Layer, Stage as StageBase } from 'react-konva'
+import { Layer, Stage } from 'react-konva'
 import { useResizeDetector } from 'react-resize-detector'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
@@ -117,31 +117,41 @@ function MsaSized({ species, gene, width, height }: MsaSizedProps) {
     applyRubberBandEffect: 'x',
   })
 
-  const onScroll = useCallback((_e: UIEvent<HTMLDivElement>) => {
-    if (scrollContainer.current) {
-      const { scrollLeft, scrollTop } = scrollContainer.current
-
-      const dx = scrollLeft - PADDING
-      const dy = scrollTop - PADDING
-
-      if (stage.current) {
-        stage.current.container().style.transform = `translate(${dx}px, ${dy}px)`
-        stage.current.x(-dx)
-        stage.current.y(-dy)
-      }
-
-      if (refSeqRow.current) {
-        refSeqRow.current.y(scrollTop)
-      }
+  const { largeWidth, largeHeight, paddingX, paddingY } = useMemo(() => {
+    const largeWidth = MSA_CHAR_WIDTH * numChars
+    const largeHeight = MSA_CHAR_HEIGHT * rows.length
+    return {
+      largeWidth,
+      largeHeight,
+      paddingX: largeWidth * 0.2,
+      paddingY: largeHeight * 0.2,
     }
-  }, [])
+  }, [numChars, rows.length])
+
+  const onScroll = useCallback(
+    (_e: UIEvent<HTMLDivElement>) => {
+      if (scrollContainer.current) {
+        const { scrollLeft, scrollTop } = scrollContainer.current
+        const dx = scrollLeft - paddingX
+        const dy = scrollTop - paddingY
+
+        if (refSeqRow.current) {
+          refSeqRow.current.y(scrollTop)
+        }
+
+        if (stage.current) {
+          stage.current.container().style.transform = `translate(${dx}px, ${dy}px)`
+          stage.current.x(-dx)
+          stage.current.y(-dy)
+        }
+      }
+    },
+    [paddingX, paddingY],
+  )
 
   if (!data) {
     return null
   }
-
-  const largeWidth = MSA_CHAR_WIDTH * numChars
-  const largeHeight = MSA_CHAR_HEIGHT * rows.length
 
   return (
     <MsaScrollContainer
@@ -152,8 +162,8 @@ function MsaSized({ species, gene, width, height }: MsaSizedProps) {
       onMouseDown={onMouseDown}
     >
       <MsaLargeContainer $width={largeWidth} $height={largeHeight}>
-        <Stage width={width + PADDING} height={height + PADDING} ref={stage}>
-          <Layer clearBeforeDraw>
+        <Stage width={width + paddingX} height={height + paddingY} ref={stage} perfectDrawEnabled={false}>
+          <Layer clearBeforeDraw perfectDrawEnabled={false}>
             {rows}
             <MsaRefSequence seq={data.refEntry.seq} ref={refSeqRow} />
           </Layer>
@@ -163,7 +173,11 @@ function MsaSized({ species, gene, width, height }: MsaSizedProps) {
   )
 }
 
-const PADDING = 100
+const MsaScrollContainer = styled.div<{ $width: number; $height: number }>`
+  width: ${(props) => props.$width}px;
+  height: ${(props) => props.$height}px;
+  overflow: auto;
+`
 
 const MsaLargeContainer = styled.div<{ $width: number; $height: number }>`
   margin: 0;
@@ -171,15 +185,4 @@ const MsaLargeContainer = styled.div<{ $width: number; $height: number }>`
   width: ${(props) => props.$width}px;
   height: ${(props) => props.$height}px;
   overflow: hidden;
-`
-
-const MsaScrollContainer = styled.div<{ $width: number; $height: number }>`
-  width: ${(props) => props.$width}px;
-  height: ${(props) => props.$height}px;
-  overflow: scroll;
-`
-
-const Stage = styled(StageBase)`
-  position: relative;
-  outline: none;
 `

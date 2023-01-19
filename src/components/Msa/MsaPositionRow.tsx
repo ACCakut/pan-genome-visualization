@@ -51,13 +51,20 @@ function MsaPosition({ pos, ...restProps }: MsaPositionProps) {
         fontFamily="monospace"
         align="center"
         verticalAlign="middle"
+        perfectDrawEnabled={false}
       />
     )
   }, [pos])
 
   return (
     <Group {...restProps}>
-      <Rect x={-MSA_CHAR_WIDTH} width={MSA_CHAR_WIDTH * 2} height={MSA_CHAR_HEIGHT} fill="#aaa" />
+      <Rect
+        x={-MSA_CHAR_WIDTH}
+        width={MSA_CHAR_WIDTH * 2}
+        height={MSA_CHAR_HEIGHT}
+        fill="#aaa"
+        perfectDrawEnabled={false}
+      />
       {text}
     </Group>
   )
