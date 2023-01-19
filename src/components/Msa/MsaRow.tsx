@@ -1,25 +1,23 @@
 import React, { ComponentProps, useMemo } from 'react'
 import { Group } from 'react-konva'
+import { useRecoilValue } from 'recoil'
 import { MsaSequence } from 'src/components/Msa/MsaSequence'
-import { SequenceType } from 'src/hooks/useDataIndexQuery'
 import { FastaEntry, Mutation, SequenceEntry } from 'src/io/parseFasta'
+import { msaOnlyMutationsAtom } from 'src/state/msa.state'
 
 export interface MsaRowProps extends ComponentProps<typeof Group> {
   refEntry: FastaEntry
   entry: SequenceEntry
-  mutationsOnly?: boolean
-  seqType: SequenceType
 }
 
-export function MsaRow({ refEntry, entry, mutationsOnly, seqType, ...restProps }: MsaRowProps) {
+export function MsaRow({ refEntry, entry, ...restProps }: MsaRowProps) {
+  const onlyMutations = useRecoilValue(msaOnlyMutationsAtom)
+
   const component = useMemo(() => {
+    const seq = onlyMutations ? ' '.repeat(refEntry.seq.length) : refEntry.seq
     const mutations = entry.mutations.filter((mut) => mut.pos < refEntry.seq.length)
-    if (mutationsOnly) {
-      return <MsaSequence seq={applyMutations(refEntry.seq, mutations)} seqType={seqType} />
-    }
-    const blank = ' '.repeat(refEntry.seq.length)
-    return <MsaSequence seq={applyMutations(blank, mutations)} seqType={seqType} />
-  }, [entry.mutations, mutationsOnly, refEntry.seq, seqType])
+    return <MsaSequence seq={applyMutations(seq, mutations)} />
+  }, [entry.mutations, onlyMutations, refEntry.seq])
   return <Group {...restProps}>{component}</Group>
 }
 

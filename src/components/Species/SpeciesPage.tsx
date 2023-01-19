@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'reactstrap'
 import { useRecoilValue } from 'recoil'
 
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
-import { SequenceType, useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
+import { useGeneClusterData, useGeneClusterJson } from 'src/hooks/useDataIndexQuery'
 import { currentGeneIdAtom } from 'src/state/genes'
 import { LOADING } from 'src/components/Loading/Loading'
 import { Layout } from 'src/components/Layout/Layout'
@@ -74,7 +74,7 @@ export function GeneClustersSection({ species }: GeneClustersSectionProps) {
       <Container fluid>
         <Row noGutters>
           <Col>
-            <Msa species={species} gene={gene} seqType={SequenceType.Aa} />
+            <Msa species={species} gene={gene} />
           </Col>
         </Row>
 

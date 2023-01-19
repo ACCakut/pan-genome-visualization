@@ -2,29 +2,31 @@
 import React, { ComponentProps, ForwardedRef, forwardRef, useMemo } from 'react'
 import Konva from 'konva'
 import { Group, Rect, Text } from 'react-konva'
+import { useRecoilValue } from 'recoil'
 import { MSA_CHAR_HEIGHT, MSA_CHAR_WIDTH, MsaCharacter } from 'src/components/Msa/MsaCharacter'
-import type { SequenceType } from 'src/hooks/useDataIndexQuery'
+import { msaShowAaAtom } from 'src/state/msa.state'
 
 const MSA_POS_FONT_SIZE = 8
 
 export interface MsaRefSequenceProps extends ComponentProps<typeof Group> {
   seq: string
-  seqType: SequenceType
 }
 
 export const MsaRefSequence = forwardRef(function MsaRefSequenceWithRef(
-  { seq, seqType, ...restProps }: MsaRefSequenceProps,
+  { seq, ...restProps }: MsaRefSequenceProps,
   ref: ForwardedRef<Konva.Group>,
 ) {
+  const showAa = useRecoilValue(msaShowAaAtom)
+
   const chars = useMemo(
     () =>
       seq.split('').map((c, pos) => (
         <Group key={pos} x={MSA_CHAR_WIDTH * pos}>
           {(pos + 1) % 2 === 0 && <MsaPosition pos={pos + 1} />}
-          <MsaCharacter y={MSA_CHAR_HEIGHT} character={c} seqType={seqType} />
+          <MsaCharacter y={MSA_CHAR_HEIGHT} character={c} showAa={showAa} />
         </Group>
       )),
-    [seq, seqType],
+    [seq, showAa],
   )
   return (
     <Group ref={ref} {...restProps}>

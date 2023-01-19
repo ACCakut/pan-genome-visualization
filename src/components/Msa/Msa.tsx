@@ -3,8 +3,11 @@ import Konva from 'konva'
 import { clamp } from 'lodash'
 import { Layer, Stage as StageBase } from 'react-konva'
 import { useResizeDetector } from 'react-resize-detector'
-import { useDraggable } from 'src/hooks/useDraggable'
+import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
+import { MsaToolbar } from 'src/components/Msa/MsaToolbar'
+import { useDraggable } from 'src/hooks/useDraggable'
+import { msaShowAaAtom } from 'src/state/msa.state'
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap'
 import { LOADING } from 'src/components/Loading/Loading'
 import { MSA_CHAR_HEIGHT, MSA_CHAR_WIDTH } from 'src/components/Msa/MsaCharacter'
@@ -12,7 +15,7 @@ import { MsaRefSequence } from 'src/components/Msa/MsaPositionRow'
 import { MsaRow } from 'src/components/Msa/MsaRow'
 import { useTranslationSafe } from 'src/helpers/useTranslationSafe'
 import type { GeneCluster, SpeciesDesc } from 'src/hooks/useDataIndexQuery'
-import { SequenceType, useGeneClusterData } from 'src/hooks/useDataIndexQuery'
+import { useGeneClusterData } from 'src/hooks/useDataIndexQuery'
 import { parseFastaToRefAndMutations } from 'src/io/parseFasta'
 
 const MsaContainer = styled(Container)`
@@ -22,7 +25,6 @@ const MsaContainer = styled(Container)`
 
 export interface MsaProps {
   gene: GeneCluster
-  seqType: SequenceType
   species: SpeciesDesc
   aspectRatio?: number
   maxWidth?: number
@@ -36,8 +38,9 @@ export default function Msa(props: MsaProps) {
       <Row noGutters className="w-100 h-100 m-0 p-0">
         <Col className="m-0 p-0 pr-1">
           <Card className="h-100">
-            <CardHeader>
-              <h4>{t('Sequences')}</h4>
+            <CardHeader className="d-flex">
+              <h4 className="mr-auto">{t('Sequences')}</h4>
+              <MsaToolbar className="ml-auto" />
             </CardHeader>
             <CardBody>
               <Suspense fallback={LOADING}>
@@ -76,16 +79,17 @@ export interface MsaSizedProps extends MsaProps {
   height: number
 }
 
-function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
+function MsaSized({ species, gene, width, height }: MsaSizedProps) {
+  const showAa = useRecoilValue(msaShowAaAtom)
   const { aa_aln_reduced, na_aln_reduced } = useGeneClusterData(species, gene)
 
   const data = useMemo(() => {
-    const fasta = seqType === SequenceType.Aa ? aa_aln_reduced : na_aln_reduced
+    const fasta = showAa ? aa_aln_reduced : na_aln_reduced
     if (!fasta) {
       return null
     }
     return parseFastaToRefAndMutations(fasta)
-  }, [aa_aln_reduced, na_aln_reduced, seqType])
+  }, [aa_aln_reduced, na_aln_reduced, showAa])
 
   const { rows, numChars } = useMemo(() => {
     if (!data) {
@@ -95,12 +99,12 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
     const { refEntry, entries } = data
 
     const rows = entries.map((entry, i) => (
-      <MsaRow key={entry.index} refEntry={refEntry} entry={entry} y={1 + MSA_CHAR_HEIGHT * i} seqType={seqType} />
+      <MsaRow key={entry.index} refEntry={refEntry} entry={entry} y={1 + MSA_CHAR_HEIGHT * i} />
     ))
 
     const numChars = refEntry.seq.length
     return { rows, numChars }
-  }, [data, seqType])
+  }, [data])
 
   const scrollContainer = useRef<HTMLDivElement>(null)
   const stage = useRef<Konva.Stage>(null)
@@ -151,7 +155,7 @@ function MsaSized({ species, gene, seqType, width, height }: MsaSizedProps) {
         <Stage width={width + PADDING} height={height + PADDING} ref={stage}>
           <Layer clearBeforeDraw>
             {rows}
-            <MsaRefSequence seq={data.refEntry.seq} seqType={seqType} ref={refSeqRow} />
+            <MsaRefSequence seq={data.refEntry.seq} ref={refSeqRow} />
           </Layer>
         </Stage>
       </MsaLargeContainer>
