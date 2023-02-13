@@ -109,7 +109,7 @@ By default, this variable points to the server hosted by the maintainers of panX
 
 You can change this variable to point to your own data - you will need a webserver either local or remote, to host the data. Make sure your server has [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) enabled.
 
-Below is explained how to run the application locally. This section assumes you are able to succesfully run th e application with the default data (see section above). There will be 2 web servers running at the same time: one to host the application itself (just like before), another to host the data.
+Below is explained how to run the application locally. This section assumes you are able to succesfully run the application with the default data (see section above). There will be 2 web servers running at the same time: one to host the application itself (just like before), another to host the data.
 
 - Gather your data, using the following directory structure:
 
@@ -187,3 +187,5 @@ The build is static and self-contained. To serve the application to the world, y
 Note that the data still has to be prepared and served independently. It can be served by a separate server or on the same server as the application. The `DATA_ROOT_URL` should be set correctly, so that the app can find the data.
 
 In fact, this is exactly how https://pangenome.org works. The data and the app are both served on AWS S3 (different buckets), both via Cloudfront cache. The app is built by the GitHub Action and the `public/` directory is simply copied to S3 (see GitHub Action config in `.github/workflows/ci.yml`).
+
+Similarly, the `npm run start` command just runs a local static web server (based on Express), which serves the `public/` directory.
