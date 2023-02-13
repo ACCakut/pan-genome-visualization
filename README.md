@@ -10,13 +10,33 @@ Although several software packages are available for pan-genome analysis, yet vi
 panX displays the pan-genome using interconnected visual components including gene cluster table, multiple alignment, comparative phylogenetic tree viewers and strain metadata table. The pan-genome data structures are prepared by our [pan-genome-analysis](https://github.com/neherlab/pan-genome-analysis) analysis pipeline, which efficiently identifies orthologous clusters from large sets of genome sequences and pre-computes alignments, trees, and plenty of informative statistics.
 **panX is available at [pangenome.org](https://pangenome.org)**
 
+## Pipeline overview
+
+![panX](/panX-pipeline.png)
+
+panX analysis pipeline is based on DIAMOND, MCL and post-processing to determine clusters of orthologous genes from a collection of annotated genomes.
+panX generates a strain/species tree based on core genome SNPs and a gene tree for each gene cluster.
+
+**panX interactive visualization
+**: (1) The dynamic pan-genome statistical charts allow rapid filtering and selection of gene subsets in cluster table;
+
+clicking a gene cluster in cluster table loads (2) related alignment, (3) individual gene tree and (4) gene presence/absence and gain/loss pattern on strain/species tree;
+
+(5) Selecting sequences in alignment highlights associated strains on strain/species tree;
+
+(6) (7) Strain/species tree interacts with gene tree in various ways;
+
+(8) Zooming into a clade on strain/species tree screens strains in metadata table;
+
+(9) Searching in metadata table display strains pertinent to specific meta-information.
+
 ## Running locally with the default data
 
 > NOTE: The project is currently undergoing a complete rewrite.
 >
 > The `master` branch currently contains legacy application written in vanilla JavaScript sometimes in 2015. It uses some very old libraries and techniques. And this is what you currently see on [pangenome.org](https://pangenome.org). It might be tricky to run. We tried to summarize how to run the application in the sections below.
 >
-> The new application will probably work differently, and once completed, when moved to the `master` branch it will likely break your setup. So make sure you remember the git commit hash you are currently using, just in case you want to go back. The rewrite currently has low-to-medium priority compared to our other projects, so it might take a while to finish. You can track the progress in https://github.com/neherlab/pan-genome-visualization/pull/13
+> The new application will probably work differently, and once the implementation is completed, when it's moved to the `master` branch, it will likely break your current setup. So make sure you remember the git commit hash you are currently using, just in case you want to go back to it. The rewrite currently has low-to-medium priority compared to our other projects, so it might take a while to finish. You can track the progress in https://github.com/neherlab/pan-genome-visualization/pull/13
 
 
 Steps:
@@ -158,88 +178,12 @@ Below is explained how to run the application locally. This section assumes you 
 
 - (Optional) If you want to change the dropdown items, then it's tricky. Currently, they are hardcoded in the file [/public/javascripts/species-list-info.js](https://github.com/neherlab/pan-genome-visualization/blob/08d876b526f273f7ee33bcc56a087f8938470ff9/public/javascripts/species-list-info.js). Modify the lists as you see fit and then rebuild and restart the application.
 
-## Pipeline overview:
+## Hosting your own copy of PanX on the internet
 
-![panX](/panX-pipeline.png)
+The build process produces all necessary files (except input data) in the directory `public/`.
 
-panX analysis pipeline is based on DIAMOND, MCL and post-processing to determine clusters of orthologous genes from a collection of annotated genomes.
-panX generates a strain/species tree based on core genome SNPs and a gene tree for each gene cluster.
+The build is static and self-contained. To serve the application to the world, you can use any static webserver (e.g. Express, Apache or nginx), as well as any cloud service (e.g. AWS) or a web hosting (e.g. GitHub Pages). All you need is to put the `public/` directory into the root of your webserver.
 
-**panX interactive visualization
-**: (1) The dynamic pan-genome statistical charts allow rapid filtering and selection of gene subsets in cluster table;
+Note that the data still has to be prepared and served independently. It can be served by a separate server or on the same server as the application. The `DATA_ROOT_URL` should be set correctly, so that the app can find the data.
 
-clicking a gene cluster in cluster table loads (2) related alignment, (3) individual gene tree and (4) gene presence/absence and gain/loss pattern on strain/species tree;
-
-(5) Selecting sequences in alignment highlights associated strains on strain/species tree;
-
-(6) (7) Strain/species tree interacts with gene tree in various ways;
-
-(8) Zooming into a clade on strain/species tree screens strains in metadata table;
-
-(9) Searching in metadata table display strains pertinent to specific meta-information.
-
-## Maintenance
-
-This section is for maintainers of pangenome.org.
-
-### With docker
-
-Last updated: 2021-04-01
-
-- Put the app code into `/www/aws_pangenome`
-
-- Install docker and AWS CLI
-
-   ```
-   ./scripts/install_docker.sh
-   ./scripts/install_aws.sh
-   ```
-
-- Put the data into `/www/aws_pangenome_dataset`
-
-  For example, the data from previous deployment is on S3:
-
-   ```
-   cd /www/aws_pangenome_dataset
-   aws s3 sync s3://data.pangenome.ch-2021-04-01/ .
-   ```
-
-  (you will need to be authenticated, for example with `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` env variables. You can create temporary ones, or, better, a temporary user on AWS. Make sure you clean up `~/.bash_history` from those keys afterwards!)
-
-  If there are issues with AWS CLI being kileld by OOM guard, reduce it's memory consumption by adding this to `~/.aws/config`:
-
-   ```
-   [profile default]
-   s3 =
-     max_concurrent_requests = 5
-     max_bandwidth = 10MB/s
-
-   ```
-
-- Run the app
-
-   ```
-   cd /www/aws_pangenome
-   screen -qxRS pangenome -- ./scripts/run-attached.sh
-   ```
-
-- Exit from `screen` session with Ctrl+A,Ctrl+D. It is safe to log out now.
-
-- To reattach to screen session, run `screen -qxRS pangenome` again.
-
-- Once containers are up, run certbot manually once, to create SSL certificates  (inside nginx container)
-
-   ```
-   docker exec -u 0 -it pangenome-nginx /certbot.sh
-   ```
-
-  The renewal is automatic, every 12 days. See these files:
-
-  ```
-  config/docker/nginx/files/etc/cron.d/jobs       # cron job
-  config/docker/nginx/files/certbot.sh            # the script which cron job runs
-  config/docker/nginx/files/etc/nginx/http.conf   # nginx config to serve ACME challenge files
-  config/docker/nginx/files/etc/nginx/https.conf  # nginx config to proxy to the app
-  ```
-
-- If something goes wrong and you want to start over, delete or move the `.volumes` directory as root (Warning: if deleted, all logs, certs and other persisted data will be lost!)
+In fact, this is exactly how https://pangenome.org works. The data and the app are both served on AWS S3 (different buckets), both via Cloudfront cache. The app is built by the GitHub Action and the `public/` directory is simply copied to S3 (see GitHub Action config in `.github/workflows/ci.yml`).
