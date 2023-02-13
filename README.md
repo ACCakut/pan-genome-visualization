@@ -120,33 +120,34 @@ Below is explained how to run the application locally. This section assumes you 
 
   that is, there should be a top-level directory `dataset`. Inside, for each pathogen there should be a directory with the name of the pathogen, e.g. `Escherichia_coli` (it will become a part of the URL, so it is better to avoid spaces and special characters). Each pathogen directory should contain the output of the panX analysis pipeline.
 
-- Start local webserver to host your data
+- Start local webserver to host your data. For example, you could execute [`serve` NPM package](https://www.npmjs.com/package/serve) using [npx](https://www.npmjs.com/package/npx):
 
    ```bash
    npx serve --cors --listen=tcp://0.0.0.0:8001 path/to/your/data/directory
    ```
 
-  Here, the `path/to/your/data/directory` is the directory that contains `dataset` directory that we prepared above.
+  Here, the `path/to/your/data/directory` is the directory that contains `dataset` directory that we prepared above and we are starting the server on port `8001`, and enabling CORS.
 
-  Note that we are starting the server on port `8001`, and enabling CORS.
-
-  You should now be able to access your data files in the browser directly:
+  You should now be able to access your raw data files in the browser directly:
 
    ````
    http://localhost:8001/dataset/Escherichia_coli/coreGenomeTree.json
    ````
 
-- Open `.env` file Change the value of the variable `DATA_ROOT_URL`, to tell application where to look for the data. In our case, we change it to:
+- Open `.env` file and change the value of the variable `DATA_ROOT_URL`, to tell the application where to look for the data. In our case, we change it to:
 
    ```
    DATA_ROOT_URL=http://localhost:8001
    ```
 
-- Rebuild the application. Note, the changes in `.env` are only picked up after rebuild.
+- Rebuild the application as usual:
 
    ```bash
    npm run build
    ```
+
+  Note, the changes to the `.env` file, as well as changes in data directory (i.e. when adding, removing or renaming the pathogens) are only picked up after rebuild.
+
 - Start the local server:
 
    ```bash
