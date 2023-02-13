@@ -136,7 +136,7 @@ Below is explained how to run the application locally. This section assumes you 
    http://localhost:8001/dataset/Escherichia_coli/coreGenomeTree.json
    ````
 
-    - Open `.env` file Change the value of the variable `DATA_ROOT_URL`, to tell application where to look for the data. In our case, we change it to:
+- Open `.env` file Change the value of the variable `DATA_ROOT_URL`, to tell application where to look for the data. In our case, we change it to:
 
    ```
    DATA_ROOT_URL=http://localhost:8001
