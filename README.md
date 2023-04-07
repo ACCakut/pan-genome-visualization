@@ -89,7 +89,7 @@ Steps:
   ReferenceError: primordials is not defined
   ```
 
-  then you are likely running Node.js version that is imcompatible with the old packages the application is using. Try to install Node.js 10 or below.
+  then you are likely running Node.js version that is incompatible with the old packages the application is using. Try to install Node.js version 10 or below.
 
 - Start the local server:
 
@@ -103,7 +103,7 @@ Steps:
 
 ## Running locally with your own data
 
-By default, the web app fetches data from `https://data.master.pangenome.org`. The data on URL is served by a separate web server, maintained by project developers. In this section we describe how to run the app with your own data instead.
+By default, the web app fetches data from `https://data.master.pangenome.org`. The data on this address is served by a separate web server, maintained by project developers. In this section we describe how to run the app with your own data instead.
 
 This section assumes that you can already run the app with the default data, as described in the previous section.
 
@@ -155,10 +155,10 @@ In this example we have a directory called `pangenome-data/`, which will be the 
 In order to prepare the data for consumption by the web app, run:
 
 ```bash
-yarn prepare-data pangenome-data/dataset
+yarn prepare-data ../pangenome-data/dataset
 ```
 
-Replace `pangenome-data/dataset` as apropriate for your local filesystem.
+Replace the path `../pangenome-data/dataset` as apropriate for your local filesystem setup.
 
 After `prepare-data` script finishes, the files `index.json` and `not_found.json` should appear in the `pangenome-data` directory.
 
@@ -169,7 +169,9 @@ pangenome-data/
 └── not_found.json
 ```
 
-Your data is now ready to be served.
+The `index.json` allows the web app to discover the list of pathogens available and to generate a web page for each pathogen.
+
+Your data is now indexed and is ready to be served.
 
 
 #### Step 2: Serve te data
@@ -187,7 +189,7 @@ Run:
  npx serve@13 --cors --listen=tcp://0.0.0.0:8001 pangenome-data/
  ```
 
-Here, the `pangenome-data/` is the data root directory that we prepared above. We have started the data server on port `8001`, and enabled CORS.
+Here, the `pangenome-data/` is the data root directory that we prepared above. We have started the data server on port `8001`, and enabled CORS. Note that starting with version 14, the `serve` package does not support Node.js 10 anymore, so we use version 13.
 
 You should now be able to access your raw data files directly in the browser:
 
@@ -219,22 +221,28 @@ Change the address as appropriate, depending on how you serve your data.
 
 #### Step 4: Rebuild and run the app
 
-These steps are the same as in the section "Running locally with the default data", except you don't need to copy the default `.env` file anymore, because you should already have it from the rprevious steps:
+These steps are the same as in the section "Running locally with the default data", except you don't need to copy the default `.env` file anymore, because you should already have it from the previous steps:
 
 ```bash
 npm run build
 npm run start
 ```
 
-If you navigate to http://localhost:8000 in your browser, you will still see that your data is not available in the dropdown. However, you can navigate to the page of the pathogen by its name, for example:
+If you navigate to http://localhost:8000 in your browser, you will still see that your data is still not available in the dropdown. However, you can now navigate to the page of the pathogen by its name, for example:
 
 ```
-http://localhost:8000/Escherichia_coli.
+http://localhost:8000/Escherichia_coli
 ```
 
 In this case the app will fetch data from the server you specified, from its subdirectory `dataset/Escherichia_coli`.
 
-(Optional) If you want to change the dropdown items, then, due to legacy reasons, it's tricky. Currently, they are hardcoded in the file [/public/javascripts/species-list-info.js](https://github.com/neherlab/pan-genome-visualization/blob/08d876b526f273f7ee33bcc56a087f8938470ff9/public/javascripts/species-list-info.js). Modify the lists as you see fit and then rebuild and restart the application.
+
+#### (Optional) Step 5: Change dropdown items
+
+If you want to change the dropdown items, then, due to legacy reasons, it's tricky. Currently, they are hardcoded in the file [/public/javascripts/species-list-info.js](https://github.com/neherlab/pan-genome-visualization/blob/08d876b526f273f7ee33bcc56a087f8938470ff9/public/javascripts/species-list-info.js). Modify the lists as you see fit and then rebuild and restart the application.
+
+
+#### (Optional) Step 6: Update custom data and rebuild
 
 Note, the changes to the `.env` file, as well as changes in data directory are only picked up after rebuild. So if you add, remove of change your datasets, or their names, or the URL of your data server, you need to rerun all the steps again:
 
@@ -244,14 +252,13 @@ npm run build
 npm run start
 ```
 
-
 ## Hosting your own copy of PanX on the internet
 
 The build process produces all necessary files (except input data) in the directory `public/`.
 
-The build is static and self-contained. To serve the application to the world, you can use any static webserver (e.g. Express, Apache or nginx), as well as any cloud service (e.g. AWS) or a web hosting (e.g. GitHub Pages). All you need is to put the `public/` directory into the root of your webserver.
+The build is static and self-contained. To serve the application to the world, you can use any static HTTP server (e.g. Express, Apache or nginx), as well as any cloud service (e.g. AWS) or a web hosting (e.g. GitHub Pages). All you need is to put the `public/` directory into the root of your webserver.
 
-Note that the data still has to be prepared and served independently. It can be served by a separate server or on the same server as the application. The `DATA_ROOT_URL` should be set correctly during app build, so that the app can find the data.
+Note that the data still has to be prepared and served independently. It can be served by a separate HTTP server or on the same server as the application. The `DATA_ROOT_URL` should be set correctly during app build, so that the app can find the data. CORS should be enabled on the server.
 
 In fact, this is exactly how https://pangenome.org works. The data and the app are both served on AWS S3 (different buckets), both via Cloudfront cache. The app is built by the GitHub Action and the `public/` directory is simply copied to S3 (see GitHub Action config in `.github/workflows/ci.yml`).
 
