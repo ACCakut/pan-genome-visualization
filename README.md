@@ -113,7 +113,7 @@ If you want to run the app with your own data, you need to perform the following
 
 1. Index the data: create an `index.json` file. The `index.json` allows the web app to discover the list of pathogens available in the data and to generate a page for each pathogen.
 
-2. Serve te data: Run your own web server to serve the data. This could be a separate local HTTP server (e.g. with Node.js `serve` package, python's `http.server` etc.), or a remote file server. You need to know an IP address and port of this sever. CORS should be enabled on your server.
+2. Serve the data: Run your own web server to serve the data. This could be a separate local HTTP server (e.g. with Node.js `serve` package, python's `http.server` etc.), or a remote file server. You need to know an IP address and port of this sever. CORS should be enabled on your server.
 
 3. Configure the app: Set `DATA_ROOT_URL` variable in the `.env` file to the IP address and port of your data sever.
 
@@ -174,7 +174,7 @@ The `index.json` allows the web app to discover the list of pathogens available 
 Your data is now indexed and is ready to be served.
 
 
-#### Step 2: Serve te data
+#### Step 2: Serve the data
 
 You can serve the data in many ways. You can use any static file server. There is a few requirements:
 
