@@ -184,10 +184,10 @@ Here we describe how to start a local webserver using [`serve` NPM package](http
 Run:
 
  ```bash
- npx serve --cors --listen=tcp://0.0.0.0:8001 pangenome-data/
+ npx serve@13 --cors --listen=tcp://0.0.0.0:8001 pangenome-data/
  ```
 
-Here, the `pangenome-data/` is the data root directory that we prepared above. And we are starting the data server on port `8001`, and enabling CORS.
+Here, the `pangenome-data/` is the data root directory that we prepared above. We have started the data server on port `8001`, and enabled CORS.
 
 You should now be able to access your raw data files directly in the browser:
 
