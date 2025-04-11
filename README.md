@@ -53,6 +53,10 @@ Steps:
    
    npm --version
    # output: 6.x.y
+
+   yarn --version
+   # output: 1.x.y
+   # if not installed: npm install --global yarn
    ````
 
 - Clone the repository and initialize submodules
